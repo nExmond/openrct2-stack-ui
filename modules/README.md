@@ -1,0 +1,1 @@
+Put the up-to-date 'openrct2.d.ts' file here.

@@ -1,0 +1,19 @@
+{
+  "name": "stack-ui",
+  "version": "0.0.1",
+  "description": "Easy to use UI plugin for OpenRCT2",
+  "license": "MIT",
+  "author": "nexmond",
+  "main": "StackUI.js",
+  "scripts": {
+    "build": "tsc",
+    "minify": "uglifyjs --compress --mangle --output out/title-editor.min.js -- out/title-editor.js",
+    "copy": "copy out\\sharpness.js \"%HOMEDRIVE%%HOMEPATH%\\Documents\\OpenRCT2\\plugin\"",
+    "watch": "tsc-watch --onSuccess \"npm run copy\""
+  },
+  "devDependencies": {
+      "tsc-watch": "^4.2.9",
+      "typescript": "^4.1.3",
+      "uglify-js": "^3.12.5"
+  }
+}
