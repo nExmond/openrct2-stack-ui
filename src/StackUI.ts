@@ -518,7 +518,7 @@ class UIWidget<T extends Widget> {
         widget.x = this._origin.x;
         widget.y = this._origin.y;
         widget.width = this._size.width ?? 0;
-        widget.height = this._size.height ?? 0;
+        widget.height = (this._size.height ?? 0) - 1;
         widget.tooltip = this._tooltip;
         widget.isDisabled = this._isDisabled;
         widget.isVisible = this._isVisible;
@@ -788,6 +788,9 @@ class UIStack extends UIWidget<GroupBoxWidget> {
                         autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights - stackMaxHeights) / (numberOfUndefinedHeightChilds - stacks.length));
                     }
                     console.log('v2', autoHeight, childContainerSize.height, stacks.length);
+
+
+
                 }
                 for (var child of this._childs) {
                     var isStack = child instanceof UIStack;
@@ -1727,19 +1730,16 @@ var openWindow = function () {
                             console.log(val);
                         }),
                     UIButton.$('6'),
-                    UIStack.$H(
-                        UISpacer.$(),
-                        UIButton.$I(29364)
-                        .onClick((button) => {
-                            viewport.mainViewportScrollToThis();
-                            window.updateUI((val) => {
-                                val.title('Moving........')
-                            })
-                            button.updateUI((val) => {
-                                val.image(val._image! + 1);
-                            })
+                    UIButton.$I(29364)
+                    .onClick((button) => {
+                        viewport.mainViewportScrollToThis();
+                        window.updateUI((val) => {
+                            val.title('Moving........')
                         })
-                    ),
+                        button.updateUI((val) => {
+                            val.image(val._image! + 1);
+                        })
+                    }),
                     UIButton.$('8')
                 ).spacing(4)
                     .padding(containerPadding),

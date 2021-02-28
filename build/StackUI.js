@@ -438,7 +438,7 @@ var UIWidget = (function () {
         widget.x = this._origin.x;
         widget.y = this._origin.y;
         widget.width = (_a = this._size.width) !== null && _a !== void 0 ? _a : 0;
-        widget.height = (_b = this._size.height) !== null && _b !== void 0 ? _b : 0;
+        widget.height = ((_b = this._size.height) !== null && _b !== void 0 ? _b : 0) - 1;
         widget.tooltip = this._tooltip;
         widget.isDisabled = this._isDisabled;
         widget.isVisible = this._isVisible;
@@ -1397,7 +1397,7 @@ var openWindow = function () {
     })
         .onChange(function (spinner, val) {
         console.log(val);
-    }), UIButton.$('6'), UIStack.$H(UISpacer.$(), UIButton.$I(29364)
+    }), UIButton.$('6'), UIButton.$I(29364)
         .onClick(function (button) {
         viewport.mainViewportScrollToThis();
         window.updateUI(function (val) {
@@ -1406,7 +1406,7 @@ var openWindow = function () {
         button.updateUI(function (val) {
             val.image(val._image + 1);
         });
-    })), UIButton.$('8')).spacing(4)
+    }), UIButton.$('8')).spacing(4)
         .padding(containerPadding), UIButton.$('change color')
         .onClick(function (button) {
         window.updateUI(function (val) {
