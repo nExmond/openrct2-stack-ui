@@ -1,8 +1,9 @@
-/// <reference path="../modules/openrct2.d.ts" />
+/// <reference path='../modules/openrct2.d.ts' />
 
 interface Array<T> {
     flatMap<T>(): T[];
     flatMapFunc<T>(d: number): T[];
+    compactMap<T>(): T[];
 }
 Array.prototype.flatMapFunc = function <T>(d = 1): T[] {
     return d > 0 ? this.reduce((acc, val) => acc.concat(Array.isArray(val) ? val.flatMapFunc(d - 1) : val), []) : this.slice();
@@ -10,14 +11,17 @@ Array.prototype.flatMapFunc = function <T>(d = 1): T[] {
 Array.prototype.flatMap = function <T>(): T[] {
     return this.flatMapFunc(1);
 }
+Array.prototype.compactMap = function <T>(): T[] {
+    return this.filter((val) => val !== undefined);
+}
 
 //https://www.cloudhadoop.com/2018/10/guide-to-unique-identifiers-uuid-guid.html
 function uuid(): string {
-    var uuidValue = "", k, randomValue;
+    var uuidValue = '', k, randomValue;
     for (k = 0; k < 32; k++) {
         randomValue = Math.random() * 16 | 0;
         if (k == 8 || k == 12 || k == 16 || k == 20) {
-            uuidValue += "-";
+            uuidValue += '-';
         }
         uuidValue += (k == 12 ? 4 : (k == 16 ? (randomValue & 3 | 8) : randomValue)).toString(16);
     }
@@ -51,9 +55,16 @@ enum UIColor {
     DarkPink, BrightPink, LightPink
 }
 
+enum UIColorFlag {
+    Outline = 1 << 5,
+    Inset = 1 << 6,
+    Translucent = 1 << 7
+    // , Unknown = 1 << 8
+}
+
 enum UITextAlignment {
-    Left = "left",
-    Center = "centred"
+    Left = 'left',
+    Center = 'centred'
 }
 
 enum UIViewportScale {
@@ -121,6 +132,13 @@ interface UIConstructResult {
     widgets: Widget[];
 }
 
+const UIWindowColorPaletteDefault: UIWindowColorPalette = { primary: UIColor.Gray, secondary: UIColor.Gray, tertiary: UIColor.Gray };
+interface UIWindowColorPalette {
+    primary?: UIColor;
+    secondary?: UIColor;
+    tertiary?: UIColor;
+}
+
 // Classes
 class UIInteractor {
 
@@ -130,7 +148,7 @@ class UIInteractor {
 
     update<T extends Widget>(name: string, block: (widget: T) => void) {
         var widget: T | undefined = this._findWidget(name);
-        if (typeof widget !== "undefined") {
+        if (typeof widget !== 'undefined') {
             block(widget);
         }
     }
@@ -143,8 +161,9 @@ class UIInteractor {
 class UIConstructor {
 
     construct(stack: UIStack, interactor: UIInteractor): UIConstructResult {
-        var flattedComponents: UIWidget<any>[] = stack._getUIWidgets();
-        flattedComponents.forEach((val) => val._interactor = interactor);
+        var flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        stack._interactor = interactor;
+        flattedChilds.forEach((val) => val._interactor = interactor);
         return {
             size: this.calculateBounds(stack),
             widgets: stack._getWidgets()
@@ -160,20 +179,39 @@ class UIConstructor {
             y: insets.top
         };
 
-        var containerSize = stack._estimatedSize();
+        var estimatedSize = stack._estimatedSize();
 
-        stack._layout(UIAxis.Vertical, origin, containerSize);
+        stack._layout(UIAxis.Vertical, origin, estimatedSize, false);
         stack._build();
 
         return {
-            width: containerSize.width + insets.left + insets.right,
-            height: containerSize.height + insets.top + insets.bottom
+            width: estimatedSize.width + insets.left + insets.right,
+            height: estimatedSize.height + insets.top + insets.bottom
         }
     }
 
-    after(stack: UIStack) {
-        var flattedComponents: UIWidget<any>[] = stack._getUIWidgets();
-        flattedComponents.forEach((val) => val._didLoad());
+    didLoad(stack: UIStack) {
+        var flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        flattedChilds.forEach((val) => val._didLoad());
+    }
+
+    refresh(stack: UIStack, windowSize: UISize) {
+
+        var insets: UIEdgeInsets = UIEdgeInsetsContainer;
+
+        var origin: UIPoint = {
+            x: insets.left,
+            y: insets.top
+        };
+
+        var estimatedSize: UISize = {
+            width: windowSize.width - (insets.left + insets.right),
+            height: windowSize.height - (insets.top + insets.bottom)
+        }
+
+        stack._resetSize();
+        stack._layout(UIAxis.Vertical, origin, estimatedSize, true);
+        stack._refreshUI();
     }
 }
 
@@ -182,20 +220,28 @@ class UIWindow {
     _uiConstructor = new UIConstructor();
     _interactor = new UIInteractor();
 
-    _windowDesc: WindowDesc | undefined;
     _window: Window | undefined;
+    _contentView!: UIStack;
+
+    _initialSize!: UISize;
 
     _title: string;
-    _childs: UIWidget<any>[];
+    _childss: UIWidget<any>[];
     _spacing = 0;
     _padding: UIEdgeInsets = UIEdgeInsetsZero;
 
     _origin!: UIPoint;
+    _size!: UISize;
+    _isExpandable: boolean = false;
+    _colorPalette: UIWindowColorPalette = UIWindowColorPaletteDefault;
+
+    _onClose: ((window: this) => void) | undefined;
+    _onTabChange: ((window: this, tabIndex: number) => void) | undefined;
 
     constructor(title: string, widgets: UIWidget<any>[]) {
 
         this._title = title;
-        this._childs = widgets;
+        this._childss = widgets;
     }
 
     //Convenience
@@ -204,34 +250,135 @@ class UIWindow {
         return new UIWindow(title, widgets);
     }
 
+    //Private
+
+    _convertColors(): UIColor[] {
+        return [
+            this._colorPalette.primary ?? UIColor.Gray,
+            this._colorPalette.secondary ?? UIColor.Gray,
+            this._colorPalette.tertiary ?? UIColor.Gray
+        ];
+    }
+
+    _isOpened(): boolean {
+        return typeof this._window !== 'undefined';
+    }
+
+    _sync() {
+        if (this._isOpened()) {
+            var window = this._window!;
+            this._origin = {
+                x: window.x,
+                y: window.y
+            }
+            this._size = {
+                width: window.width,
+                height: window.height
+            }
+            this._colorPalette = {
+                primary: window.colours[0],
+                secondary: window.colours[1],
+                tertiary: window.colours[2]
+            }
+        }
+    }
+
+    _update() {
+
+        var window = this._window;
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        window.title = this._title;
+
+        window.minWidth = this._isExpandable ? this._initialSize.width : this._size.width;
+        window.minHeight = this._isExpandable ? this._initialSize.height : this._size.height;
+        window.maxWidth = this._isExpandable ? ui.width : this._size.width;
+        window.maxHeight = this._isExpandable ? ui.height : this._size.height;
+
+        window.colours = this._convertColors();
+
+        //Because it is not rendered immediately, it moves and revert the coordinates.
+        window.x = ui.width + 1;
+        window.y = ui.height + 1;
+
+        window.x = this._origin.x;
+        window.y = this._origin.y;
+    }
+
+    _onUpdate() {
+
+        var window = this._window;
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        var isSizeChange = window.width != this._size.width || window.height != this._size.height;
+        if (isSizeChange) {
+            this._size = {
+                width: window.width,
+                height: window.height
+            }
+            this._uiConstructor.refresh(this._contentView, this._size);
+        }
+    }
+
     //Public
 
     show() {
 
-        var stack = new UIStack(UIAxis.Vertical, this._childs)
+        if (this._isOpened()) {
+            return;
+        }
+
+        var stack = new UIStack(UIAxis.Vertical, this._childss)
             .spacing(this._spacing).padding(this._padding);
         var constructed = this._uiConstructor.construct(stack, this._interactor);
         var size = constructed.size;
 
-        this._windowDesc = {
+        var windowDesc: WindowDesc = {
             classification: this._title,
             width: size.width,
             height: size.height,
             title: this._title,
-            widgets: constructed.widgets
+            minWidth: this._isExpandable ? size.width : undefined,
+            maxWidth: this._isExpandable ? ui.width : undefined,
+            minHeight: this._isExpandable ? size.height : undefined,
+            maxHeight: this._isExpandable ? ui.height : undefined,
+            widgets: constructed.widgets,
+            colours: this._convertColors(),
+            onClose: () => {
+                this._onClose?.call(this, this);
+            },
+            onUpdate: () => {
+                this._onUpdate();
+            },
+            onTabChange: () => {
+                var tabIndex = this._window?.tabIndex ?? 0;
+                this._onTabChange?.call(this, this, tabIndex);
+            }
         }
 
-        this._window = ui.openWindow(this._windowDesc);
-        this._origin = {
-            x: this._window.x,
-            y: this._window.y
-        }
+        this._window = ui.openWindow(windowDesc);
+        this._contentView = stack;
+        this._initialSize = {
+            width: this._window.width,
+            height: this._window.height
+        };
+        this._sync();
 
         this._interactor.findWidget((name) => {
             return this.findWidget(name);
         });
 
-        this._uiConstructor.after(stack);
+        this._uiConstructor.didLoad(stack);
+    }
+
+    updateUI(block: (val: this) => void) {
+        this._sync();
+        block(this);
+        this._update();
     }
 
     close() {
@@ -259,29 +406,35 @@ class UIWindow {
         return this;
     }
 
-    updateUI(block: (val: this) => void) {
-        block(this);
-        this._update();
-    }
-
-    _update() {
-
-        var window = this._window;
-
-        if (typeof window === "undefined") {
-            return;
-        }
-
-        window.x = this._origin.x;
-        window.y = this._origin.y;
-    }
-
     origin(val: UIPoint): this {
         this._origin = val;
         return this;
     }
 
-    
+    isExpandable(val: boolean): this {
+        this._isExpandable = val;
+        return this;
+    }
+
+    title(val: string): this {
+        this._title = val;
+        return this;
+    }
+
+    colorPalette(val: UIWindowColorPalette): this {
+        this._colorPalette = val;
+        return this;
+    }
+
+    onClose(block: (window: this) => void): this {
+        this._onClose = block;
+        return this;
+    }
+
+    onTabChange(block: (window: this, tabIndex: number) => void): this {
+        this._onTabChange = block;
+        return this;
+    }
 }
 
 class UIWidget<T extends Widget> {
@@ -297,9 +450,11 @@ class UIWidget<T extends Widget> {
 
     _widget!: T | any;
 
+    _initialSize: UIOptionalSize | undefined;
+
     constructor() {
         //https://stackoverflow.com/questions/13613524/get-an-objects-class-name-at-runtime
-        this._name = this.constructor.name + "-" + uuid();
+        this._name = this.constructor.name + '-' + uuid();
     }
 
     //Private
@@ -324,11 +479,15 @@ class UIWidget<T extends Widget> {
         }
     }
 
-    _layout(axis: UIAxis, origin: UIPoint, parentSize: UISize): UIPoint {
+    _layout(axis: UIAxis, origin: UIPoint, estimatedSize: UISize, isResizing: boolean): UIPoint {
+        if (typeof this._initialSize === 'undefined') {
+            this._initialSize = this._size;
+        }
+
         this._origin = origin;
         this._size = {
-            width: this._size.width ?? parentSize.width,
-            height: this._size.height ?? parentSize.height
+            width: this._size.width ?? estimatedSize.width,
+            height: this._size.height ?? estimatedSize.height
         }
         switch (axis) {
             case UIAxis.Vertical: {
@@ -347,11 +506,11 @@ class UIWidget<T extends Widget> {
     }
 
     _build() {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 
-    _updateUI(block: (widget: this) => void) {
-        block(this);
+    updateUI(block: ((widget: this) => void) | undefined = undefined) {
+        block?.(this);
         this._update(this._widget);
     }
 
@@ -381,7 +540,17 @@ class UIWidget<T extends Widget> {
     _didLoad() {
         this._interactor.update(this._name, (widget: T) => {
             this._widget = widget;
-        })
+        });
+    }
+
+    _resetSize() {
+        if (typeof this._initialSize !== 'undefined') {
+            this._size = this._initialSize;
+        }
+    }
+
+    _refreshUI() {
+        this._update(this._widget);
     }
 
     //Public
@@ -391,6 +560,7 @@ class UIWidget<T extends Widget> {
             width: val,
             height: this._size.height
         }
+        this._initialSize = this._size;
         return this;
     }
 
@@ -399,15 +569,17 @@ class UIWidget<T extends Widget> {
             width: this._size.width,
             height: val
         }
+        this._initialSize = this._size;
         return this;
     }
 
     size(val: UISize): this {
         this._size = val;
+        this._initialSize = val;
         return this;
     }
 
-    tooltop(val: string): this {
+    tooltip(val: string): this {
         this._tooltip = val;
         return this;
     }
@@ -427,7 +599,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
 
     _axis: UIAxis;
     _spacing = 0;
-    _child: UIWidget<any>[];
+    _childs: UIWidget<any>[];
 
     _isGrouped: boolean;
     _groupTitle: string | undefined;
@@ -440,8 +612,8 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     constructor(axis: UIAxis, widgets: UIWidget<any>[], isGrouped: boolean = false) {
         super();
         this._axis = axis;
-        this._child = widgets;
-        this._child.forEach((val) => {
+        this._childs = widgets;
+        this._childs.forEach((val) => {
             if (val instanceof UISpacer) {
                 val._confirm(axis);
             }
@@ -478,7 +650,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     //Private
 
     _getUIWidgets(): UIWidget<any>[] {
-        var widgets: UIWidget<any>[] = this._child.map((val) => val._getUIWidgets()).flatMap();
+        var widgets: UIWidget<any>[] = this._childs.map((val) => val._getUIWidgets()).flatMap();
         if (this._isGrouped) {
             widgets.unshift(this);
         }
@@ -486,7 +658,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     _getWidgets(): Widget[] {
-        var widgets: Widget[] = this._child.map((val) => val._getWidgets()).flatMap();
+        var widgets: Widget[] = this._childs.map((val) => val._getWidgets()).flatMap();
         if (this._isGrouped) {
             widgets.unshift(this._widget);
         }
@@ -494,7 +666,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     _containerSize(): UISize {
-        return this._child
+        return this._childs
             .map((val) => val._estimatedSize())
             .reduce((acc, val): UISize => {
                 switch (this._axis) {
@@ -515,7 +687,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     _isUnNamedGroup(): boolean {
-        return this._isGrouped && typeof this._groupTitle === "undefined";
+        return this._isGrouped && typeof this._groupTitle === 'undefined';
     }
 
     _estimatedSize(): UISize {
@@ -527,23 +699,28 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         }
     }
 
-    _layout(axis: UIAxis, origin: UIPoint, parentSize: UISize): UIPoint {
+    _layout(axis: UIAxis, origin: UIPoint, estimatedSize: UISize, isResizing: boolean): UIPoint {
+        if (typeof this._initialSize === 'undefined') {
+            this._initialSize = this._size;
+        }
 
-        var intrinsicSize = this._estimatedSize();
-        switch (axis) {
-            case UIAxis.Vertical: {
-                intrinsicSize = {
-                    width: parentSize.width,
-                    height: intrinsicSize.height
+        var thisEstimatedSize = estimatedSize;
+        if (!isResizing) {
+            switch (axis) {
+                case UIAxis.Vertical: {
+                    thisEstimatedSize = {
+                        width: estimatedSize.width,
+                        height: this._estimatedSize().height
+                    }
+                    break;
                 }
-                break;
-            }
-            case UIAxis.Horizontal: {
-                intrinsicSize = {
-                    width: intrinsicSize.width,
-                    height: parentSize.height
+                case UIAxis.Horizontal: {
+                    thisEstimatedSize = {
+                        width: this._estimatedSize().width,
+                        height: estimatedSize.height
+                    }
+                    break;
                 }
-                break;
             }
         }
 
@@ -555,17 +732,17 @@ class UIStack extends UIWidget<GroupBoxWidget> {
                 y: origin.y - unNamedGroupCorrect
             };
             this._size = {
-                width: intrinsicSize.width,
-                height: intrinsicSize.height + unNamedGroupCorrect
+                width: thisEstimatedSize.width,
+                height: thisEstimatedSize.height + unNamedGroupCorrect
             };
         } else {
             this._origin = origin;
-            this._size = intrinsicSize;
+            this._size = thisEstimatedSize;
         }
 
         var childContainerSize: UISize = {
-            width: intrinsicSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
-            height: intrinsicSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect
+            width: thisEstimatedSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
+            height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect
         };
         var childOrigin: UIPoint = {
             x: this._origin.x + this._insets.left + this._padding.left,
@@ -573,39 +750,57 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         }
         var point = childOrigin;
 
+        var sumOfSpacing = this._spacing * (this._childs.length - 1);
+
         switch (this._axis) {
             case UIAxis.Vertical: {
-                var numberOfUndefinedHeightComponents = this._child
+                var undefinedHeightChilds = this._childs
                     .filter((val) => {
                         if (val instanceof UIStack) {
-                            return false;
+                            return isResizing;
                         } else {
-                            return typeof val._size.height === "undefined";
+                            return typeof val._size.height === 'undefined';
                         }
-                    }).length;
-                var sumOfExactComponentHeights: number = this._child
+                    });
+                var numberOfUndefinedHeightChilds = undefinedHeightChilds.length;
+                var sumOfExactChildHeights: number = this._childs
                     .map((val) => {
                         if (val instanceof UIStack) {
-                            return val._estimatedSize().height;
+                            return isResizing ? 0 : val._estimatedSize().height;
                         } else {
                             return val._size.height ?? 0
                         }
                     }).reduce((acc, val) => acc + val);
                 var autoHeight: number = 0;
-                if (numberOfUndefinedHeightComponents > 0) {
-                    var sumOfSpacing = this._spacing * (this._child.length - 1);
-                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactComponentHeights) / numberOfUndefinedHeightComponents);
+                if (numberOfUndefinedHeightChilds > 0) {
+                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights) / numberOfUndefinedHeightChilds);
                 }
-                for (var component of this._child) {
-                    var isHeightUndefined = typeof component._size.height === "undefined";
-                    var parentSize: UISize = {
+                var storedAutoHeight = autoHeight;
+                if (isResizing) {
+                    console.log('v1', autoHeight, childContainerSize.height);
+                    var stacks = undefinedHeightChilds.filter((val) => val instanceof UIStack);
+                    var stackMaxHeights = 0;
+                    if (stacks.length > 0) {
+                        console.log(stacks.map((val) => val._estimatedSize().height.toString()).reduce((acc, val) => acc + ' ' + val));
+                        stackMaxHeights = stacks.map((val) => Math.max(autoHeight, val._estimatedSize().height)).reduce((acc, val) => acc + val);
+                    }
+                    if (numberOfUndefinedHeightChilds - stacks.length > 0) {
+                        autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights - stackMaxHeights) / (numberOfUndefinedHeightChilds - stacks.length));
+                    }
+                    console.log('v2', autoHeight, childContainerSize.height, stacks.length);
+                }
+                for (var child of this._childs) {
+                    var isStack = child instanceof UIStack;
+                    var isHeightUndefined = typeof child._size.height === 'undefined';
+                    var childEstimatedSize: UISize = {
                         width: childContainerSize.width,
-                        height: isHeightUndefined ? autoHeight : component._estimatedSize().height
+                        height: isHeightUndefined ? (isStack ? Math.max(child._estimatedSize().height, storedAutoHeight): autoHeight): child._estimatedSize().height
                     };
-                    point = component._layout(
+                    point = child._layout(
                         this._axis,
                         { x: childOrigin.x, y: point.y },
-                        parentSize
+                        childEstimatedSize,
+                        isResizing
                     )
                     point = { x: point.x, y: point.y + this._spacing }
                 }
@@ -616,37 +811,53 @@ class UIStack extends UIWidget<GroupBoxWidget> {
                 }
             }
             case UIAxis.Horizontal: {
-                var numberOfUndefinedWidthComponents = this._child
+                var undefinedWidthChilds = this._childs
                     .filter((val) => {
                         if (val instanceof UIStack) {
-                            return false;
+                            return isResizing;
                         } else {
-                            return typeof val._size.width === "undefined";
+                            return typeof val._size.width === 'undefined';
                         }
-                    }).length;
-                var sumOfExactComponentWidths: number = this._child
+                    })
+                var numberOfUndefinedWidthChilds = undefinedWidthChilds.length;
+                var sumOfExactChildWidths: number = this._childs
                     .map((val) => {
                         if (val instanceof UIStack) {
-                            return val._estimatedSize().width;
+                            return isResizing ? 0 : val._estimatedSize().width;
                         } else {
                             return val._size.width ?? 0
                         }
                     }).reduce((acc, val) => acc + val);
                 var autoWidth: number = 0;
-                if (numberOfUndefinedWidthComponents > 0) {
-                    var sumOfSpacing = this._spacing * (this._child.length - 1);
-                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactComponentWidths) / numberOfUndefinedWidthComponents);
+                if (numberOfUndefinedWidthChilds > 0) {
+                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths) / numberOfUndefinedWidthChilds);
                 }
-                for (var component of this._child) {
-                    var isWidthUndefined = typeof component._size.width === "undefined";
-                    var parentSize: UISize = {
-                        width: isWidthUndefined ? autoWidth : component._estimatedSize().width,
+                var storedAutoWidth = autoWidth;
+                if (isResizing) {
+                    console.log('h1', autoWidth, childContainerSize.width);
+                    var stacks = undefinedWidthChilds.filter((val) => val instanceof UIStack);
+                    var stackMaxWidths = 0;
+                    if (stacks.length > 0) {
+                        console.log(stacks.map((val) => val._estimatedSize().width.toString()).reduce((acc, val) => acc + ' ' + val));
+                        stackMaxWidths = stacks.map((val) => Math.max(autoWidth, val._estimatedSize().width)).reduce((acc, val) => acc + val);
+                    }
+                    if (numberOfUndefinedWidthChilds - stacks.length > 0) {
+                        autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths - stackMaxWidths) / (numberOfUndefinedWidthChilds - stacks.length));
+                    }
+                    console.log('h2', autoWidth, childContainerSize.width, stacks.length);
+                }
+                for (var child of this._childs) {
+                    var isStack = child instanceof UIStack;
+                    var isWidthUndefined = typeof child._size.width === 'undefined';
+                    var childEstimatedSize: UISize = {
+                        width: isWidthUndefined ? (isStack ? Math.max(child._estimatedSize().width, storedAutoWidth): autoWidth): child._estimatedSize().width,
                         height: childContainerSize.height
                     };
-                    point = component._layout(
+                    point = child._layout(
                         this._axis,
                         { x: point.x, y: childOrigin.y },
-                        parentSize
+                        childEstimatedSize,
+                        isResizing
                     )
                     point = { x: point.x + this._spacing, y: point.y }
                 }
@@ -659,22 +870,41 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         }
     }
 
+    _didLoad() {
+        if (this._isGrouped) {
+            super._didLoad();
+        }
+        this._childs.forEach((val) => val._didLoad());
+    }
+
     _build() {
         if (this._isGrouped) {
             this._widget = {
                 ...this._buildBaseValues(),
-                text: this._groupTitle ?? "",
-                type: "groupbox"
+                text: this._groupTitle ?? '',
+                type: 'groupbox'
             }
         }
-        this._child.forEach((val) => val._build())
+        this._childs.forEach((val) => val._build())
     }
 
     _update(widget: any) {
         super._update(widget);
         if (this._isGrouped) {
-            widget.name = this._groupTitle ?? "";
+            widget.name = this._groupTitle ?? '';
         }
+    }
+
+    _resetSize() {
+        super._resetSize();
+        this._childs.forEach((val) => val._resetSize());
+    }
+
+    _refreshUI() {
+        if (this._isGrouped) {
+            super._refreshUI();
+        }
+        this._childs.forEach((val) => val._refreshUI());
     }
 
     //Public
@@ -705,9 +935,9 @@ class UIStack extends UIWidget<GroupBoxWidget> {
 
 class UIButton extends UIWidget<ButtonWidget> {
 
-    _border: boolean | undefined;
+    _border: boolean = true;
     _image: number | undefined;
-    _isPressed: boolean | undefined;
+    _isPressed: boolean = false;
     _title: string | undefined;
     _onClick: ((button: this) => void) | undefined;
 
@@ -738,11 +968,12 @@ class UIButton extends UIWidget<ButtonWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: "button",
+            type: 'button',
             border: this._border,
             image: this._image,
             isPressed: this._isPressed,
-            text: this._title,
+            // text: this._title,
+            text: this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height,
             onClick: () => {
                 this._onClick?.call(this, this);
             }
@@ -752,13 +983,16 @@ class UIButton extends UIWidget<ButtonWidget> {
     _update(widget: ButtonWidget) {
         super._update(widget);
         widget.border = this._border;
-        widget.image = this._image;
+        widget.image = this._image ?? 0;
         widget.isPressed = this._isPressed;
-        widget.text = this._title;
+        if (typeof this._title !== 'undefined') {
+            // widget.text = this._title;
+            widget.text = this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height;
+        }
     }
 
     _isImage(): boolean {
-        return typeof this._image !== "undefined";
+        return typeof this._image !== 'undefined';
     }
 
     //Public
@@ -796,17 +1030,17 @@ class UIButton extends UIWidget<ButtonWidget> {
 
 class UISpacer extends UIWidget<LabelWidget> {
 
-    _spacing: number | undefined;
+    _spacing: number;
     _axis: UIAxis = UIAxis.Vertical;
 
-    constructor(spacing: number | undefined) {
+    constructor(spacing: number | undefined = undefined) {
         super();
-        this._spacing = spacing;
+        this._spacing = spacing ?? 1;
     }
 
     //Convenience
 
-    static $(spacing: number | undefined): UISpacer {
+    static $(spacing: number | undefined = undefined): UISpacer {
         return new UISpacer(spacing);
     }
 
@@ -814,7 +1048,7 @@ class UISpacer extends UIWidget<LabelWidget> {
 
     _confirm(axis: UIAxis) {
         this._axis = axis;
-        var unit = this._spacing ?? 1;
+        var unit = this._spacing;
         switch (axis) {
             case UIAxis.Vertical: {
                 this._size = { width: 1, height: unit };
@@ -828,7 +1062,7 @@ class UISpacer extends UIWidget<LabelWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: "label"
+            type: 'label'
         }
     }
 
@@ -872,8 +1106,9 @@ class UILabel extends UIWidget<LabelWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: "label",
-            text: this._text,
+            type: 'label',
+            // text: this._text,
+            text: this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height,
             textAlign: this._align,
             onChange: (index: number) => {
                 this._onChange?.call(this, this, index);
@@ -883,7 +1118,8 @@ class UILabel extends UIWidget<LabelWidget> {
 
     _update(widget: LabelWidget) {
         super._update(widget);
-        widget.text = this._text;
+        // widget.text = this._text;
+        widget.text = this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height;
         widget.textAlign = this._align;
     }
 
@@ -891,6 +1127,11 @@ class UILabel extends UIWidget<LabelWidget> {
 
     align(val: UITextAlignment): this {
         this._align = val;
+        return this;
+    }
+
+    text(val: string): this {
+        this._text = val;
         return this;
     }
 
@@ -902,13 +1143,13 @@ class UILabel extends UIWidget<LabelWidget> {
 
 class UICheckbox extends UIWidget<CheckboxWidget> {
 
-    _text: string | undefined;
+    _text: string;
     _isChecked: boolean = false;
     _onChange: ((checkbox: this, isChecked: boolean) => void) | undefined;
 
-    constructor(text: string | undefined = undefined) {
+    constructor(text: string | undefined) {
         super();
-        this._text = text;
+        this._text = text ?? '';
     }
 
     //Convenience
@@ -918,7 +1159,7 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
     }
 
     static $UN(): UICheckbox {
-        var checkbox = new UICheckbox();
+        var checkbox = new UICheckbox(undefined);
         return checkbox
             .size({ width: 11, height: 11 });
     }
@@ -932,8 +1173,8 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: "checkbox",
-            text: this._text ?? "",
+            type: 'checkbox',
+            text: this._text,
             isChecked: this._isChecked,
             onChange: (isChecked: boolean) => {
                 this._isChecked = isChecked;
@@ -949,13 +1190,18 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
     }
 
     _isUnnamed(): boolean {
-        return typeof this._text === "undefined";
+        return typeof this._text === 'undefined';
     }
 
     //Public
 
     isChecked(val: boolean): this {
         this._isChecked = val;
+        return this;
+    }
+
+    text(val: string): this {
+        this._text = val;
         return this;
     }
 
@@ -967,12 +1213,12 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
 
 class UIColorPicker extends UIWidget<ColourPickerWidget> {
 
-    _color: UIColor | undefined;
+    _color: UIColor;
     _onChange: ((picker: this, color: UIColor) => void) | undefined;
 
-    constructor(color: UIColor | undefined = undefined) {
+    constructor(color: UIColor | undefined) {
         super();
-        this._color = color;
+        this._color = color ?? UIColor.Black;
     }
 
     //Convenience
@@ -988,7 +1234,7 @@ class UIColorPicker extends UIWidget<ColourPickerWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: "colourpicker",
+            type: 'colourpicker',
             colour: this._color,
             onChange: (color: number) => {
                 this._color = color;
@@ -1042,7 +1288,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: "dropdown",
+            type: 'dropdown',
             items: this._items,
             selectedIndex: this._selectedIndex,
             onChange: (index: number) => {
@@ -1103,17 +1349,16 @@ class UISpinner extends UIWidget<SpinnerWidget> {
     }
 
     _build() {
-        var usingFormatter = typeof this._formatter !== "undefined";
-        var text: string
+        var usingFormatter = typeof this._formatter !== 'undefined';
         if (usingFormatter) {
-            text = this._formatter!(this._value);
+            this._text = this._formatter!(this._value);
         } else {
-            text = this._value.toFixed(this._fixed);
+            this._text = this._value.toFixed(this._fixed);
         }
         this._widget = {
             ...this._buildBaseValues(),
-            type: "spinner",
-            text: text,
+            type: 'spinner',
+            text: this._text,
             onDecrement: () => {
                 var prev = this._value;
                 this._value = Math.max(this._value - this._step, this._min);
@@ -1132,26 +1377,25 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         var fixedCurrent = current.toFixed(this._fixed)
         var zero = +0.0;
         var fixedZero = zero.toFixed(this._fixed);
-        var negativeFixedZero = "-" + fixedZero;
+        var negativeFixedZero = '-' + fixedZero;
         var isNegativeZero = fixedCurrent === negativeFixedZero;
-        var usingFormatter = typeof this._formatter !== "undefined";
+        var usingFormatter = typeof this._formatter !== 'undefined';
         var valueChanged = prev.toFixed(this._fixed) != fixedCurrent;
         if (valueChanged) {
-            this._updateUI((widget) => {
-                if (usingFormatter) {
-                    if (isNegativeZero) {
-                        widget._text = this._formatter!(zero);
-                    } else {
-                        widget._text = this._formatter!(current);
-                    }
+            if (usingFormatter) {
+                if (isNegativeZero) {
+                    this._text = this._formatter!(zero);
                 } else {
-                    if (isNegativeZero) {
-                        widget._text = fixedZero;
-                    } else {
-                        widget._text = fixedCurrent;
-                    }
+                    this._text = this._formatter!(current);
                 }
-            })
+            } else {
+                if (isNegativeZero) {
+                    this._text = fixedZero;
+                } else {
+                    this._text = fixedCurrent;
+                }
+            }
+            this.updateUI();
             this._onChange?.call(this, this, current);
         }
     }
@@ -1165,7 +1409,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     range(min: number, max: number): this {
         if (min > max) {
-            console.log("'min' cannot be greater than 'max'.")
+            console.log("min' cannot be greater than 'max'.");
         } else {
             this._min = min;
             this._max = max;
@@ -1173,10 +1417,10 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         return this;
     }
 
-    step(step: number, fixed: number | undefined = undefined): this {
+    step(step: number, fixed: number | undefined): this {
         this._step = step;
 
-        if (typeof fixed === "undefined") {
+        if (typeof fixed === 'undefined') {
             for (var i = 0; i < Infinity; i++) {
                 let mul = Math.pow(10, i);
                 if ((step * mul) % 1 == 0) {
@@ -1209,13 +1453,13 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
 class UITextBox extends UIWidget<TextBoxWidget> {
 
-    _text: string | undefined;
-    _maxLength: number | undefined;
+    _text: string;
+    _maxLength: number = Number.MAX_VALUE;
     _onChange: ((textBox: this, text: string) => void) | undefined;
 
     constructor(text: string | undefined = undefined) {
         super();
-        this._text = text;
+        this._text = text ?? '';
     }
 
     //Convenience
@@ -1234,10 +1478,11 @@ class UITextBox extends UIWidget<TextBoxWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: "textbox",
+            type: 'textbox',
             text: this._text,
             maxLength: this._maxLength,
             onChange: (text: string) => {
+                this._text = text;
                 this._onChange?.call(this, this, text);
             }
         }
@@ -1273,7 +1518,7 @@ class UIViewport extends UIWidget<ViewportWidget> {
     _zoom: UIViewportScale = UIViewportScale.One;
     _visibilityFlags: UIViewportFlag = UIViewportFlag.None;
 
-    _position: CoordsXY | CoordsXYZ = { x: ui.width / 2, y: ui.height / 2 };
+    _position: CoordsXY | CoordsXYZ = ui.mainViewport.getCentrePosition();
 
     constructor() {
         super();
@@ -1303,7 +1548,7 @@ class UIViewport extends UIWidget<ViewportWidget> {
         }
         this._widget = {
             ...this._buildBaseValues(),
-            type: "viewport",
+            type: 'viewport',
             viewport: this._viewport
         }
     }
@@ -1355,11 +1600,23 @@ class UIViewport extends UIWidget<ViewportWidget> {
     }
 
     moveTo(val: CoordsXY | CoordsXYZ) {
+        this._position = val;
         this._viewport.moveTo(val);
     }
 
     scrollTo(val: CoordsXY | CoordsXYZ) {
+        this._position = val;
         this._viewport.scrollTo(val);
+    }
+
+    scrollToMainViewportCenter() {
+        this.scrollTo(ui.mainViewport.getCentrePosition());
+    }
+
+    mainViewportScrollToThis() {
+        if (typeof this._viewport !== 'undefined') {
+            ui.mainViewport.scrollTo(this.getCenterPosition()!);
+        }
     }
 }
 
@@ -1368,14 +1625,21 @@ var openWindow = function () {
     var containerPadding: UIEdgeInsets = { top: 2, left: 2, bottom: 2, right: 2 };
 
     var viewport = UIViewport.$()
-        .size({ width: 200, height: 200 })
+        .width(150)
+        .height(200)
+        // .size({ width: 200, height: 200 })
         .zoom(UIViewportScale.Quater)
         .flags(UIViewportFlag.InvisibleSupports);
 
     let window = UIWindow.$(
-        "Window title",
-        UIButton.$("1")
-            .tooltop("툴팁이다. 어쩌라고~"),
+        'Window title',
+        UIButton.$('1')
+            .tooltip('Tooltip')
+            .onClick((val) => {
+                val.updateUI((val) => {
+                    val.title('1111111111111')
+                })
+            }),
         UIStack.$H(
             UIStack.$VG(
                 UIStack.$HG(
@@ -1403,48 +1667,52 @@ var openWindow = function () {
                         .color(Math.floor(Math.random() * 32)),
                     UIColorPicker.$()
                         .color(Math.floor(Math.random() * 32)),
-                ).title("ColorSet")
+                ).title('ColorSet')
                     .isDisabled(true)
                     .padding(containerPadding),
                 UIStack.$VG(
-                    UIButton.$("2")
+                    UIButton.$('2')
                         .isDisabled(true),
-                    UIButton.$("2"),
-                    UIButton.$("2"),
-                    UIButton.$("2")
+                    UIButton.$('2'),
+                    UIButton.$('2'),
+                    UIButton.$('2')
                 ).padding(containerPadding),
-                UIButton.$("2"),
+                UIButton.$('2'),
                 UIStack.$H(
-                    UIButton.$("3"),
+                    UIButton.$('3'),
                     UISpacer.$(10),
-                    UIButton.$("4"),
+                    UIButton.$('4'),
                     UICheckbox.$UN()
-                        .isChecked(true)
                         .onChange((checkbox, isChecked) => {
                             console.log(isChecked);
 
                             window.updateUI((val) => {
                                 if (isChecked) {
-                                    val.origin({ x: 200, y: 200 })
+                                    val.isExpandable(true);
                                 } else {
-                                    val.origin({ x: 100, y: 100 })
+                                    val.isExpandable(false);
                                 }
                             })
                         })
                 ).spacing(4),
-                UIButton.$("A")
-            ).title("GroupBox")
+                UIButton.$('A')
+            ).title('GroupBox')
                 .spacing(4)
                 .padding(containerPadding),
             UISpacer.$(10),
             UIStack.$HG(
-                UIButton.$("5"),
+                UIButton.$('5')
+                    .onClick((val) => {
+                        val.updateUI((val) => {
+                            val.title('555555555555555')
+                        })
+                    }),
                 UIStack.$VG(
                     UIDropdown.$([
-                        "first",
-                        "second",
-                        "third",
-                        "fourth"
+                        'first',
+                        'second',
+                        'third',
+                        'fourth'
                     ]).onChange((dropdown, index, item) => {
                         console.log(index, item);
                     }).isVisible(true),
@@ -1453,41 +1721,59 @@ var openWindow = function () {
                         .step(0.1, 2)
                         .value(-0.1)
                         .formatter((val): string => {
-                            return val.toFixed(2) + "%"
+                            return val.toFixed(2) + '%'
                         })
                         .onChange((spinner, val) => {
                             console.log(val);
                         }),
-                    UIButton.$("6"),
-                    UIButton.$I(5167),
-                    UIButton.$("8")
+                    UIButton.$('6'),
+                    UIStack.$H(
+                        UISpacer.$(),
+                        UIButton.$I(29364)
+                        .onClick((button) => {
+                            viewport.mainViewportScrollToThis();
+                            window.updateUI((val) => {
+                                val.title('Moving........')
+                            })
+                            button.updateUI((val) => {
+                                val.image(val._image! + 1);
+                            })
+                        })
+                    ),
+                    UIButton.$('8')
                 ).spacing(4)
                     .padding(containerPadding),
-                UIButton.$("B")
+                UIButton.$('change color')
                     .onClick((button) => {
-                        console.log(button._title);
+                        window.updateUI((val) => {
+                            val.colorPalette({
+                                primary: UIColor.DarkGreen | UIColorFlag.Translucent,
+                                secondary: UIColor.SalmonPink | UIColorFlag.Outline,
+                                tertiary: UIColor.SaturatedRed | UIColorFlag.Inset
+                            })
+                        })
                     })
             ).spacing(4)
                 .padding(containerPadding),
             viewport
         ).spacing(4),
-        UIButton.$("9"),
+        UIButton.$('9'),
         UIStack.$H(
-            UIButton.$("10")
+            UIButton.$('10')
                 .width(100),
-            UIButton.$("Clear!")
-                .width(350).height(80)
+            UIButton.$('Clear!')
+                .width(350).height(100)
                 .onClick((button) => {
                     viewport.moveTo({ x: Math.random() * ui.width, y: Math.random() * ui.height });
-                    viewport._updateUI((widget) => {
+                    viewport.updateUI((widget) => {
                         widget
-                            .size({ width: Math.random() * 100, height: Math.random() * 100 })
+                            .size({ width: Math.random() * 200, height: Math.random() * 200 })
                     })
                 }),
             UITextBox.$()
                 .maxLength(20)
         ).spacing(4),
-        UILabel.$("Label----------------------!")
+        UILabel.$('Label----------------------!')
             .align(UITextAlignment.Center)
     )
 
@@ -1502,23 +1788,23 @@ var main = function () {
     // If we do not use the var keyword then the variable acts as a global shared between all plugins and
     // the console. The following code allows the console and other plugins to use our functions.
     if (typeof ui === 'undefined') {
-        console.log("Plugin not available on headless mode.");
+        console.log('Plugin not available on headless mode.');
         return;
     }
 
     // Add a menu item under the map icon on the top toolbar
-    ui.registerMenuItem("StackUI Demo", function () {
+    ui.registerMenuItem('StackUI Demo', function () {
         openWindow();
     });
 }
 
 registerPlugin(
     {
-        name: "StackUI",
-        version: "0.0.1",
-        authors: ["nExmond"],
-        type: "local",
-        licence: "MIT",
+        name: 'StackUI',
+        version: '0.0.1',
+        authors: ['nExmond'],
+        type: 'local',
+        licence: 'MIT',
         main: main
     }
 )

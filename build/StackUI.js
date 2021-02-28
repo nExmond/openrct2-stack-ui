@@ -30,12 +30,15 @@ Array.prototype.flatMapFunc = function (d) {
 Array.prototype.flatMap = function () {
     return this.flatMapFunc(1);
 };
+Array.prototype.compactMap = function () {
+    return this.filter(function (val) { return val !== undefined; });
+};
 function uuid() {
-    var uuidValue = "", k, randomValue;
+    var uuidValue = '', k, randomValue;
     for (k = 0; k < 32; k++) {
         randomValue = Math.random() * 16 | 0;
         if (k == 8 || k == 12 || k == 16 || k == 20) {
-            uuidValue += "-";
+            uuidValue += '-';
         }
         uuidValue += (k == 12 ? 4 : (k == 16 ? (randomValue & 3 | 8) : randomValue)).toString(16);
     }
@@ -87,6 +90,12 @@ var UIColor;
     UIColor[UIColor["BrightPink"] = 30] = "BrightPink";
     UIColor[UIColor["LightPink"] = 31] = "LightPink";
 })(UIColor || (UIColor = {}));
+var UIColorFlag;
+(function (UIColorFlag) {
+    UIColorFlag[UIColorFlag["Outline"] = 32] = "Outline";
+    UIColorFlag[UIColorFlag["Inset"] = 64] = "Inset";
+    UIColorFlag[UIColorFlag["Translucent"] = 128] = "Translucent";
+})(UIColorFlag || (UIColorFlag = {}));
 var UITextAlignment;
 (function (UITextAlignment) {
     UITextAlignment["Left"] = "left";
@@ -131,12 +140,13 @@ var UIEdgeInsetsZero = { top: 0, left: 0, bottom: 0, right: 0 };
 var UIEdgeInsetsContainer = { top: 16, left: 2, bottom: 2, right: 2 };
 var UIOptionalSizeDefulat = { width: undefined, height: undefined };
 var UISizeZero = { width: 0, height: 0 };
+var UIWindowColorPaletteDefault = { primary: UIColor.Gray, secondary: UIColor.Gray, tertiary: UIColor.Gray };
 var UIInteractor = (function () {
     function UIInteractor() {
     }
     UIInteractor.prototype.update = function (name, block) {
         var widget = this._findWidget(name);
-        if (typeof widget !== "undefined") {
+        if (typeof widget !== 'undefined') {
             block(widget);
         }
     };
@@ -149,8 +159,9 @@ var UIConstructor = (function () {
     function UIConstructor() {
     }
     UIConstructor.prototype.construct = function (stack, interactor) {
-        var flattedComponents = stack._getUIWidgets();
-        flattedComponents.forEach(function (val) { return val._interactor = interactor; });
+        var flattedChilds = stack._getUIWidgets();
+        stack._interactor = interactor;
+        flattedChilds.forEach(function (val) { return val._interactor = interactor; });
         return {
             size: this.calculateBounds(stack),
             widgets: stack._getWidgets()
@@ -162,17 +173,31 @@ var UIConstructor = (function () {
             x: insets.left,
             y: insets.top
         };
-        var containerSize = stack._estimatedSize();
-        stack._layout(UIAxis.Vertical, origin, containerSize);
+        var estimatedSize = stack._estimatedSize();
+        stack._layout(UIAxis.Vertical, origin, estimatedSize, false);
         stack._build();
         return {
-            width: containerSize.width + insets.left + insets.right,
-            height: containerSize.height + insets.top + insets.bottom
+            width: estimatedSize.width + insets.left + insets.right,
+            height: estimatedSize.height + insets.top + insets.bottom
         };
     };
-    UIConstructor.prototype.after = function (stack) {
-        var flattedComponents = stack._getUIWidgets();
-        flattedComponents.forEach(function (val) { return val._didLoad(); });
+    UIConstructor.prototype.didLoad = function (stack) {
+        var flattedChilds = stack._getUIWidgets();
+        flattedChilds.forEach(function (val) { return val._didLoad(); });
+    };
+    UIConstructor.prototype.refresh = function (stack, windowSize) {
+        var insets = UIEdgeInsetsContainer;
+        var origin = {
+            x: insets.left,
+            y: insets.top
+        };
+        var estimatedSize = {
+            width: windowSize.width - (insets.left + insets.right),
+            height: windowSize.height - (insets.top + insets.bottom)
+        };
+        stack._resetSize();
+        stack._layout(UIAxis.Vertical, origin, estimatedSize, true);
+        stack._refreshUI();
     };
     return UIConstructor;
 }());
@@ -182,8 +207,10 @@ var UIWindow = (function () {
         this._interactor = new UIInteractor();
         this._spacing = 0;
         this._padding = UIEdgeInsetsZero;
+        this._isExpandable = false;
+        this._colorPalette = UIWindowColorPaletteDefault;
         this._title = title;
-        this._childs = widgets;
+        this._childss = widgets;
     }
     UIWindow.$ = function (title) {
         var widgets = [];
@@ -192,28 +219,114 @@ var UIWindow = (function () {
         }
         return new UIWindow(title, widgets);
     };
+    UIWindow.prototype._convertColors = function () {
+        var _a, _b, _c;
+        return [
+            (_a = this._colorPalette.primary) !== null && _a !== void 0 ? _a : UIColor.Gray,
+            (_b = this._colorPalette.secondary) !== null && _b !== void 0 ? _b : UIColor.Gray,
+            (_c = this._colorPalette.tertiary) !== null && _c !== void 0 ? _c : UIColor.Gray
+        ];
+    };
+    UIWindow.prototype._isOpened = function () {
+        return typeof this._window !== 'undefined';
+    };
+    UIWindow.prototype._sync = function () {
+        if (this._isOpened()) {
+            var window = this._window;
+            this._origin = {
+                x: window.x,
+                y: window.y
+            };
+            this._size = {
+                width: window.width,
+                height: window.height
+            };
+            this._colorPalette = {
+                primary: window.colours[0],
+                secondary: window.colours[1],
+                tertiary: window.colours[2]
+            };
+        }
+    };
+    UIWindow.prototype._update = function () {
+        var window = this._window;
+        if (typeof window === 'undefined') {
+            return;
+        }
+        window.title = this._title;
+        window.minWidth = this._isExpandable ? this._initialSize.width : this._size.width;
+        window.minHeight = this._isExpandable ? this._initialSize.height : this._size.height;
+        window.maxWidth = this._isExpandable ? ui.width : this._size.width;
+        window.maxHeight = this._isExpandable ? ui.height : this._size.height;
+        window.colours = this._convertColors();
+        window.x = ui.width + 1;
+        window.y = ui.height + 1;
+        window.x = this._origin.x;
+        window.y = this._origin.y;
+    };
+    UIWindow.prototype._onUpdate = function () {
+        var window = this._window;
+        if (typeof window === 'undefined') {
+            return;
+        }
+        var isSizeChange = window.width != this._size.width || window.height != this._size.height;
+        if (isSizeChange) {
+            this._size = {
+                width: window.width,
+                height: window.height
+            };
+            this._uiConstructor.refresh(this._contentView, this._size);
+        }
+    };
     UIWindow.prototype.show = function () {
         var _this = this;
-        var stack = new UIStack(UIAxis.Vertical, this._childs)
+        if (this._isOpened()) {
+            return;
+        }
+        var stack = new UIStack(UIAxis.Vertical, this._childss)
             .spacing(this._spacing).padding(this._padding);
         var constructed = this._uiConstructor.construct(stack, this._interactor);
         var size = constructed.size;
-        this._windowDesc = {
+        var windowDesc = {
             classification: this._title,
             width: size.width,
             height: size.height,
             title: this._title,
-            widgets: constructed.widgets
+            minWidth: this._isExpandable ? size.width : undefined,
+            maxWidth: this._isExpandable ? ui.width : undefined,
+            minHeight: this._isExpandable ? size.height : undefined,
+            maxHeight: this._isExpandable ? ui.height : undefined,
+            widgets: constructed.widgets,
+            colours: this._convertColors(),
+            onClose: function () {
+                var _a;
+                (_a = _this._onClose) === null || _a === void 0 ? void 0 : _a.call(_this, _this);
+            },
+            onUpdate: function () {
+                _this._onUpdate();
+            },
+            onTabChange: function () {
+                var _a, _b, _c;
+                var tabIndex = (_b = (_a = _this._window) === null || _a === void 0 ? void 0 : _a.tabIndex) !== null && _b !== void 0 ? _b : 0;
+                (_c = _this._onTabChange) === null || _c === void 0 ? void 0 : _c.call(_this, _this, tabIndex);
+            }
         };
-        this._window = ui.openWindow(this._windowDesc);
-        this._origin = {
-            x: this._window.x,
-            y: this._window.y
+        this._window = ui.openWindow(windowDesc);
+        this._contentView = stack;
+        this._initialSize = {
+            width: this._window.width,
+            height: this._window.height
         };
+        this._sync();
         this._interactor.findWidget(function (name) {
             return _this.findWidget(name);
         });
-        this._uiConstructor.after(stack);
+        this._uiConstructor.didLoad(stack);
+    };
+    UIWindow.prototype.updateUI = function (block) {
+        this._sync();
+        block(this);
+        this._update();
     };
     UIWindow.prototype.close = function () {
         var _a;
@@ -236,20 +349,28 @@ var UIWindow = (function () {
         this._padding = val;
         return this;
     };
-    UIWindow.prototype.updateUI = function (block) {
-        block(this);
-        this._update();
-    };
-    UIWindow.prototype._update = function () {
-        var window = this._window;
-        if (typeof window === "undefined") {
-            return;
-        }
-        window.x = this._origin.x;
-        window.y = this._origin.y;
-    };
     UIWindow.prototype.origin = function (val) {
         this._origin = val;
+        return this;
+    };
+    UIWindow.prototype.isExpandable = function (val) {
+        this._isExpandable = val;
+        return this;
+    };
+    UIWindow.prototype.title = function (val) {
+        this._title = val;
+        return this;
+    };
+    UIWindow.prototype.colorPalette = function (val) {
+        this._colorPalette = val;
+        return this;
+    };
+    UIWindow.prototype.onClose = function (block) {
+        this._onClose = block;
+        return this;
+    };
+    UIWindow.prototype.onTabChange = function (block) {
+        this._onTabChange = block;
         return this;
     };
     return UIWindow;
@@ -260,7 +381,7 @@ var UIWidget = (function () {
         this._size = UIOptionalSizeDefulat;
         this._isDisabled = false;
         this._isVisible = true;
-        this._name = this.constructor.name + "-" + uuid();
+        this._name = this.constructor.name + '-' + uuid();
     }
     UIWidget.prototype._getUIWidgets = function () {
         return [this];
@@ -279,12 +400,15 @@ var UIWidget = (function () {
             height: (_b = this._size.height) !== null && _b !== void 0 ? _b : minSize.height
         };
     };
-    UIWidget.prototype._layout = function (axis, origin, parentSize) {
+    UIWidget.prototype._layout = function (axis, origin, estimatedSize, isResizing) {
         var _a, _b;
+        if (typeof this._initialSize === 'undefined') {
+            this._initialSize = this._size;
+        }
         this._origin = origin;
         this._size = {
-            width: (_a = this._size.width) !== null && _a !== void 0 ? _a : parentSize.width,
-            height: (_b = this._size.height) !== null && _b !== void 0 ? _b : parentSize.height
+            width: (_a = this._size.width) !== null && _a !== void 0 ? _a : estimatedSize.width,
+            height: (_b = this._size.height) !== null && _b !== void 0 ? _b : estimatedSize.height
         };
         switch (axis) {
             case UIAxis.Vertical: {
@@ -302,10 +426,11 @@ var UIWidget = (function () {
         }
     };
     UIWidget.prototype._build = function () {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     };
-    UIWidget.prototype._updateUI = function (block) {
-        block(this);
+    UIWidget.prototype.updateUI = function (block) {
+        if (block === void 0) { block = undefined; }
+        block === null || block === void 0 ? void 0 : block(this);
         this._update(this._widget);
     };
     UIWidget.prototype._update = function (widget) {
@@ -337,11 +462,20 @@ var UIWidget = (function () {
             _this._widget = widget;
         });
     };
+    UIWidget.prototype._resetSize = function () {
+        if (typeof this._initialSize !== 'undefined') {
+            this._size = this._initialSize;
+        }
+    };
+    UIWidget.prototype._refreshUI = function () {
+        this._update(this._widget);
+    };
     UIWidget.prototype.width = function (val) {
         this._size = {
             width: val,
             height: this._size.height
         };
+        this._initialSize = this._size;
         return this;
     };
     UIWidget.prototype.height = function (val) {
@@ -349,13 +483,15 @@ var UIWidget = (function () {
             width: this._size.width,
             height: val
         };
+        this._initialSize = this._size;
         return this;
     };
     UIWidget.prototype.size = function (val) {
         this._size = val;
+        this._initialSize = val;
         return this;
     };
-    UIWidget.prototype.tooltop = function (val) {
+    UIWidget.prototype.tooltip = function (val) {
         this._tooltip = val;
         return this;
     };
@@ -378,8 +514,8 @@ var UIStack = (function (_super) {
         _this._insets = UIEdgeInsetsZero;
         _this._padding = UIEdgeInsetsZero;
         _this._axis = axis;
-        _this._child = widgets;
-        _this._child.forEach(function (val) {
+        _this._childs = widgets;
+        _this._childs.forEach(function (val) {
             if (val instanceof UISpacer) {
                 val._confirm(axis);
             }
@@ -432,14 +568,14 @@ var UIStack = (function (_super) {
         return new UIStack(UIAxis.Horizontal, widgets, true);
     };
     UIStack.prototype._getUIWidgets = function () {
-        var widgets = this._child.map(function (val) { return val._getUIWidgets(); }).flatMap();
+        var widgets = this._childs.map(function (val) { return val._getUIWidgets(); }).flatMap();
         if (this._isGrouped) {
             widgets.unshift(this);
         }
         return widgets;
     };
     UIStack.prototype._getWidgets = function () {
-        var widgets = this._child.map(function (val) { return val._getWidgets(); }).flatMap();
+        var widgets = this._childs.map(function (val) { return val._getWidgets(); }).flatMap();
         if (this._isGrouped) {
             widgets.unshift(this._widget);
         }
@@ -447,7 +583,7 @@ var UIStack = (function (_super) {
     };
     UIStack.prototype._containerSize = function () {
         var _this = this;
-        return this._child
+        return this._childs
             .map(function (val) { return val._estimatedSize(); })
             .reduce(function (acc, val) {
             switch (_this._axis) {
@@ -467,7 +603,7 @@ var UIStack = (function (_super) {
         });
     };
     UIStack.prototype._isUnNamedGroup = function () {
-        return this._isGrouped && typeof this._groupTitle === "undefined";
+        return this._isGrouped && typeof this._groupTitle === 'undefined';
     };
     UIStack.prototype._estimatedSize = function () {
         var size = this._containerSize();
@@ -477,22 +613,27 @@ var UIStack = (function (_super) {
             height: size.height + this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom - unNamedGroupCorrect
         };
     };
-    UIStack.prototype._layout = function (axis, origin, parentSize) {
-        var intrinsicSize = this._estimatedSize();
-        switch (axis) {
-            case UIAxis.Vertical: {
-                intrinsicSize = {
-                    width: parentSize.width,
-                    height: intrinsicSize.height
-                };
-                break;
-            }
-            case UIAxis.Horizontal: {
-                intrinsicSize = {
-                    width: intrinsicSize.width,
-                    height: parentSize.height
-                };
-                break;
+    UIStack.prototype._layout = function (axis, origin, estimatedSize, isResizing) {
+        if (typeof this._initialSize === 'undefined') {
+            this._initialSize = this._size;
+        }
+        var thisEstimatedSize = estimatedSize;
+        if (!isResizing) {
+            switch (axis) {
+                case UIAxis.Vertical: {
+                    thisEstimatedSize = {
+                        width: estimatedSize.width,
+                        height: this._estimatedSize().height
+                    };
+                    break;
+                }
+                case UIAxis.Horizontal: {
+                    thisEstimatedSize = {
+                        width: this._estimatedSize().width,
+                        height: estimatedSize.height
+                    };
+                    break;
+                }
             }
         }
         var isUnNamedGroup = this._isUnNamedGroup();
@@ -503,57 +644,73 @@ var UIStack = (function (_super) {
                 y: origin.y - unNamedGroupCorrect
             };
             this._size = {
-                width: intrinsicSize.width,
-                height: intrinsicSize.height + unNamedGroupCorrect
+                width: thisEstimatedSize.width,
+                height: thisEstimatedSize.height + unNamedGroupCorrect
             };
         }
         else {
             this._origin = origin;
-            this._size = intrinsicSize;
+            this._size = thisEstimatedSize;
         }
         var childContainerSize = {
-            width: intrinsicSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
-            height: intrinsicSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect
+            width: thisEstimatedSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
+            height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect
         };
         var childOrigin = {
             x: this._origin.x + this._insets.left + this._padding.left,
             y: this._origin.y + this._insets.top + this._padding.top
         };
         var point = childOrigin;
+        var sumOfSpacing = this._spacing * (this._childs.length - 1);
         switch (this._axis) {
             case UIAxis.Vertical: {
-                var numberOfUndefinedHeightComponents = this._child
+                var undefinedHeightChilds = this._childs
                     .filter(function (val) {
                     if (val instanceof UIStack) {
-                        return false;
+                        return isResizing;
                     }
                     else {
-                        return typeof val._size.height === "undefined";
+                        return typeof val._size.height === 'undefined';
                     }
-                }).length;
-                var sumOfExactComponentHeights = this._child
+                });
+                var numberOfUndefinedHeightChilds = undefinedHeightChilds.length;
+                var sumOfExactChildHeights = this._childs
                     .map(function (val) {
                     var _a;
                     if (val instanceof UIStack) {
-                        return val._estimatedSize().height;
+                        return isResizing ? 0 : val._estimatedSize().height;
                     }
                     else {
                         return (_a = val._size.height) !== null && _a !== void 0 ? _a : 0;
                     }
                 }).reduce(function (acc, val) { return acc + val; });
                 var autoHeight = 0;
-                if (numberOfUndefinedHeightComponents > 0) {
-                    var sumOfSpacing = this._spacing * (this._child.length - 1);
-                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactComponentHeights) / numberOfUndefinedHeightComponents);
+                if (numberOfUndefinedHeightChilds > 0) {
+                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights) / numberOfUndefinedHeightChilds);
                 }
-                for (var _i = 0, _a = this._child; _i < _a.length; _i++) {
-                    var component = _a[_i];
-                    var isHeightUndefined = typeof component._size.height === "undefined";
-                    var parentSize = {
+                var storedAutoHeight = autoHeight;
+                if (isResizing) {
+                    console.log('v1', autoHeight, childContainerSize.height);
+                    var stacks = undefinedHeightChilds.filter(function (val) { return val instanceof UIStack; });
+                    var stackMaxHeights = 0;
+                    if (stacks.length > 0) {
+                        console.log(stacks.map(function (val) { return val._estimatedSize().height.toString(); }).reduce(function (acc, val) { return acc + ' ' + val; }));
+                        stackMaxHeights = stacks.map(function (val) { return Math.max(autoHeight, val._estimatedSize().height); }).reduce(function (acc, val) { return acc + val; });
+                    }
+                    if (numberOfUndefinedHeightChilds - stacks.length > 0) {
+                        autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights - stackMaxHeights) / (numberOfUndefinedHeightChilds - stacks.length));
+                    }
+                    console.log('v2', autoHeight, childContainerSize.height, stacks.length);
+                }
+                for (var _i = 0, _a = this._childs; _i < _a.length; _i++) {
+                    var child = _a[_i];
+                    var isStack = child instanceof UIStack;
+                    var isHeightUndefined = typeof child._size.height === 'undefined';
+                    var childEstimatedSize = {
                         width: childContainerSize.width,
-                        height: isHeightUndefined ? autoHeight : component._estimatedSize().height
+                        height: isHeightUndefined ? (isStack ? Math.max(child._estimatedSize().height, storedAutoHeight) : autoHeight) : child._estimatedSize().height
                     };
-                    point = component._layout(this._axis, { x: childOrigin.x, y: point.y }, parentSize);
+                    point = child._layout(this._axis, { x: childOrigin.x, y: point.y }, childEstimatedSize, isResizing);
                     point = { x: point.x, y: point.y + this._spacing };
                 }
                 return {
@@ -562,38 +719,53 @@ var UIStack = (function (_super) {
                 };
             }
             case UIAxis.Horizontal: {
-                var numberOfUndefinedWidthComponents = this._child
+                var undefinedWidthChilds = this._childs
                     .filter(function (val) {
                     if (val instanceof UIStack) {
-                        return false;
+                        return isResizing;
                     }
                     else {
-                        return typeof val._size.width === "undefined";
+                        return typeof val._size.width === 'undefined';
                     }
-                }).length;
-                var sumOfExactComponentWidths = this._child
+                });
+                var numberOfUndefinedWidthChilds = undefinedWidthChilds.length;
+                var sumOfExactChildWidths = this._childs
                     .map(function (val) {
                     var _a;
                     if (val instanceof UIStack) {
-                        return val._estimatedSize().width;
+                        return isResizing ? 0 : val._estimatedSize().width;
                     }
                     else {
                         return (_a = val._size.width) !== null && _a !== void 0 ? _a : 0;
                     }
                 }).reduce(function (acc, val) { return acc + val; });
                 var autoWidth = 0;
-                if (numberOfUndefinedWidthComponents > 0) {
-                    var sumOfSpacing = this._spacing * (this._child.length - 1);
-                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactComponentWidths) / numberOfUndefinedWidthComponents);
+                if (numberOfUndefinedWidthChilds > 0) {
+                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths) / numberOfUndefinedWidthChilds);
                 }
-                for (var _b = 0, _c = this._child; _b < _c.length; _b++) {
-                    var component = _c[_b];
-                    var isWidthUndefined = typeof component._size.width === "undefined";
-                    var parentSize = {
-                        width: isWidthUndefined ? autoWidth : component._estimatedSize().width,
+                var storedAutoWidth = autoWidth;
+                if (isResizing) {
+                    console.log('h1', autoWidth, childContainerSize.width);
+                    var stacks = undefinedWidthChilds.filter(function (val) { return val instanceof UIStack; });
+                    var stackMaxWidths = 0;
+                    if (stacks.length > 0) {
+                        console.log(stacks.map(function (val) { return val._estimatedSize().width.toString(); }).reduce(function (acc, val) { return acc + ' ' + val; }));
+                        stackMaxWidths = stacks.map(function (val) { return Math.max(autoWidth, val._estimatedSize().width); }).reduce(function (acc, val) { return acc + val; });
+                    }
+                    if (numberOfUndefinedWidthChilds - stacks.length > 0) {
+                        autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths - stackMaxWidths) / (numberOfUndefinedWidthChilds - stacks.length));
+                    }
+                    console.log('h2', autoWidth, childContainerSize.width, stacks.length);
+                }
+                for (var _b = 0, _c = this._childs; _b < _c.length; _b++) {
+                    var child = _c[_b];
+                    var isStack = child instanceof UIStack;
+                    var isWidthUndefined = typeof child._size.width === 'undefined';
+                    var childEstimatedSize = {
+                        width: isWidthUndefined ? (isStack ? Math.max(child._estimatedSize().width, storedAutoWidth) : autoWidth) : child._estimatedSize().width,
                         height: childContainerSize.height
                     };
-                    point = component._layout(this._axis, { x: point.x, y: childOrigin.y }, parentSize);
+                    point = child._layout(this._axis, { x: point.x, y: childOrigin.y }, childEstimatedSize, isResizing);
                     point = { x: point.x + this._spacing, y: point.y };
                 }
                 return {
@@ -603,19 +775,35 @@ var UIStack = (function (_super) {
             }
         }
     };
+    UIStack.prototype._didLoad = function () {
+        if (this._isGrouped) {
+            _super.prototype._didLoad.call(this);
+        }
+        this._childs.forEach(function (val) { return val._didLoad(); });
+    };
     UIStack.prototype._build = function () {
         var _a;
         if (this._isGrouped) {
-            this._widget = __assign(__assign({}, this._buildBaseValues()), { text: (_a = this._groupTitle) !== null && _a !== void 0 ? _a : "", type: "groupbox" });
+            this._widget = __assign(__assign({}, this._buildBaseValues()), { text: (_a = this._groupTitle) !== null && _a !== void 0 ? _a : '', type: 'groupbox' });
         }
-        this._child.forEach(function (val) { return val._build(); });
+        this._childs.forEach(function (val) { return val._build(); });
     };
     UIStack.prototype._update = function (widget) {
         var _a;
         _super.prototype._update.call(this, widget);
         if (this._isGrouped) {
-            widget.name = (_a = this._groupTitle) !== null && _a !== void 0 ? _a : "";
+            widget.name = (_a = this._groupTitle) !== null && _a !== void 0 ? _a : '';
         }
+    };
+    UIStack.prototype._resetSize = function () {
+        _super.prototype._resetSize.call(this);
+        this._childs.forEach(function (val) { return val._resetSize(); });
+    };
+    UIStack.prototype._refreshUI = function () {
+        if (this._isGrouped) {
+            _super.prototype._refreshUI.call(this);
+        }
+        this._childs.forEach(function (val) { return val._refreshUI(); });
     };
     UIStack.prototype.spacing = function (val) {
         this._spacing = val;
@@ -642,7 +830,10 @@ var UIStack = (function (_super) {
 var UIButton = (function (_super) {
     __extends(UIButton, _super);
     function UIButton() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this._border = true;
+        _this._isPressed = false;
+        return _this;
     }
     UIButton.$ = function (title) {
         var button = new UIButton();
@@ -659,20 +850,23 @@ var UIButton = (function (_super) {
     };
     UIButton.prototype._build = function () {
         var _this = this;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "button", border: this._border, image: this._image, isPressed: this._isPressed, text: this._title, onClick: function () {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'button', border: this._border, image: this._image, isPressed: this._isPressed, text: this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height, onClick: function () {
                 var _a;
                 (_a = _this._onClick) === null || _a === void 0 ? void 0 : _a.call(_this, _this);
             } });
     };
     UIButton.prototype._update = function (widget) {
+        var _a;
         _super.prototype._update.call(this, widget);
         widget.border = this._border;
-        widget.image = this._image;
+        widget.image = (_a = this._image) !== null && _a !== void 0 ? _a : 0;
         widget.isPressed = this._isPressed;
-        widget.text = this._title;
+        if (typeof this._title !== 'undefined') {
+            widget.text = this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height;
+        }
     };
     UIButton.prototype._isImage = function () {
-        return typeof this._image !== "undefined";
+        return typeof this._image !== 'undefined';
     };
     UIButton.prototype.border = function (val) {
         if (!this._isImage()) {
@@ -704,18 +898,19 @@ var UIButton = (function (_super) {
 var UISpacer = (function (_super) {
     __extends(UISpacer, _super);
     function UISpacer(spacing) {
+        if (spacing === void 0) { spacing = undefined; }
         var _this = _super.call(this) || this;
         _this._axis = UIAxis.Vertical;
-        _this._spacing = spacing;
+        _this._spacing = spacing !== null && spacing !== void 0 ? spacing : 1;
         return _this;
     }
     UISpacer.$ = function (spacing) {
+        if (spacing === void 0) { spacing = undefined; }
         return new UISpacer(spacing);
     };
     UISpacer.prototype._confirm = function (axis) {
-        var _a;
         this._axis = axis;
-        var unit = (_a = this._spacing) !== null && _a !== void 0 ? _a : 1;
+        var unit = this._spacing;
         switch (axis) {
             case UIAxis.Vertical: {
                 this._size = { width: 1, height: unit };
@@ -726,7 +921,7 @@ var UISpacer = (function (_super) {
         }
     };
     UISpacer.prototype._build = function () {
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "label" });
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'label' });
     };
     UISpacer.prototype._update = function (widget) {
         this._confirm(this._axis);
@@ -755,18 +950,22 @@ var UILabel = (function (_super) {
     };
     UILabel.prototype._build = function () {
         var _this = this;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "label", text: this._text, textAlign: this._align, onChange: function (index) {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'label', text: this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height, textAlign: this._align, onChange: function (index) {
                 var _a;
                 (_a = _this._onChange) === null || _a === void 0 ? void 0 : _a.call(_this, _this, index);
             } });
     };
     UILabel.prototype._update = function (widget) {
         _super.prototype._update.call(this, widget);
-        widget.text = this._text;
+        widget.text = this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height;
         widget.textAlign = this._align;
     };
     UILabel.prototype.align = function (val) {
         this._align = val;
+        return this;
+    };
+    UILabel.prototype.text = function (val) {
+        this._text = val;
         return this;
     };
     UILabel.prototype.onChange = function (block) {
@@ -778,17 +977,16 @@ var UILabel = (function (_super) {
 var UICheckbox = (function (_super) {
     __extends(UICheckbox, _super);
     function UICheckbox(text) {
-        if (text === void 0) { text = undefined; }
         var _this = _super.call(this) || this;
         _this._isChecked = false;
-        _this._text = text;
+        _this._text = text !== null && text !== void 0 ? text : '';
         return _this;
     }
     UICheckbox.$ = function (text) {
         return new UICheckbox(text);
     };
     UICheckbox.$UN = function () {
-        var checkbox = new UICheckbox();
+        var checkbox = new UICheckbox(undefined);
         return checkbox
             .size({ width: 11, height: 11 });
     };
@@ -797,8 +995,7 @@ var UICheckbox = (function (_super) {
     };
     UICheckbox.prototype._build = function () {
         var _this = this;
-        var _a;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "checkbox", text: (_a = this._text) !== null && _a !== void 0 ? _a : "", isChecked: this._isChecked, onChange: function (isChecked) {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'checkbox', text: this._text, isChecked: this._isChecked, onChange: function (isChecked) {
                 var _a;
                 _this._isChecked = isChecked;
                 (_a = _this._onChange) === null || _a === void 0 ? void 0 : _a.call(_this, _this, _this._isChecked);
@@ -810,10 +1007,14 @@ var UICheckbox = (function (_super) {
         widget.isChecked = this._isChecked;
     };
     UICheckbox.prototype._isUnnamed = function () {
-        return typeof this._text === "undefined";
+        return typeof this._text === 'undefined';
     };
     UICheckbox.prototype.isChecked = function (val) {
         this._isChecked = val;
+        return this;
+    };
+    UICheckbox.prototype.text = function (val) {
+        this._text = val;
         return this;
     };
     UICheckbox.prototype.onChange = function (block) {
@@ -825,9 +1026,8 @@ var UICheckbox = (function (_super) {
 var UIColorPicker = (function (_super) {
     __extends(UIColorPicker, _super);
     function UIColorPicker(color) {
-        if (color === void 0) { color = undefined; }
         var _this = _super.call(this) || this;
-        _this._color = color;
+        _this._color = color !== null && color !== void 0 ? color : UIColor.Black;
         return _this;
     }
     UIColorPicker.$ = function (color) {
@@ -838,7 +1038,7 @@ var UIColorPicker = (function (_super) {
     };
     UIColorPicker.prototype._build = function () {
         var _this = this;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "colourpicker", colour: this._color, onChange: function (color) {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'colourpicker', colour: this._color, onChange: function (color) {
                 var _a;
                 _this._color = color;
                 (_a = _this._onChange) === null || _a === void 0 ? void 0 : _a.call(_this, _this, _this._color);
@@ -876,7 +1076,7 @@ var UIDropdown = (function (_super) {
     };
     UIDropdown.prototype._build = function () {
         var _this = this;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "dropdown", items: this._items, selectedIndex: this._selectedIndex, onChange: function (index) {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'dropdown', items: this._items, selectedIndex: this._selectedIndex, onChange: function (index) {
                 var _a;
                 _this._selectedIndex = index;
                 var item = _this._items[index];
@@ -918,15 +1118,14 @@ var UISpinner = (function (_super) {
     };
     UISpinner.prototype._build = function () {
         var _this = this;
-        var usingFormatter = typeof this._formatter !== "undefined";
-        var text;
+        var usingFormatter = typeof this._formatter !== 'undefined';
         if (usingFormatter) {
-            text = this._formatter(this._value);
+            this._text = this._formatter(this._value);
         }
         else {
-            text = this._value.toFixed(this._fixed);
+            this._text = this._value.toFixed(this._fixed);
         }
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "spinner", text: text, onDecrement: function () {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'spinner', text: this._text, onDecrement: function () {
                 var prev = _this._value;
                 _this._value = Math.max(_this._value - _this._step, _this._min);
                 _this._signal(prev, _this._value);
@@ -937,34 +1136,32 @@ var UISpinner = (function (_super) {
             } });
     };
     UISpinner.prototype._signal = function (prev, current) {
-        var _this = this;
         var _a;
         var fixedCurrent = current.toFixed(this._fixed);
         var zero = +0.0;
         var fixedZero = zero.toFixed(this._fixed);
-        var negativeFixedZero = "-" + fixedZero;
+        var negativeFixedZero = '-' + fixedZero;
         var isNegativeZero = fixedCurrent === negativeFixedZero;
-        var usingFormatter = typeof this._formatter !== "undefined";
+        var usingFormatter = typeof this._formatter !== 'undefined';
         var valueChanged = prev.toFixed(this._fixed) != fixedCurrent;
         if (valueChanged) {
-            this._updateUI(function (widget) {
-                if (usingFormatter) {
-                    if (isNegativeZero) {
-                        widget._text = _this._formatter(zero);
-                    }
-                    else {
-                        widget._text = _this._formatter(current);
-                    }
+            if (usingFormatter) {
+                if (isNegativeZero) {
+                    this._text = this._formatter(zero);
                 }
                 else {
-                    if (isNegativeZero) {
-                        widget._text = fixedZero;
-                    }
-                    else {
-                        widget._text = fixedCurrent;
-                    }
+                    this._text = this._formatter(current);
                 }
-            });
+            }
+            else {
+                if (isNegativeZero) {
+                    this._text = fixedZero;
+                }
+                else {
+                    this._text = fixedCurrent;
+                }
+            }
+            this.updateUI();
             (_a = this._onChange) === null || _a === void 0 ? void 0 : _a.call(this, this, current);
         }
     };
@@ -974,7 +1171,7 @@ var UISpinner = (function (_super) {
     };
     UISpinner.prototype.range = function (min, max) {
         if (min > max) {
-            console.log("'min' cannot be greater than 'max'.");
+            console.log("min' cannot be greater than 'max'.");
         }
         else {
             this._min = min;
@@ -983,9 +1180,8 @@ var UISpinner = (function (_super) {
         return this;
     };
     UISpinner.prototype.step = function (step, fixed) {
-        if (fixed === void 0) { fixed = undefined; }
         this._step = step;
-        if (typeof fixed === "undefined") {
+        if (typeof fixed === 'undefined') {
             for (var i = 0; i < Infinity; i++) {
                 var mul = Math.pow(10, i);
                 if ((step * mul) % 1 == 0) {
@@ -1018,7 +1214,8 @@ var UITextBox = (function (_super) {
     function UITextBox(text) {
         if (text === void 0) { text = undefined; }
         var _this = _super.call(this) || this;
-        _this._text = text;
+        _this._maxLength = Number.MAX_VALUE;
+        _this._text = text !== null && text !== void 0 ? text : '';
         return _this;
     }
     UITextBox.$ = function (text) {
@@ -1031,8 +1228,9 @@ var UITextBox = (function (_super) {
     };
     UITextBox.prototype._build = function () {
         var _this = this;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "textbox", text: this._text, maxLength: this._maxLength, onChange: function (text) {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'textbox', text: this._text, maxLength: this._maxLength, onChange: function (text) {
                 var _a;
+                _this._text = text;
                 (_a = _this._onChange) === null || _a === void 0 ? void 0 : _a.call(_this, _this, text);
             } });
     };
@@ -1061,7 +1259,7 @@ var UIViewport = (function (_super) {
         var _this = _super.call(this) || this;
         _this._zoom = UIViewportScale.One;
         _this._visibilityFlags = UIViewportFlag.None;
-        _this._position = { x: ui.width / 2, y: ui.height / 2 };
+        _this._position = ui.mainViewport.getCentrePosition();
         return _this;
     }
     UIViewport.$ = function () {
@@ -1081,7 +1279,7 @@ var UIViewport = (function (_super) {
             zoom: ui.mainViewport.zoom,
             visibilityFlags: this._visibilityFlags
         };
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "viewport", viewport: this._viewport });
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'viewport', viewport: this._viewport });
     };
     UIViewport.prototype._update = function (widget) {
         var _a, _b;
@@ -1118,21 +1316,37 @@ var UIViewport = (function (_super) {
         return this._viewport.getCentrePosition();
     };
     UIViewport.prototype.moveTo = function (val) {
+        this._position = val;
         this._viewport.moveTo(val);
     };
     UIViewport.prototype.scrollTo = function (val) {
+        this._position = val;
         this._viewport.scrollTo(val);
+    };
+    UIViewport.prototype.scrollToMainViewportCenter = function () {
+        this.scrollTo(ui.mainViewport.getCentrePosition());
+    };
+    UIViewport.prototype.mainViewportScrollToThis = function () {
+        if (typeof this._viewport !== 'undefined') {
+            ui.mainViewport.scrollTo(this.getCenterPosition());
+        }
     };
     return UIViewport;
 }(UIWidget));
 var openWindow = function () {
     var containerPadding = { top: 2, left: 2, bottom: 2, right: 2 };
     var viewport = UIViewport.$()
-        .size({ width: 200, height: 200 })
+        .width(150)
+        .height(200)
         .zoom(UIViewportScale.Quater)
         .flags(UIViewportFlag.InvisibleSupports);
-    var window = UIWindow.$("Window title", UIButton.$("1")
-        .tooltop("툴팁이다. 어쩌라고~"), UIStack.$H(UIStack.$VG(UIStack.$HG(UIColorPicker.$()
+    var window = UIWindow.$('Window title', UIButton.$('1')
+        .tooltip('Tooltip')
+        .onClick(function (val) {
+        val.updateUI(function (val) {
+            val.title('1111111111111');
+        });
+    }), UIStack.$H(UIStack.$VG(UIStack.$HG(UIColorPicker.$()
         .onChange(function (picker, color) {
         console.log(color);
     }), UIColorPicker.$()
@@ -1146,28 +1360,32 @@ var openWindow = function () {
         .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
         .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
         .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
-        .color(Math.floor(Math.random() * 32))).title("ColorSet")
+        .color(Math.floor(Math.random() * 32))).title('ColorSet')
         .isDisabled(true)
-        .padding(containerPadding), UIStack.$VG(UIButton.$("2")
-        .isDisabled(true), UIButton.$("2"), UIButton.$("2"), UIButton.$("2")).padding(containerPadding), UIButton.$("2"), UIStack.$H(UIButton.$("3"), UISpacer.$(10), UIButton.$("4"), UICheckbox.$UN()
-        .isChecked(true)
+        .padding(containerPadding), UIStack.$VG(UIButton.$('2')
+        .isDisabled(true), UIButton.$('2'), UIButton.$('2'), UIButton.$('2')).padding(containerPadding), UIButton.$('2'), UIStack.$H(UIButton.$('3'), UISpacer.$(10), UIButton.$('4'), UICheckbox.$UN()
         .onChange(function (checkbox, isChecked) {
         console.log(isChecked);
         window.updateUI(function (val) {
             if (isChecked) {
-                val.origin({ x: 200, y: 200 });
+                val.isExpandable(true);
             }
             else {
-                val.origin({ x: 100, y: 100 });
+                val.isExpandable(false);
             }
         });
-    })).spacing(4), UIButton.$("A")).title("GroupBox")
+    })).spacing(4), UIButton.$('A')).title('GroupBox')
         .spacing(4)
-        .padding(containerPadding), UISpacer.$(10), UIStack.$HG(UIButton.$("5"), UIStack.$VG(UIDropdown.$([
-        "first",
-        "second",
-        "third",
-        "fourth"
+        .padding(containerPadding), UISpacer.$(10), UIStack.$HG(UIButton.$('5')
+        .onClick(function (val) {
+        val.updateUI(function (val) {
+            val.title('555555555555555');
+        });
+    }), UIStack.$VG(UIDropdown.$([
+        'first',
+        'second',
+        'third',
+        'fourth'
     ]).onChange(function (dropdown, index, item) {
         console.log(index, item);
     }).isVisible(true), UISpinner.$()
@@ -1175,26 +1393,41 @@ var openWindow = function () {
         .step(0.1, 2)
         .value(-0.1)
         .formatter(function (val) {
-        return val.toFixed(2) + "%";
+        return val.toFixed(2) + '%';
     })
         .onChange(function (spinner, val) {
         console.log(val);
-    }), UIButton.$("6"), UIButton.$I(5167), UIButton.$("8")).spacing(4)
-        .padding(containerPadding), UIButton.$("B")
+    }), UIButton.$('6'), UIStack.$H(UISpacer.$(), UIButton.$I(29364)
         .onClick(function (button) {
-        console.log(button._title);
+        viewport.mainViewportScrollToThis();
+        window.updateUI(function (val) {
+            val.title('Moving........');
+        });
+        button.updateUI(function (val) {
+            val.image(val._image + 1);
+        });
+    })), UIButton.$('8')).spacing(4)
+        .padding(containerPadding), UIButton.$('change color')
+        .onClick(function (button) {
+        window.updateUI(function (val) {
+            val.colorPalette({
+                primary: UIColor.DarkGreen | UIColorFlag.Translucent,
+                secondary: UIColor.SalmonPink | UIColorFlag.Outline,
+                tertiary: UIColor.SaturatedRed | UIColorFlag.Inset
+            });
+        });
     })).spacing(4)
-        .padding(containerPadding), viewport).spacing(4), UIButton.$("9"), UIStack.$H(UIButton.$("10")
-        .width(100), UIButton.$("Clear!")
-        .width(350).height(80)
+        .padding(containerPadding), viewport).spacing(4), UIButton.$('9'), UIStack.$H(UIButton.$('10')
+        .width(100), UIButton.$('Clear!')
+        .width(350).height(100)
         .onClick(function (button) {
         viewport.moveTo({ x: Math.random() * ui.width, y: Math.random() * ui.height });
-        viewport._updateUI(function (widget) {
+        viewport.updateUI(function (widget) {
             widget
-                .size({ width: Math.random() * 100, height: Math.random() * 100 });
+                .size({ width: Math.random() * 200, height: Math.random() * 200 });
         });
     }), UITextBox.$()
-        .maxLength(20)).spacing(4), UILabel.$("Label----------------------!")
+        .maxLength(20)).spacing(4), UILabel.$('Label----------------------!')
         .align(UITextAlignment.Center));
     window
         .spacing(4)
@@ -1203,21 +1436,18 @@ var openWindow = function () {
 };
 var main = function () {
     if (typeof ui === 'undefined') {
-        console.log("Plugin not available on headless mode.");
+        console.log('Plugin not available on headless mode.');
         return;
     }
-    ui.registerMenuItem("StackUI Demo", function () {
+    ui.registerMenuItem('StackUI Demo', function () {
         openWindow();
     });
 };
 registerPlugin({
-    name: "StackUI",
-    version: "0.0.1",
-    authors: ["nExmond"],
-    type: "local",
-    licence: "MIT",
+    name: 'StackUI',
+    version: '0.0.1',
+    authors: ['nExmond'],
+    type: 'local',
+    licence: 'MIT',
     main: main
 });
-var UIImage;
-(function (UIImage) {
-})(UIImage || (UIImage = {}));
