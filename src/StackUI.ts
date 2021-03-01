@@ -100,6 +100,11 @@ enum UIImage {
 }
 
 // Interfaces
+interface UIOptionalRange {
+    min: number | undefined
+    max: number | undefined
+}
+
 const UIPointZero: UIPoint = { x: 0, y: 0 };
 interface UIPoint {
     x: number;
@@ -181,7 +186,8 @@ class UIConstructor {
 
         var estimatedSize = stack._estimatedSize();
 
-        stack._layout(UIAxis.Vertical, origin, estimatedSize, false);
+        stack._isUndefinedSize(UIAxis.Vertical);
+        stack._layout(UIAxis.Vertical, origin, estimatedSize);
         stack._build();
 
         return {
@@ -210,7 +216,7 @@ class UIConstructor {
         }
 
         stack._resetSize();
-        stack._layout(UIAxis.Vertical, origin, estimatedSize, true);
+        stack._layout(UIAxis.Vertical, origin, estimatedSize);
         stack._refreshUI();
     }
 }
@@ -326,10 +332,10 @@ class UIWindow {
 
     //Public
 
-    show() {
+    show(): this {
 
         if (this._isOpened()) {
-            return;
+            return this;
         }
 
         var stack = new UIStack(UIAxis.Vertical, this._childss)
@@ -373,6 +379,8 @@ class UIWindow {
         });
 
         this._uiConstructor.didLoad(stack);
+
+        return this;
     }
 
     updateUI(block: (val: this) => void) {
@@ -450,6 +458,7 @@ class UIWidget<T extends Widget> {
 
     _widget!: T | any;
 
+    _minSize: UISize = UISizeZero;
     _initialSize: UIOptionalSize | undefined;
 
     constructor() {
@@ -467,19 +476,26 @@ class UIWidget<T extends Widget> {
         return [this._widget];
     }
 
-    _minSize(): UISize {
-        return UISizeZero;
-    }
-
     _estimatedSize(): UISize {
-        var minSize = this._minSize();
+        var minSize = this._minSize;
         return {
             width: this._size.width ?? minSize.width,
             height: this._size.height ?? minSize.height
         }
     }
 
-    _layout(axis: UIAxis, origin: UIPoint, estimatedSize: UISize, isResizing: boolean): UIPoint {
+    _isUndefinedSize(axis: UIAxis): boolean {
+        switch (axis) {
+            case UIAxis.Vertical: {
+                return typeof this._size.width === 'undefined';
+            }
+            case UIAxis.Horizontal: {
+                return typeof this._size.height === 'undefined';
+            }
+        }
+    }
+
+    _layout(axis: UIAxis, origin: UIPoint, estimatedSize: UISize): UIPoint {
         if (typeof this._initialSize === 'undefined') {
             this._initialSize = this._size;
         }
@@ -507,11 +523,6 @@ class UIWidget<T extends Widget> {
 
     _build() {
         throw new Error('Method not implemented.');
-    }
-
-    updateUI(block: ((widget: this) => void) | undefined = undefined) {
-        block?.(this);
-        this._update(this._widget);
     }
 
     _update(widget: T) {
@@ -554,6 +565,16 @@ class UIWidget<T extends Widget> {
     }
 
     //Public
+
+    updateUI(block: ((widget: this) => void) | undefined = undefined) {
+        block?.(this);
+        this._update(this._widget);
+    }
+
+    minSize(val: UISize): this {
+        this._minSize = val;
+        return this;
+    }
 
     width(val: number): this {
         this._size = {
@@ -666,9 +687,8 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     _containerSize(): UISize {
-        return this._childs
-            .map((val) => val._estimatedSize())
-            .reduce((acc, val): UISize => {
+        return this._childs.map((val) => val._estimatedSize())
+            .reduce((acc, val) => {
                 switch (this._axis) {
                     case UIAxis.Vertical: {
                         return {
@@ -699,29 +719,36 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         }
     }
 
-    _layout(axis: UIAxis, origin: UIPoint, estimatedSize: UISize, isResizing: boolean): UIPoint {
+    _isUndefinedSize(axis: UIAxis): boolean {
+        var sizeUndefinedChilds = this._childs.filter((val) => val._isUndefinedSize(this._axis));
+        if (sizeUndefinedChilds.length == 0) {
+            switch (this._axis) {
+                case UIAxis.Vertical: {
+                    this._size = {
+                        width: this._estimatedSize().width,
+                        height: this._size.height
+                    }
+                }
+                case UIAxis.Horizontal: {
+                    this._size = {
+                        width: this._size.width,
+                        height: this._estimatedSize().height
+                    }
+                }
+            }
+        }
+        return sizeUndefinedChilds.length > 0;
+    }
+
+    _layout(axis: UIAxis, origin: UIPoint, estimatedSize: UISize): UIPoint {
         if (typeof this._initialSize === 'undefined') {
             this._initialSize = this._size;
         }
 
-        var thisEstimatedSize = estimatedSize;
-        if (!isResizing) {
-            switch (axis) {
-                case UIAxis.Vertical: {
-                    thisEstimatedSize = {
-                        width: estimatedSize.width,
-                        height: this._estimatedSize().height
-                    }
-                    break;
-                }
-                case UIAxis.Horizontal: {
-                    thisEstimatedSize = {
-                        width: this._estimatedSize().width,
-                        height: estimatedSize.height
-                    }
-                    break;
-                }
-            }
+        var thisEstimatedSize = this._estimatedSize();
+        thisEstimatedSize = {
+            width: Math.max(thisEstimatedSize.width, estimatedSize.width),
+            height: Math.max(thisEstimatedSize.height, estimatedSize.height)
         }
 
         var isUnNamedGroup = this._isUnNamedGroup();
@@ -754,56 +781,37 @@ class UIStack extends UIWidget<GroupBoxWidget> {
 
         switch (this._axis) {
             case UIAxis.Vertical: {
-                var undefinedHeightChilds = this._childs
-                    .filter((val) => {
-                        if (val instanceof UIStack) {
-                            return isResizing;
-                        } else {
-                            return typeof val._size.height === 'undefined';
-                        }
-                    });
+                var undefinedHeightChilds = this._childs.filter((val) => typeof val._size.height === 'undefined');
                 var numberOfUndefinedHeightChilds = undefinedHeightChilds.length;
-                var sumOfExactChildHeights: number = this._childs
-                    .map((val) => {
-                        if (val instanceof UIStack) {
-                            return isResizing ? 0 : val._estimatedSize().height;
-                        } else {
-                            return val._size.height ?? 0
-                        }
-                    }).reduce((acc, val) => acc + val);
+                var sumOfExactChildHeights: number = this._childs.map((val) => val._size.height ?? 0).reduce((acc, val) => acc + val);
                 var autoHeight: number = 0;
                 if (numberOfUndefinedHeightChilds > 0) {
                     autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights) / numberOfUndefinedHeightChilds);
                 }
                 var storedAutoHeight = autoHeight;
-                if (isResizing) {
-                    console.log('v1', autoHeight, childContainerSize.height);
-                    var stacks = undefinedHeightChilds.filter((val) => val instanceof UIStack);
-                    var stackMaxHeights = 0;
-                    if (stacks.length > 0) {
-                        console.log(stacks.map((val) => val._estimatedSize().height.toString()).reduce((acc, val) => acc + ' ' + val));
-                        stackMaxHeights = stacks.map((val) => Math.max(autoHeight, val._estimatedSize().height)).reduce((acc, val) => acc + val);
-                    }
-                    if (numberOfUndefinedHeightChilds - stacks.length > 0) {
-                        autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights - stackMaxHeights) / (numberOfUndefinedHeightChilds - stacks.length));
-                    }
-                    console.log('v2', autoHeight, childContainerSize.height, stacks.length);
 
-
-
+                var stacks = undefinedHeightChilds.filter((val) => val instanceof UIStack);
+                var stackMaxHeights = 0;
+                if (stacks.length > 0) {
+                    stackMaxHeights = stacks.map((val) => Math.max(autoHeight, val._estimatedSize().height)).reduce((acc, val) => acc + val);
                 }
+                var othersCount = numberOfUndefinedHeightChilds - stacks.length;
+                if (othersCount > 0) {
+                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights - stackMaxHeights) / othersCount);
+                }
+
                 for (var child of this._childs) {
                     var isStack = child instanceof UIStack;
                     var isHeightUndefined = typeof child._size.height === 'undefined';
+                    var childEstimatedHeight = child._estimatedSize().height;
                     var childEstimatedSize: UISize = {
                         width: childContainerSize.width,
-                        height: isHeightUndefined ? (isStack ? Math.max(child._estimatedSize().height, storedAutoHeight): autoHeight): child._estimatedSize().height
+                        height: isHeightUndefined ? (isStack ? Math.max(childEstimatedHeight, storedAutoHeight) : autoHeight) : childEstimatedHeight
                     };
                     point = child._layout(
                         this._axis,
                         { x: childOrigin.x, y: point.y },
-                        childEstimatedSize,
-                        isResizing
+                        childEstimatedSize
                     )
                     point = { x: point.x, y: point.y + this._spacing }
                 }
@@ -814,53 +822,37 @@ class UIStack extends UIWidget<GroupBoxWidget> {
                 }
             }
             case UIAxis.Horizontal: {
-                var undefinedWidthChilds = this._childs
-                    .filter((val) => {
-                        if (val instanceof UIStack) {
-                            return isResizing;
-                        } else {
-                            return typeof val._size.width === 'undefined';
-                        }
-                    })
+                var undefinedWidthChilds = this._childs.filter((val) => typeof val._size.width === 'undefined');
                 var numberOfUndefinedWidthChilds = undefinedWidthChilds.length;
-                var sumOfExactChildWidths: number = this._childs
-                    .map((val) => {
-                        if (val instanceof UIStack) {
-                            return isResizing ? 0 : val._estimatedSize().width;
-                        } else {
-                            return val._size.width ?? 0
-                        }
-                    }).reduce((acc, val) => acc + val);
+                var sumOfExactChildWidths: number = this._childs.map((val) => val._size.width ?? 0).reduce((acc, val) => acc + val);
                 var autoWidth: number = 0;
                 if (numberOfUndefinedWidthChilds > 0) {
                     autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths) / numberOfUndefinedWidthChilds);
                 }
                 var storedAutoWidth = autoWidth;
-                if (isResizing) {
-                    console.log('h1', autoWidth, childContainerSize.width);
-                    var stacks = undefinedWidthChilds.filter((val) => val instanceof UIStack);
-                    var stackMaxWidths = 0;
-                    if (stacks.length > 0) {
-                        console.log(stacks.map((val) => val._estimatedSize().width.toString()).reduce((acc, val) => acc + ' ' + val));
-                        stackMaxWidths = stacks.map((val) => Math.max(autoWidth, val._estimatedSize().width)).reduce((acc, val) => acc + val);
-                    }
-                    if (numberOfUndefinedWidthChilds - stacks.length > 0) {
-                        autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths - stackMaxWidths) / (numberOfUndefinedWidthChilds - stacks.length));
-                    }
-                    console.log('h2', autoWidth, childContainerSize.width, stacks.length);
+
+                var stacks = undefinedWidthChilds.filter((val) => val instanceof UIStack);
+                var stackMaxWidths = 0;
+                if (stacks.length > 0) {
+                    stackMaxWidths = stacks.map((val) => Math.max(autoWidth, val._estimatedSize().width)).reduce((acc, val) => acc + val);
                 }
+                var othersCount = numberOfUndefinedWidthChilds - stacks.length;
+                if (othersCount > 0) {
+                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths - stackMaxWidths) / othersCount);
+                }
+
                 for (var child of this._childs) {
                     var isStack = child instanceof UIStack;
                     var isWidthUndefined = typeof child._size.width === 'undefined';
+                    var childEstimatedWidth = child._estimatedSize().width;
                     var childEstimatedSize: UISize = {
-                        width: isWidthUndefined ? (isStack ? Math.max(child._estimatedSize().width, storedAutoWidth): autoWidth): child._estimatedSize().width,
+                        width: isWidthUndefined ? (isStack ? Math.max(childEstimatedWidth, storedAutoWidth) : autoWidth) : childEstimatedWidth,
                         height: childContainerSize.height
                     };
                     point = child._layout(
                         this._axis,
                         { x: point.x, y: childOrigin.y },
-                        childEstimatedSize,
-                        isResizing
+                        childEstimatedSize
                     )
                     point = { x: point.x + this._spacing, y: point.y }
                 }
@@ -953,20 +945,18 @@ class UIButton extends UIWidget<ButtonWidget> {
     static $(title: string): UIButton {
         var button = new UIButton();
         return button.title(title)
+            .minSize({ width: 50, height: 15 });
     }
 
     static $I(image: UIImage): UIButton {
         var button = new UIButton();
         return button
             .image(image)
-            .size({ width: 24, height: 24 });
+            .size({ width: 24, height: 24 })
+            .minSize({ width: 50, height: 15 });
     }
 
     //Private
-
-    _minSize(): UISize {
-        return { width: 50, height: 15 };
-    }
 
     _build() {
         this._widget = {
@@ -975,8 +965,7 @@ class UIButton extends UIWidget<ButtonWidget> {
             border: this._border,
             image: this._image,
             isPressed: this._isPressed,
-            // text: this._title,
-            text: this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height,
+            text: this._title,
             onClick: () => {
                 this._onClick?.call(this, this);
             }
@@ -989,8 +978,7 @@ class UIButton extends UIWidget<ButtonWidget> {
         widget.image = this._image ?? 0;
         widget.isPressed = this._isPressed;
         if (typeof this._title !== 'undefined') {
-            // widget.text = this._title;
-            widget.text = this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height;
+            widget.text = this._title;
         }
     }
 
@@ -1033,12 +1021,12 @@ class UIButton extends UIWidget<ButtonWidget> {
 
 class UISpacer extends UIWidget<LabelWidget> {
 
-    _spacing: number;
+    _spacing: number | undefined;
     _axis: UIAxis = UIAxis.Vertical;
 
     constructor(spacing: number | undefined = undefined) {
         super();
-        this._spacing = spacing ?? 1;
+        this._spacing = spacing;
     }
 
     //Convenience
@@ -1049,15 +1037,18 @@ class UISpacer extends UIWidget<LabelWidget> {
 
     //Private
 
+    _isUndefinedSize(axis: UIAxis): boolean {
+        return false;
+    }
+
     _confirm(axis: UIAxis) {
         this._axis = axis;
-        var unit = this._spacing;
         switch (axis) {
             case UIAxis.Vertical: {
-                this._size = { width: 1, height: unit };
+                this._size = { width: undefined, height: this._spacing };
             }
             case UIAxis.Horizontal: {
-                this._size = { width: unit, height: 1 };
+                this._size = { width: this._spacing, height: undefined };
             }
         }
     }
@@ -1072,13 +1063,6 @@ class UISpacer extends UIWidget<LabelWidget> {
     _update(widget: LabelWidget) {
         this._confirm(this._axis);
         super._update(widget);
-    }
-
-    //Public
-
-    spacing(val: number): this {
-        this._spacing = val;
-        return this;
     }
 }
 
@@ -1097,21 +1081,17 @@ class UILabel extends UIWidget<LabelWidget> {
 
     static $(text: string): UILabel {
         var label = new UILabel(text);
-        return label.height(15);
+        return label.height(15)
+            .minSize({ width: 50, height: 15 });
     }
 
     //Private
-
-    _minSize(): UISize {
-        return { width: 50, height: 15 }
-    }
 
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
             type: 'label',
-            // text: this._text,
-            text: this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height,
+            text: this._text,
             textAlign: this._align,
             onChange: (index: number) => {
                 this._onChange?.call(this, this, index);
@@ -1121,8 +1101,7 @@ class UILabel extends UIWidget<LabelWidget> {
 
     _update(widget: LabelWidget) {
         super._update(widget);
-        // widget.text = this._text;
-        widget.text = this._origin.x + '_' + this._origin.y + '_' + this._size.width + '_' + this._size.height;
+        widget.text = this._text;
         widget.textAlign = this._align;
     }
 
@@ -1158,20 +1137,18 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
     //Convenience
 
     static $(text: string): UICheckbox {
-        return new UICheckbox(text);
+        var checkbox = new UICheckbox(text);
+        return checkbox
+            .minSize({ width: 50, height: 15 });
     }
 
     static $UN(): UICheckbox {
         var checkbox = new UICheckbox(undefined);
         return checkbox
-            .size({ width: 11, height: 11 });
+            .size({ width: 11, height: 11 })
     }
 
     //Private
-
-    _minSize(): UISize {
-        return { width: 50, height: 15 };
-    }
 
     _build() {
         this._widget = {
@@ -1270,7 +1247,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
     _selectedIndex: number = 0;
     _onChange: ((dropdown: this, index: number, item: string) => void) | undefined;
 
-    constructor(items: string[] = []) {
+    constructor(items: string[]) {
         super();
         this._items = items;
     }
@@ -1279,19 +1256,17 @@ class UIDropdown extends UIWidget<DropdownWidget> {
 
     static $(items: string[]): UIDropdown {
         var dropdown = new UIDropdown(items);
-        return dropdown.height(15);
+        return dropdown.height(15)
+            .minSize({ width: 50, height: 15 });
     }
 
     //Private
-
-    _minSize(): UISize {
-        return { width: 50, height: 15 };
-    }
 
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
             type: 'dropdown',
+            textAlign: UITextAlignment.Center,
             items: this._items,
             selectedIndex: this._selectedIndex,
             onChange: (index: number) => {
@@ -1325,6 +1300,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     _text: string | undefined;
     _onChange: ((spinner: this, val: number) => void) | undefined;
+    _onClick: ((spinner: this) => void) | undefined;
 
     _min: number = 0;
     _max: number = 1;
@@ -1342,14 +1318,11 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     static $(): UISpinner {
         var spinner = new UISpinner();
-        return spinner.height(15);
+        return spinner.height(15)
+            .minSize({ width: 50, height: 15 });
     }
 
     //Private
-
-    _minSize(): UISize {
-        return { width: 50, height: 15 };
-    }
 
     _build() {
         var usingFormatter = typeof this._formatter !== 'undefined';
@@ -1371,6 +1344,9 @@ class UISpinner extends UIWidget<SpinnerWidget> {
                 var prev = this._value;
                 this._value = Math.min(this._value + this._step, this._max);
                 this._signal(prev, this._value);
+            },
+            onClick: () => {
+                this._onClick?.call(this, this);
             }
         }
     }
@@ -1452,6 +1428,11 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         this._onChange = block;
         return this;
     }
+
+    onClick(block: (spinner: this) => void): this {
+        this._onClick = block;
+        return this;
+    }
 }
 
 class UITextBox extends UIWidget<TextBoxWidget> {
@@ -1469,14 +1450,11 @@ class UITextBox extends UIWidget<TextBoxWidget> {
 
     static $(text: string | undefined = undefined): UITextBox {
         var textBox = new UITextBox(text);
-        return textBox.height(15);
+        return textBox.height(15)
+            .minSize({ width: 50, height: 15 });
     }
 
     //Private
-
-    _minSize(): UISize {
-        return { width: 50, height: 15 };
-    }
 
     _build() {
         this._widget = {
@@ -1530,14 +1508,12 @@ class UIViewport extends UIWidget<ViewportWidget> {
     //Convenience
 
     static $(): UIViewport {
-        return new UIViewport();
+        var viewport = new UIViewport();
+        return viewport
+            .minSize({ width: 165, height: 120 });
     }
 
     //Private
-
-    _minSize(): UISize {
-        return { width: 50, height: 50 };
-    }
 
     _build() {
         this._viewport = <Viewport>{
@@ -1565,6 +1541,7 @@ class UIViewport extends UIWidget<ViewportWidget> {
         this._viewport.bottom = this._origin.y + (this._size.height ?? 0);
         this._viewport.zoom = this._zoom;
         this._viewport.visibilityFlags = this._visibilityFlags;
+        this.moveTo(this._position);
     }
 
     _didLoad() {
@@ -1623,164 +1600,537 @@ class UIViewport extends UIWidget<ViewportWidget> {
     }
 }
 
+enum UIScrollbarType {
+    None = 'none',
+    Vertical = 'vertical',
+    Horizontal = 'horizontal',
+    both = 'both'
+}
+
+enum UISortOrder {
+    None = 'none',
+    Ascending = 'ascending',
+    Descending = 'descending'
+}
+
+class UIListViewColum {
+
+    _canSort: boolean = false;
+    _sortOrder: UISortOrder = UISortOrder.None;
+
+    _header: string;
+    _headerTooltip: string | undefined;
+
+    _width: number | undefined;
+    _weight: number | undefined;
+    _minWidth: number | undefined;
+    _maxWidth: number | undefined;
+
+    constructor(header: string) {
+        this._header = header;
+    }
+
+    //Convenience
+
+    static $(header: string): UIListViewColum {
+        return new UIListViewColum(header);
+    }
+
+    static $F(header: string, width: number): UIListViewColum {
+        var listView = new UIListViewColum(header);
+        return listView.width(width);
+    }
+
+    static $R(header: string, widthRange: UIOptionalRange): UIListViewColum {
+        var listView = new UIListViewColum(header);
+        if (typeof widthRange.min !== 'undefined') {
+            listView = listView.minWidth(widthRange.min);
+        }
+        if (typeof widthRange.max !== 'undefined') {
+            listView = listView.maxWidth(widthRange.max);
+        }
+        return listView;
+    }
+
+    static $W(header: string, weight: number): UIListViewColum {
+        var listView = new UIListViewColum(header);
+        return listView.weight(weight);
+    }
+
+    //Private
+
+    _data(): ListViewColumn {
+        return {
+            canSort: this._canSort,
+            sortOrder: this._sortOrder,
+            header: this._header,
+            headerTooltip: this._headerTooltip,
+            width: this._width,
+            ratioWidth: this._weight,
+            minWidth: this._minWidth,
+            maxWidth: this._maxWidth
+        }
+    }
+
+    //Public
+
+    sortOrder(val: UISortOrder): this {
+        this._sortOrder = val;
+        return this;
+    }
+
+    canSort(val: boolean): this {
+        this._canSort = val;
+        return this;
+    }
+
+    tooltip(val: string): this {
+        this._headerTooltip = val;
+        return this;
+    }
+
+    width(val: number): this {
+        this._width = val;
+        return this;
+    }
+
+    weight(val: number): this {
+        this._weight = val;
+        return this;
+    }
+
+    minWidth(val: number): this {
+        this._minWidth = val;
+        return this;
+    }
+
+    maxWidth(val: number): this {
+        this._maxWidth = val;
+        return this;
+    }
+}
+
+class UIListViewItem {
+
+    _isSeparator: boolean = false;
+    _textList: string[];
+
+    constructor(textList: string[] = [], isSeparator: boolean) {
+        this._textList = textList
+    }
+
+    //Convenience
+
+    static $(textList: string[]): UIListViewItem {
+        return new UIListViewItem(textList, false);
+    }
+    static $S(text: string | undefined = undefined): UIListViewItem {
+        var val = typeof text === undefined ? [] : [text!];
+        return new UIListViewItem(val, true);
+    }
+
+    //Private
+
+    _data(): ListViewItem {
+        if (this._isSeparator) {
+            var text = this._textList.length > 0 ? this._textList[0] : undefined;
+            return {
+                type: 'seperator',
+                text: text
+            }
+        } else {
+            return this._textList;
+        }
+    }
+}
+
+class UIListView extends UIWidget<ListView> {
+
+    _scrollbarType: UIScrollbarType = UIScrollbarType.None;
+    _isStriped: boolean = false;
+
+    _showColumnHeaders: boolean = false;
+    _columns: UIListViewColum[] | undefined;
+    _items: UIListViewItem[] = [];
+
+    _selectedCell: RowColumn | undefined;
+    _canSelect: boolean = false;
+
+    _onHeighlight: ((listView: this, column: number, item: number) => void) | undefined;
+    _onClick: ((listView: this, column: number, item: number) => void) | undefined;
+
+    constructor(columns: UIListViewColum[] | undefined = undefined) {
+        super();
+        this._columns = columns;
+    }
+
+    //Convenience
+
+    static $(columns: UIListViewColum[] | undefined = undefined): UIListView {
+        var listView = new UIListView(columns);
+        return listView
+            .minSize({ width: 165, height: 120 });
+    }
+
+    //Private
+
+    _build() {
+        this._widget = {
+            ...this._buildBaseValues(),
+            type: 'listview',
+            scrollbars: this._scrollbarType,
+            isStriped: this._isStriped,
+            showColumnHeaders: this._showColumnHeaders,
+            columns: this._columns?.map((val) => val._data()),
+            items: this._items.map((val) => val._data()),
+            selectedCell: this._selectedCell,
+            canSelect: this._canSelect,
+            onHighlight: (item: number, column: number) => {
+                this._onHeighlight?.call(this, this, column, item);
+            },
+            onClick: (item: number, column: number) => {
+                this._onClick?.call(this, this, column, item);
+            }
+        }
+    }
+
+    _update(widget: ListView) {
+        super._update(widget);
+        widget.scrollbars = this._scrollbarType;
+        widget.isStriped = this._isStriped;
+        widget.showColumnHeaders = this._showColumnHeaders;
+        widget.columns = this._columns?.map((val) => val._data());
+        widget.items = this._items.map((val) => val._data());
+        widget.selectedCell = this._selectedCell;
+        widget.canSelect = this._canSelect;
+    }
+
+    //Public
+
+    scrollbarType(val: UIScrollbarType): this {
+        this._scrollbarType = val;
+        return this;
+    }
+
+    isStriped(val: boolean): this {
+        this._isStriped = val;
+        return this;
+    }
+
+    showColumnHeaders(val: boolean): this {
+        this._showColumnHeaders = val;
+        return this;
+    }
+
+    addColumn(val: UIListViewColum): this {
+        this._columns?.push(val);
+        return this;
+    }
+
+    addColumns(val: UIListViewColum[]): this {
+        this._columns = this._columns?.concat(val);
+        return this;
+    }
+
+    addItem(val: UIListViewItem): this {
+        this._items.push(val);
+        return this;
+    }
+
+    addItems(val: UIListViewItem[]): this {
+        this._items = this._items.concat(val);
+        return this;
+    }
+
+    selectCell(row: number, column: number): this {
+        this._selectedCell = { row: row, column: column };
+        return this;
+    }
+
+    canSelect(val: boolean): this {
+        this._canSelect = val;
+        return this;
+    }
+
+    getColumnData(val: number): UIListViewColum | undefined {
+        return this._columns?.[val];
+    }
+
+    getItemData(val: number): UIListViewItem | undefined {
+        return this._items?.[val];
+    }
+
+    getHighlightedCell(): RowColumn | undefined {
+        var widget: ListView = this._widget;
+        return widget.highlightedCell;
+    }
+
+    onHeighlight(block: (listView: this, column: number, item: number) => void): this {
+        this._onHeighlight = block;
+        return this;
+    }
+
+    onClick(block: (listView: this, column: number, item: number) => void): this {
+        this._onClick = block;
+        return this;
+    }
+}
+
 var openWindow = function () {
 
-    var containerPadding: UIEdgeInsets = { top: 2, left: 2, bottom: 2, right: 2 };
+    // UIWindow.$('솜사탕 가게 1',
+    //     UIStack.$H(
+    //         UIStack.$V(
+    //             UIStack.$H(
+    //                 UISpacer.$(33),
+    //                 UIDropdown.$(
+    //                     ['전경']
+    //                 ),
+    //                 UISpacer.$(33)
+    //             ),
+    //             UIViewport.$(),
+    //             UILabel.$('열림')
+    //                 .align(UITextAlignment.Center)
+    //         ),
+    //         UIStack.$V(
+    //             UIButton.$I(29360).width(24),
+    //             UIButton.$I(29362).width(24),
+    //             UIButton.$I(29364).width(24),
+    //             UIButton.$I(29366).width(24)
+    //         )
+    //     )
+    // ).isExpandable(true)
+    //     .colorPalette({
+    //         primary: UIColor.Gray,
+    //         secondary: UIColor.BordeauxRed
+    //     })
+    //     .show();
 
-    var viewport = UIViewport.$()
-        .width(150)
-        .height(200)
-        // .size({ width: 200, height: 200 })
-        .zoom(UIViewportScale.Quater)
-        .flags(UIViewportFlag.InvisibleSupports);
-
-    let window = UIWindow.$(
-        'Window title',
-        UIButton.$('1')
-            .tooltip('Tooltip')
-            .onClick((val) => {
-                val.updateUI((val) => {
-                    val.title('1111111111111')
-                })
-            }),
+    UIWindow.$('직원',
         UIStack.$H(
-            UIStack.$VG(
-                UIStack.$HG(
-                    UIColorPicker.$()
-                        .onChange((picker, color) => {
-                            console.log(color);
-                        }),
-                    UIColorPicker.$()
-                        .isDisabled(true)
-                        .color(UIColor.BrightRed),
-                    UIColorPicker.$()
-                        .color(Math.floor(Math.random() * 32)),
-                    UIColorPicker.$()
-                        .isDisabled(true)
-                        .color(Math.floor(Math.random() * 32)),
-                    UIColorPicker.$()
-                        .color(Math.floor(Math.random() * 32)),
-                    UIColorPicker.$()
-                        .color(Math.floor(Math.random() * 32)),
-                    UIColorPicker.$()
-                        .color(Math.floor(Math.random() * 32)),
-                    UIColorPicker.$()
-                        .color(Math.floor(Math.random() * 32)),
-                    UIColorPicker.$()
-                        .color(Math.floor(Math.random() * 32)),
-                    UIColorPicker.$()
-                        .color(Math.floor(Math.random() * 32)),
-                ).title('ColorSet')
-                    .isDisabled(true)
-                    .padding(containerPadding),
-                UIStack.$VG(
-                    UIButton.$('2')
-                        .isDisabled(true),
-                    UIButton.$('2'),
-                    UIButton.$('2'),
-                    UIButton.$('2')
-                ).padding(containerPadding),
-                UIButton.$('2'),
+            UIStack.$V(
+                UISpacer.$(),
                 UIStack.$H(
-                    UIButton.$('3'),
-                    UISpacer.$(10),
-                    UIButton.$('4'),
-                    UICheckbox.$UN()
-                        .onChange((checkbox, isChecked) => {
-                            console.log(isChecked);
-
-                            window.updateUI((val) => {
-                                if (isChecked) {
-                                    val.isExpandable(true);
-                                } else {
-                                    val.isExpandable(false);
-                                }
-                            })
-                        })
-                ).spacing(4),
-                UIButton.$('A')
-            ).title('GroupBox')
-                .spacing(4)
-                .padding(containerPadding),
-            UISpacer.$(10),
-            UIStack.$HG(
-                UIButton.$('5')
-                    .onClick((val) => {
-                        val.updateUI((val) => {
-                            val.title('555555555555555')
-                        })
-                    }),
-                UIStack.$VG(
-                    UIDropdown.$([
-                        'first',
-                        'second',
-                        'third',
-                        'fourth'
-                    ]).onChange((dropdown, index, item) => {
-                        console.log(index, item);
-                    }).isVisible(true),
-                    UISpinner.$()
-                        .range(-1, 1)
-                        .step(0.1, 2)
-                        .value(-0.1)
-                        .formatter((val): string => {
-                            return val.toFixed(2) + '%'
-                        })
-                        .onChange((spinner, val) => {
-                            console.log(val);
-                        }),
-                    UIButton.$('6'),
-                    UIButton.$I(29364)
-                    .onClick((button) => {
-                        viewport.mainViewportScrollToThis();
-                        window.updateUI((val) => {
-                            val.title('Moving........')
-                        })
-                        button.updateUI((val) => {
-                            val.image(val._image! + 1);
-                        })
-                    }),
-                    UIButton.$('8')
-                ).spacing(4)
-                    .padding(containerPadding),
-                UIButton.$('change color')
-                    .onClick((button) => {
-                        window.updateUI((val) => {
-                            val.colorPalette({
-                                primary: UIColor.DarkGreen | UIColorFlag.Translucent,
-                                secondary: UIColor.SalmonPink | UIColorFlag.Outline,
-                                tertiary: UIColor.SaturatedRed | UIColorFlag.Inset
-                            })
-                        })
-                    })
-            ).spacing(4)
-                .padding(containerPadding),
-            viewport
-        ).spacing(4),
-        UIButton.$('9'),
-        UIStack.$H(
-            UIButton.$('10')
-                .width(100),
-            UIButton.$('Clear!')
-                .width(350).height(100)
-                .onClick((button) => {
-                    viewport.moveTo({ x: Math.random() * ui.width, y: Math.random() * ui.height });
-                    viewport.updateUI((widget) => {
-                        widget
-                            .size({ width: Math.random() * 200, height: Math.random() * 200 })
+                    UILabel.$('유니폼 색상:')
+                        .width(100),
+                    UIColorPicker.$(UIColor.BrightRed)
+                )
+            ),
+            UISpacer.$(),
+            UIButton.$I(5179)
+                .onClick((val) => {
+                    val.updateUI((widget) => {
+                        if (widget._image == 5179) {
+                            widget.image(5180);
+                        } else {
+                            widget.image(5179);
+                        }
                     })
                 }),
-            UITextBox.$()
-                .maxLength(20)
-        ).spacing(4),
-        UILabel.$('Label----------------------!')
-            .align(UITextAlignment.Center)
-    )
-
-    window
-        .spacing(4)
-        .padding(containerPadding)
+            UIButton.$I(5180)
+                .onClick((val) => {
+                    val.updateUI((widget) => {
+                        widget.isPressed(!widget._isPressed);
+                    })
+                }),
+            UIButton.$I(5181)
+        ),
+        UIListView.$([
+            UIListViewColum.$W('이름', 2)
+                .tooltip('tooltip')
+                .sortOrder(UISortOrder.Ascending)
+                .canSort(true),
+            UIListViewColum.$('역할'),
+            UIListViewColum.$('상태')
+        ]).showColumnHeaders(true)
+            .scrollbarType(UIScrollbarType.both)
+            .isStriped(true)
+            .canSelect(true)
+            .addItems([
+                UIListViewItem.$(['미화원 1', '쓸기, 가꾸기, 비우기', '걷는 중']),
+                UIListViewItem.$S()
+            ])
+            .onHeighlight((listView, column, item) => {
+                var itemData = listView.getItemData(item);
+                console.log(itemData?._textList[column]);
+            })
+            .onClick((listView, column, item) => {
+                var itemData = listView.getItemData(item);
+                console.log(itemData?._textList[column]);
+            }),
+        UILabel.$('1 미화원')
+        // UISpinner.$()
+        //     .onClick((val) => {
+        //         console.log(val._value);
+        //     })
+    ).isExpandable(true)
+        .colorPalette({
+            primary: UIColor.Gray,
+            secondary: UIColor.LightPurple
+        })
         .show();
+
+
+    // var containerPadding: UIEdgeInsets = { top: 2, left: 2, bottom: 2, right: 2 };
+
+    // var viewport = UIViewport.$()
+    //     .size({ width: 200, height: 200 })
+    //     .zoom(UIViewportScale.Quater)
+    //     .flags(UIViewportFlag.InvisibleSupports);
+
+    // let window = UIWindow.$(
+    //     'Window title',
+    //     UIButton.$('1')
+    //         .tooltip('Tooltip')
+    //         .onClick((val) => {
+    //             val.updateUI((val) => {
+    //                 val.title('1111111111111')
+    //             })
+    //         }),
+    //     UIStack.$H(
+    //         UIStack.$VG(
+    //             UIStack.$HG(
+    //                 UIColorPicker.$()
+    //                     .onChange((picker, color) => {
+    //                         console.log(color);
+    //                     }),
+    //                 UIColorPicker.$()
+    //                     .isDisabled(true)
+    //                     .color(UIColor.BrightRed),
+    //                 UIColorPicker.$()
+    //                     .color(Math.floor(Math.random() * 32)),
+    //                 UIColorPicker.$()
+    //                     .isDisabled(true)
+    //                     .color(Math.floor(Math.random() * 32)),
+    //                 UIColorPicker.$()
+    //                     .color(Math.floor(Math.random() * 32)),
+    //                 UIColorPicker.$()
+    //                     .color(Math.floor(Math.random() * 32)),
+    //                 UIColorPicker.$()
+    //                     .color(Math.floor(Math.random() * 32)),
+    //                 UIColorPicker.$()
+    //                     .color(Math.floor(Math.random() * 32)),
+    //                 UIColorPicker.$()
+    //                     .color(Math.floor(Math.random() * 32)),
+    //                 UIColorPicker.$()
+    //                     .color(Math.floor(Math.random() * 32)),
+    //             ).title('ColorSet')
+    //                 .isDisabled(true)
+    //                 .padding(containerPadding),
+    //             UIStack.$VG(
+    //                 UIButton.$('2')
+    //                     .isDisabled(true),
+    //                 UIButton.$('2'),
+    //                 UIButton.$('2'),
+    //                 UIButton.$('2')
+    //             ).padding(containerPadding),
+    //             UIButton.$('2'),
+    //             UIStack.$H(
+    //                 UIButton.$('3'),
+    //                 UISpacer.$(10),
+    //                 UIButton.$('4'),
+    //                 UICheckbox.$UN()
+    //                     .onChange((checkbox, isChecked) => {
+    //                         console.log(isChecked);
+
+    //                         window.updateUI((val) => {
+    //                             if (isChecked) {
+    //                                 val.isExpandable(true);
+    //                             } else {
+    //                                 val.isExpandable(false);
+    //                             }
+    //                         })
+    //                     })
+    //             ).spacing(4),
+    //             UIButton.$('A')
+    //         ).title('GroupBox')
+    //             .spacing(4)
+    //             .padding(containerPadding),
+    //         UISpacer.$(10),
+    //         UIStack.$HG(
+    //             UIButton.$('5')
+    //                 .onClick((val) => {
+    //                     val.updateUI((val) => {
+    //                         val.title('555555555555555')
+    //                     })
+    //                 }),
+    //             UIStack.$VG(
+    //                 UIDropdown.$([
+    //                     'first',
+    //                     'second',
+    //                     'third',
+    //                     'fourth'
+    //                 ]).onChange((dropdown, index, item) => {
+    //                     console.log(index, item);
+    //                 }).isVisible(true),
+    //                 UISpinner.$()
+    //                     .range(-1, 1)
+    //                     .step(0.1, 2)
+    //                     .value(-0.1)
+    //                     .formatter((val): string => {
+    //                         return val.toFixed(2) + '%'
+    //                     })
+    //                     .onChange((spinner, val) => {
+    //                         console.log(val);
+    //                     }),
+    //                 UIButton.$('6')
+    //                     .height(15),
+    //                 UIButton.$I(29364)
+    //                     .onClick((button) => {
+    //                         viewport.mainViewportScrollToThis();
+    //                         window.updateUI((val) => {
+    //                             val.title('Moving........')
+    //                         })
+    //                         button.updateUI((val) => {
+    //                             val.image(val._image! + 1);
+    //                         })
+    //                     }),
+    //                 UIButton.$('8')
+    //                     .height(20)
+    //             ).spacing(4)
+    //                 .padding(containerPadding),
+    //             UIButton.$('change color')
+    //                 .onClick((button) => {
+    //                     window.updateUI((val) => {
+    //                         val.colorPalette({
+    //                             primary: UIColor.DarkGreen | UIColorFlag.Translucent,
+    //                             secondary: UIColor.SalmonPink | UIColorFlag.Outline,
+    //                             tertiary: UIColor.SaturatedRed | UIColorFlag.Inset
+    //                         })
+    //                     })
+    //                 })
+    //         ).spacing(4)
+    //             .padding(containerPadding),
+    //         viewport
+    //     ).spacing(4),
+    //     UIStack.$H(
+    //         UISpacer.$(),
+    //         UIButton.$('dddd')
+    //             .height(50).width(100)
+    //     ),
+    //     UIStack.$H(
+    //         UIButton.$('10')
+    //             .width(100),
+    //         UIButton.$('Clear!')
+    //             .width(350).height(100)
+    //             .onClick((button) => {
+    //                 viewport.moveTo({ x: Math.random() * ui.width, y: Math.random() * ui.height });
+    //                 viewport.updateUI((widget) => {
+    //                     widget
+    //                         .size({ width: Math.random() * 200, height: Math.random() * 200 })
+    //                 })
+    //             }),
+    //         UITextBox.$()
+    //             .maxLength(20)
+    //     ).spacing(4),
+    //     UILabel.$('Label----------------------!')
+    //         .align(UITextAlignment.Center)
+    // )
+
+    // window
+    //     .spacing(4)
+    //     .padding(containerPadding)
+    //     .show();
 };
 
 var main = function () {
