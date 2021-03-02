@@ -23,6 +23,13 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Array.prototype.flatMapFunc = function (d) {
     if (d === void 0) { d = 1; }
     return d > 0 ? this.reduce(function (acc, val) { return acc.concat(Array.isArray(val) ? val.flatMapFunc(d - 1) : val); }, []) : this.slice();
@@ -132,9 +139,19 @@ var UIViewportFlag;
     UIViewportFlag[UIViewportFlag["HighlightPathIssues"] = 262144] = "HighlightPathIssues";
     UIViewportFlag[UIViewportFlag["TransparentBackground"] = 524288] = "TransparentBackground";
 })(UIViewportFlag || (UIViewportFlag = {}));
-var UIImage;
-(function (UIImage) {
-})(UIImage || (UIImage = {}));
+var UIScrollbarType;
+(function (UIScrollbarType) {
+    UIScrollbarType["None"] = "none";
+    UIScrollbarType["Vertical"] = "vertical";
+    UIScrollbarType["Horizontal"] = "horizontal";
+    UIScrollbarType["both"] = "both";
+})(UIScrollbarType || (UIScrollbarType = {}));
+var UISortOrder;
+(function (UISortOrder) {
+    UISortOrder["None"] = "none";
+    UISortOrder["Ascending"] = "ascending";
+    UISortOrder["Descending"] = "descending";
+})(UISortOrder || (UISortOrder = {}));
 var UIPointZero = { x: 0, y: 0 };
 var UIEdgeInsetsZero = { top: 0, left: 0, bottom: 0, right: 0 };
 var UIEdgeInsetsContainer = { top: 16, left: 2, bottom: 2, right: 2 };
@@ -203,7 +220,7 @@ var UIConstructor = (function () {
     return UIConstructor;
 }());
 var UIWindow = (function () {
-    function UIWindow(title, widgets) {
+    function UIWindow(title, contentView) {
         this._uiConstructor = new UIConstructor();
         this._interactor = new UIInteractor();
         this._spacing = 0;
@@ -211,14 +228,15 @@ var UIWindow = (function () {
         this._isExpandable = false;
         this._colorPalette = UIWindowColorPaletteDefault;
         this._title = title;
-        this._childss = widgets;
+        this._contentView = contentView;
     }
     UIWindow.$ = function (title) {
         var widgets = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             widgets[_i - 1] = arguments[_i];
         }
-        return new UIWindow(title, widgets);
+        var stack = new UIStack(UIAxis.Vertical, widgets);
+        return new UIWindow(title, stack);
     };
     UIWindow.prototype._convertColors = function () {
         var _a, _b, _c;
@@ -284,9 +302,8 @@ var UIWindow = (function () {
         if (this._isOpened()) {
             return this;
         }
-        var stack = new UIStack(UIAxis.Vertical, this._childss)
-            .spacing(this._spacing).padding(this._padding);
-        var constructed = this._uiConstructor.construct(stack, this._interactor);
+        var contentView = this._contentView.spacing(this._spacing).padding(this._padding);
+        var constructed = this._uiConstructor.construct(contentView, this._interactor);
         var size = constructed.size;
         var windowDesc = {
             classification: this._title,
@@ -313,7 +330,6 @@ var UIWindow = (function () {
             }
         };
         this._window = ui.openWindow(windowDesc);
-        this._contentView = stack;
         this._initialSize = {
             width: this._window.width,
             height: this._window.height
@@ -322,7 +338,7 @@ var UIWindow = (function () {
         this._interactor.findWidget(function (name) {
             return _this.findWidget(name);
         });
-        this._uiConstructor.didLoad(stack);
+        this._uiConstructor.didLoad(contentView);
         return this;
     };
     UIWindow.prototype.updateUI = function (block) {
@@ -1307,34 +1323,21 @@ var UIViewport = (function (_super) {
     };
     return UIViewport;
 }(UIWidget));
-var UIScrollbarType;
-(function (UIScrollbarType) {
-    UIScrollbarType["None"] = "none";
-    UIScrollbarType["Vertical"] = "vertical";
-    UIScrollbarType["Horizontal"] = "horizontal";
-    UIScrollbarType["both"] = "both";
-})(UIScrollbarType || (UIScrollbarType = {}));
-var UISortOrder;
-(function (UISortOrder) {
-    UISortOrder["None"] = "none";
-    UISortOrder["Ascending"] = "ascending";
-    UISortOrder["Descending"] = "descending";
-})(UISortOrder || (UISortOrder = {}));
-var UIListViewColum = (function () {
-    function UIListViewColum(header) {
+var UIListViewColumn = (function () {
+    function UIListViewColumn(header) {
         this._canSort = false;
         this._sortOrder = UISortOrder.None;
         this._header = header;
     }
-    UIListViewColum.$ = function (header) {
-        return new UIListViewColum(header);
+    UIListViewColumn.$ = function (header) {
+        return new UIListViewColumn(header);
     };
-    UIListViewColum.$F = function (header, width) {
-        var listView = new UIListViewColum(header);
+    UIListViewColumn.$F = function (header, width) {
+        var listView = new UIListViewColumn(header);
         return listView.width(width);
     };
-    UIListViewColum.$R = function (header, widthRange) {
-        var listView = new UIListViewColum(header);
+    UIListViewColumn.$R = function (header, widthRange) {
+        var listView = new UIListViewColumn(header);
         if (typeof widthRange.min !== 'undefined') {
             listView = listView.minWidth(widthRange.min);
         }
@@ -1343,11 +1346,11 @@ var UIListViewColum = (function () {
         }
         return listView;
     };
-    UIListViewColum.$W = function (header, weight) {
-        var listView = new UIListViewColum(header);
+    UIListViewColumn.$W = function (header, weight) {
+        var listView = new UIListViewColumn(header);
         return listView.weight(weight);
     };
-    UIListViewColum.prototype._data = function () {
+    UIListViewColumn.prototype._data = function () {
         return {
             canSort: this._canSort,
             sortOrder: this._sortOrder,
@@ -1359,35 +1362,35 @@ var UIListViewColum = (function () {
             maxWidth: this._maxWidth
         };
     };
-    UIListViewColum.prototype.sortOrder = function (val) {
+    UIListViewColumn.prototype.sortOrder = function (val) {
         this._sortOrder = val;
         return this;
     };
-    UIListViewColum.prototype.canSort = function (val) {
+    UIListViewColumn.prototype.canSort = function (val) {
         this._canSort = val;
         return this;
     };
-    UIListViewColum.prototype.tooltip = function (val) {
+    UIListViewColumn.prototype.tooltip = function (val) {
         this._headerTooltip = val;
         return this;
     };
-    UIListViewColum.prototype.width = function (val) {
+    UIListViewColumn.prototype.width = function (val) {
         this._width = val;
         return this;
     };
-    UIListViewColum.prototype.weight = function (val) {
+    UIListViewColumn.prototype.weight = function (val) {
         this._weight = val;
         return this;
     };
-    UIListViewColum.prototype.minWidth = function (val) {
+    UIListViewColumn.prototype.minWidth = function (val) {
         this._minWidth = val;
         return this;
     };
-    UIListViewColum.prototype.maxWidth = function (val) {
+    UIListViewColumn.prototype.maxWidth = function (val) {
         this._maxWidth = val;
         return this;
     };
-    return UIListViewColum;
+    return UIListViewColumn;
 }());
 var UIListViewItem = (function () {
     function UIListViewItem(textList, isSeparator) {
@@ -1518,6 +1521,86 @@ var UIListView = (function (_super) {
     };
     return UIListView;
 }(UIWidget));
+var UIImage = (function () {
+    function UIImage(frames) {
+        this._frames = [];
+        this._duration = 1.0;
+        this._offset = UIPointZero;
+        this._frames = frames;
+    }
+    UIImage.$ = function (single) {
+        var image = new UIImage([single]);
+        return image;
+    };
+    UIImage.$A = function (base, count) {
+        var frames = __spreadArrays(Array(count)).map(function (_, i) { return base + i; });
+        var image = new UIImage(frames);
+        return image;
+    };
+    UIImage.$F = function (frames) {
+        var image = new UIImage(frames);
+        return image;
+    };
+    UIImage.prototype._data = function () {
+        var frameCount = this._frames.length;
+        if (frameCount > 1) {
+            var isContiguous = this._frames.reduce(function (acc, val) { return val === acc + 1 ? val : acc; }) == this._frames.reverse()[0];
+            if (isContiguous) {
+                return {
+                    frameBase: this._frames[0],
+                    frameCount: this._frames.length,
+                    frameDuration: this._duration,
+                    offset: this._offset
+                };
+            }
+            else {
+                return -1;
+            }
+        }
+        else if (frameCount > 0) {
+            return this._frames[0];
+        }
+        else {
+            return -1;
+        }
+    };
+    UIImage.prototype._isAnimatable = function () {
+        return this._frames.length > 1;
+    };
+    UIImage.prototype.duration = function (val) {
+        this._duration = val;
+        return this;
+    };
+    UIImage.prototype.offset = function (val) {
+        this._offset = val;
+        return this;
+    };
+    return UIImage;
+}());
+var UIImageTabGears = UIImage.$A(5201, 4);
+var UIImageNone = UIImage.$(-1);
+var UITab = (function () {
+    function UITab(contentView, image) {
+        if (image === void 0) { image = undefined; }
+        this._image = image !== null && image !== void 0 ? image : UIImageNone;
+        this._contentView = contentView;
+    }
+    UITab.$ = function (contentView) {
+        var tab = new UITab(contentView);
+        return tab;
+    };
+    UITab.prototype._data = function () {
+        return {
+            image: this._image._data(),
+            widgets: this._contentView._getWidgets()
+        };
+    };
+    UITab.prototype.image = function (val) {
+        this._image = val;
+        return this;
+    };
+    return UITab;
+}());
 var openWindow = function () {
     UIWindow.$('직원', UIStack.$H(UIStack.$V(UISpacer.$(), UIStack.$H(UILabel.$('유니폼 색상:')
         .width(100), UIColorPicker.$(UIColor.BrightRed))), UISpacer.$(), UIButton.$I(5179)
@@ -1536,12 +1619,12 @@ var openWindow = function () {
             widget.isPressed(!widget._isPressed);
         });
     }), UIButton.$I(5181)), UIListView.$([
-        UIListViewColum.$W('이름', 2)
+        UIListViewColumn.$W('이름', 2)
             .tooltip('tooltip')
             .sortOrder(UISortOrder.Ascending)
             .canSort(true),
-        UIListViewColum.$('역할'),
-        UIListViewColum.$('상태')
+        UIListViewColumn.$('역할'),
+        UIListViewColumn.$('상태')
     ]).showColumnHeaders(true)
         .scrollbarType(UIScrollbarType.both)
         .isStriped(true)

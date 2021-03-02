@@ -95,8 +95,17 @@ enum UIViewportFlag {
     TransparentBackground = 1 << 19,
 }
 
-enum UIImage {
+enum UIScrollbarType {
+    None = 'none',
+    Vertical = 'vertical',
+    Horizontal = 'horizontal',
+    both = 'both'
+}
 
+enum UISortOrder {
+    None = 'none',
+    Ascending = 'ascending',
+    Descending = 'descending'
 }
 
 // Interfaces
@@ -106,10 +115,7 @@ interface UIOptionalRange {
 }
 
 const UIPointZero: UIPoint = { x: 0, y: 0 };
-interface UIPoint {
-    x: number;
-    y: number;
-}
+interface UIPoint extends ScreenCoordsXY {}
 
 const UIEdgeInsetsZero: UIEdgeInsets = { top: 0, left: 0, bottom: 0, right: 0 };
 const UIEdgeInsetsContainer: UIEdgeInsets = { top: 16, left: 2, bottom: 2, right: 2 };
@@ -227,12 +233,11 @@ class UIWindow {
     _interactor = new UIInteractor();
 
     _window: Window | undefined;
-    _contentView!: UIStack;
+    _contentView: UIStack;
 
     _initialSize!: UISize;
 
     _title: string;
-    _childss: UIWidget<any>[];
     _spacing = 0;
     _padding: UIEdgeInsets = UIEdgeInsetsZero;
 
@@ -244,16 +249,17 @@ class UIWindow {
     _onClose: ((window: this) => void) | undefined;
     _onTabChange: ((window: this, tabIndex: number) => void) | undefined;
 
-    constructor(title: string, widgets: UIWidget<any>[]) {
+    constructor(title: string, contentView: UIStack) {
 
         this._title = title;
-        this._childss = widgets;
+        this._contentView = contentView;
     }
 
     //Convenience
 
     static $(title: string, ...widgets: UIWidget<any>[]): UIWindow {
-        return new UIWindow(title, widgets);
+        var stack = new UIStack(UIAxis.Vertical, widgets);
+        return new UIWindow(title, stack);
     }
 
     //Private
@@ -338,9 +344,8 @@ class UIWindow {
             return this;
         }
 
-        var stack = new UIStack(UIAxis.Vertical, this._childss)
-            .spacing(this._spacing).padding(this._padding);
-        var constructed = this._uiConstructor.construct(stack, this._interactor);
+        var contentView = this._contentView.spacing(this._spacing).padding(this._padding);
+        var constructed = this._uiConstructor.construct(contentView, this._interactor);
         var size = constructed.size;
 
         var windowDesc: WindowDesc = {
@@ -367,7 +372,6 @@ class UIWindow {
         }
 
         this._window = ui.openWindow(windowDesc);
-        this._contentView = stack;
         this._initialSize = {
             width: this._window.width,
             height: this._window.height
@@ -378,7 +382,7 @@ class UIWindow {
             return this.findWidget(name);
         });
 
-        this._uiConstructor.didLoad(stack);
+        this._uiConstructor.didLoad(contentView);
 
         return this;
     }
@@ -948,7 +952,7 @@ class UIButton extends UIWidget<ButtonWidget> {
             .minSize({ width: 50, height: 15 });
     }
 
-    static $I(image: UIImage): UIButton {
+    static $I(image: number): UIButton {
         var button = new UIButton();
         return button
             .image(image)
@@ -1600,20 +1604,7 @@ class UIViewport extends UIWidget<ViewportWidget> {
     }
 }
 
-enum UIScrollbarType {
-    None = 'none',
-    Vertical = 'vertical',
-    Horizontal = 'horizontal',
-    both = 'both'
-}
-
-enum UISortOrder {
-    None = 'none',
-    Ascending = 'ascending',
-    Descending = 'descending'
-}
-
-class UIListViewColum {
+class UIListViewColumn {
 
     _canSort: boolean = false;
     _sortOrder: UISortOrder = UISortOrder.None;
@@ -1632,17 +1623,17 @@ class UIListViewColum {
 
     //Convenience
 
-    static $(header: string): UIListViewColum {
-        return new UIListViewColum(header);
+    static $(header: string): UIListViewColumn {
+        return new UIListViewColumn(header);
     }
 
-    static $F(header: string, width: number): UIListViewColum {
-        var listView = new UIListViewColum(header);
+    static $F(header: string, width: number): UIListViewColumn {
+        var listView = new UIListViewColumn(header);
         return listView.width(width);
     }
 
-    static $R(header: string, widthRange: UIOptionalRange): UIListViewColum {
-        var listView = new UIListViewColum(header);
+    static $R(header: string, widthRange: UIOptionalRange): UIListViewColumn {
+        var listView = new UIListViewColumn(header);
         if (typeof widthRange.min !== 'undefined') {
             listView = listView.minWidth(widthRange.min);
         }
@@ -1652,8 +1643,8 @@ class UIListViewColum {
         return listView;
     }
 
-    static $W(header: string, weight: number): UIListViewColum {
-        var listView = new UIListViewColum(header);
+    static $W(header: string, weight: number): UIListViewColumn {
+        var listView = new UIListViewColumn(header);
         return listView.weight(weight);
     }
 
@@ -1750,7 +1741,7 @@ class UIListView extends UIWidget<ListView> {
     _isStriped: boolean = false;
 
     _showColumnHeaders: boolean = false;
-    _columns: UIListViewColum[] | undefined;
+    _columns: UIListViewColumn[] | undefined;
     _items: UIListViewItem[] = [];
 
     _selectedCell: RowColumn | undefined;
@@ -1759,14 +1750,14 @@ class UIListView extends UIWidget<ListView> {
     _onHeighlight: ((listView: this, column: number, item: number) => void) | undefined;
     _onClick: ((listView: this, column: number, item: number) => void) | undefined;
 
-    constructor(columns: UIListViewColum[] | undefined = undefined) {
+    constructor(columns: UIListViewColumn[] | undefined = undefined) {
         super();
         this._columns = columns;
     }
 
     //Convenience
 
-    static $(columns: UIListViewColum[] | undefined = undefined): UIListView {
+    static $(columns: UIListViewColumn[] | undefined = undefined): UIListView {
         var listView = new UIListView(columns);
         return listView
             .minSize({ width: 165, height: 120 });
@@ -1822,12 +1813,12 @@ class UIListView extends UIWidget<ListView> {
         return this;
     }
 
-    addColumn(val: UIListViewColum): this {
+    addColumn(val: UIListViewColumn): this {
         this._columns?.push(val);
         return this;
     }
 
-    addColumns(val: UIListViewColum[]): this {
+    addColumns(val: UIListViewColumn[]): this {
         this._columns = this._columns?.concat(val);
         return this;
     }
@@ -1852,7 +1843,7 @@ class UIListView extends UIWidget<ListView> {
         return this;
     }
 
-    getColumnData(val: number): UIListViewColum | undefined {
+    getColumnData(val: number): UIListViewColumn | undefined {
         return this._columns?.[val];
     }
 
@@ -1872,6 +1863,110 @@ class UIListView extends UIWidget<ListView> {
 
     onClick(block: (listView: this, column: number, item: number) => void): this {
         this._onClick = block;
+        return this;
+    }
+}
+
+class UIImage {
+
+    _frames: number[] = [];
+    _duration: number = 1.0;
+    _offset: UIPoint = UIPointZero;
+
+    constructor(frames: number[]) {
+        this._frames = frames;
+    }
+
+    //Convenience
+
+    static $(single: number): UIImage {
+        var image = new UIImage([single]);
+        return image;
+    }
+    
+    static $A(base: number, count: number): UIImage {
+        var frames = [...Array(count)].map((_,i) => base+i);
+        var image = new UIImage(frames);
+        return image;
+    }
+
+    static $F(frames: number[]): UIImage {
+        var image = new UIImage(frames);
+        return image;
+    }
+
+    //Private
+
+    _data(): number | ImageAnimation {
+        var frameCount = this._frames.length;
+        if (frameCount > 1) {
+            var isContiguous = this._frames.reduce((acc, val) => val === acc+1 ? val: acc) == this._frames.reverse()[0];
+            if (isContiguous) {
+                return {
+                    frameBase: this._frames[0],
+                    frameCount: this._frames.length,
+                    frameDuration: this._duration,
+                    offset: this._offset
+                }
+            } else {
+                return -1;
+            }
+        } else if (frameCount > 0) {
+            return this._frames[0];
+        } else {
+            return -1;
+        }
+    }
+
+    _isAnimatable(): boolean {
+        return this._frames.length > 1;
+    }
+
+    //Public
+
+    duration(val: number): this {
+        this._duration = val;
+        return this;
+    }
+
+    offset(val: UIPoint): this {
+        this._offset = val;
+        return this;
+    }
+}
+const UIImageTabGears = UIImage.$A(5201, 4);
+const UIImageNone = UIImage.$(-1);
+
+class UITab {
+
+    _image: UIImage;
+    _contentView: UIStack;
+
+    constructor(contentView: UIStack, image: UIImage | undefined = undefined) {
+        this._image = image ?? UIImageNone;
+        this._contentView = contentView;
+    }
+
+    //Convenience
+
+    static $(contentView: UIStack): UITab {
+        var tab = new UITab(contentView);
+        return tab;
+    }
+
+    //Private
+
+    _data(): WindowTabDesc {
+        return {
+            image: this._image._data(),
+            widgets: this._contentView._getWidgets()
+        }
+    }
+
+    //Public
+
+    image(val: UIImage): this {
+        this._image = val;
         return this;
     }
 }
@@ -1936,12 +2031,12 @@ var openWindow = function () {
             UIButton.$I(5181)
         ),
         UIListView.$([
-            UIListViewColum.$W('이름', 2)
+            UIListViewColumn.$W('이름', 2)
                 .tooltip('tooltip')
                 .sortOrder(UISortOrder.Ascending)
                 .canSort(true),
-            UIListViewColum.$('역할'),
-            UIListViewColum.$('상태')
+            UIListViewColumn.$('역할'),
+            UIListViewColumn.$('상태')
         ]).showColumnHeaders(true)
             .scrollbarType(UIScrollbarType.both)
             .isStriped(true)
