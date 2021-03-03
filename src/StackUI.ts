@@ -115,10 +115,11 @@ interface UIOptionalRange {
 }
 
 const UIPointZero: UIPoint = { x: 0, y: 0 };
-interface UIPoint extends ScreenCoordsXY {}
+interface UIPoint extends ScreenCoordsXY { }
 
 const UIEdgeInsetsZero: UIEdgeInsets = { top: 0, left: 0, bottom: 0, right: 0 };
 const UIEdgeInsetsContainer: UIEdgeInsets = { top: 16, left: 2, bottom: 2, right: 2 };
+const UIEdgeInsetsTabContainer: UIEdgeInsets = { top: 45, left: 2, bottom: 2, right: 2 };
 interface UIEdgeInsets {
     top: number;
     left: number;
@@ -141,6 +142,7 @@ interface UISize extends UIOptionalSize {
 interface UIConstructResult {
     size: UISize;
     widgets: Widget[];
+    tabs?: WindowTabDesc[];
 }
 
 const UIWindowColorPaletteDefault: UIWindowColorPalette = { primary: UIColor.Gray, secondary: UIColor.Gray, tertiary: UIColor.Gray };
@@ -171,19 +173,53 @@ class UIInteractor {
 
 class UIConstructor {
 
-    construct(stack: UIStack, interactor: UIInteractor): UIConstructResult {
-        var flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
-        stack._interactor = interactor;
-        flattedChilds.forEach((val) => val._interactor = interactor);
+    constructTabs(tabs: UITab[], selectedIndex: number, interactor: UIInteractor): UIConstructResult {
+        if (selectedIndex >= tabs.length || selectedIndex < 0) {
+            throw new Error('SelectedIndex is less than the count of tabs and must be at least 0.');
+        }
+        var minWidth = 31 * tabs.length + 6
+        for (var i = 0; i < tabs.length; i++) {
+            var tab = tabs[i];
+            var stack = tab._contentView.spacing(tab._spacing).padding(tab._padding);
+
+            var results = this.construct(stack, interactor, UIEdgeInsetsTabContainer);
+            tab._minSize = {
+                width: Math.max(minWidth, results.size.width),
+                height: results.size.height
+            }
+
+            if (tab._maxSize.width < tab._minSize.width || tab._maxSize.height < tab._minSize.height) {
+                console.log('WARNING: UITab['+i+'] maximum size is less than its minimum size!');
+                console.log('minSize: { width: '+tab._minSize.width+', height: '+tab._minSize.height+' }');
+                console.log('maxSize: { width: '+tab._maxSize.width+', height: '+tab._maxSize.height+' }');
+                console.log('Errors can occur when resizing windows.');
+            }
+        }
+        var selectedTab = tabs[selectedIndex];
+        this.refreshTab(selectedTab, selectedTab._minSize);
         return {
-            size: this.calculateBounds(stack),
+            size: selectedTab._minSize,
+            widgets: [],
+            tabs: tabs.map((val) => val._data())
+        }
+    }
+
+    construct(stack: UIStack, interactor: UIInteractor, insets: UIEdgeInsets = UIEdgeInsetsContainer): UIConstructResult {
+        this._injectInteractor(stack, interactor);
+        return {
+            size: this.calculateBounds(stack, insets),
             widgets: stack._getWidgets()
         };
     }
 
-    private calculateBounds(stack: UIStack): UISize {
+    _injectInteractor(stack: UIStack, interactor: UIInteractor) {
 
-        var insets: UIEdgeInsets = UIEdgeInsetsContainer;
+        var flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        stack._interactor = interactor;
+        flattedChilds.forEach((val) => val._interactor = interactor);
+    }
+
+    private calculateBounds(stack: UIStack, insets: UIEdgeInsets): UISize {
 
         var origin: UIPoint = {
             x: insets.left,
@@ -192,7 +228,6 @@ class UIConstructor {
 
         var estimatedSize = stack._estimatedSize();
 
-        stack._isUndefinedSize(UIAxis.Vertical);
         stack._layout(UIAxis.Vertical, origin, estimatedSize);
         stack._build();
 
@@ -202,14 +237,21 @@ class UIConstructor {
         }
     }
 
-    didLoad(stack: UIStack) {
-        var flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
-        flattedChilds.forEach((val) => val._didLoad());
+    didLoadTabs(tabs: UITab[]) {
+        var flattedChilds: UIWidget<any>[] = tabs.map((val) => val._contentView._getUIWidgets()).flatMap();
+        flattedChilds.forEach((val) => val._loadWidget());
     }
 
-    refresh(stack: UIStack, windowSize: UISize) {
+    didLoad(stack: UIStack) {
+        var flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        flattedChilds.forEach((val) => val._loadWidget());
+    }
 
-        var insets: UIEdgeInsets = UIEdgeInsetsContainer;
+    refreshTab(tab: UITab, windowSize: UISize) {
+        this.refresh(tab._contentView, windowSize, UIEdgeInsetsTabContainer);
+    }
+
+    refresh(stack: UIStack, windowSize: UISize, insets: UIEdgeInsets = UIEdgeInsetsContainer) {
 
         var origin: UIPoint = {
             x: insets.left,
@@ -233,36 +275,60 @@ class UIWindow {
     _interactor = new UIInteractor();
 
     _window: Window | undefined;
-    _contentView: UIStack;
 
-    _initialSize!: UISize;
-
-    _title: string;
-    _spacing = 0;
-    _padding: UIEdgeInsets = UIEdgeInsetsZero;
+    _singleContentView: UIStack | undefined;
+    _tabs: UITab[] | undefined;
+    _selectedTabIndex: number = 0;
 
     _origin!: UIPoint;
     _size!: UISize;
-    _isExpandable: boolean = false;
+    _initialSize!: UISize;
+
+    _title: string;
     _colorPalette: UIWindowColorPalette = UIWindowColorPaletteDefault;
 
+    _spacing = 0;
+    _padding: UIEdgeInsets = UIEdgeInsetsZero;
+
+    _initialExpandableState: boolean = false;
+    _isExpandable: boolean = false;
+    _minSize: UISize = UISizeZero;
+    _maxSize: UISize = { width: ui.width, height: ui.height };
+
     _onClose: ((window: this) => void) | undefined;
-    _onTabChange: ((window: this, tabIndex: number) => void) | undefined;
+    _onTabChange: ((window: this, selectedIndex: number) => void) | undefined;
 
-    constructor(title: string, contentView: UIStack) {
-
+    constructor(title: string, contents: UIWidget<any>[] | UITab[]) {
         this._title = title;
-        this._contentView = contentView;
+
+        if (contents.length > 0) {
+            if (contents[0] instanceof UIWidget) {
+                var widgets: any = contents;
+                this._singleContentView = new UIStack(UIAxis.Vertical, widgets);
+            } else {
+                var tabs: any = contents;
+                this._tabs = tabs;
+            }
+        } else {
+            throw new Error('Need to add at least one UITab or UIWidget.');
+        }
     }
 
     //Convenience
 
     static $(title: string, ...widgets: UIWidget<any>[]): UIWindow {
-        var stack = new UIStack(UIAxis.Vertical, widgets);
-        return new UIWindow(title, stack);
+        return new UIWindow(title, widgets);
+    }
+
+    static $T(title: string, ...tabs: UITab[]): UIWindow {
+        return new UIWindow(title, tabs);
     }
 
     //Private
+
+    _usingTab(): boolean {
+        return typeof this._tabs !== 'undefined';
+    }
 
     _convertColors(): UIColor[] {
         return [
@@ -304,10 +370,10 @@ class UIWindow {
 
         window.title = this._title;
 
-        window.minWidth = this._isExpandable ? this._initialSize.width : this._size.width;
-        window.minHeight = this._isExpandable ? this._initialSize.height : this._size.height;
-        window.maxWidth = this._isExpandable ? ui.width : this._size.width;
-        window.maxHeight = this._isExpandable ? ui.height : this._size.height;
+        window.minWidth = this._isExpandable ? this._minSize.width : this._size.width;
+        window.minHeight = this._isExpandable ? this._minSize.height : this._size.height;
+        window.maxWidth = this._isExpandable ? this._maxSize.width : this._size.width;
+        window.maxHeight = this._isExpandable ? this._maxSize.height : this._size.height;
 
         window.colours = this._convertColors();
 
@@ -332,7 +398,33 @@ class UIWindow {
                 width: window.width,
                 height: window.height
             }
-            this._uiConstructor.refresh(this._contentView, this._size);
+            this._refresh(this._size);
+        }
+    }
+
+    _internalOnTabChange() {
+        var currentTab = this._tabs![this._selectedTabIndex];
+        var tabMinSize = currentTab._minSize;
+        var tabMaxSize = currentTab._maxSize;
+        var size: UISize = {
+            width: Math.max(Math.min(this._size.width, tabMaxSize.width), tabMinSize.width),
+            height: Math.max(Math.min(this._size.height, tabMaxSize.height), tabMinSize.height)
+        }
+        currentTab._contentView._loadWidget();
+        this._refresh(size);
+        this.updateUI((window) => {
+            window._minSize = tabMinSize;
+            window._maxSize = tabMaxSize;
+            window._isExpandable = window._initialExpandableState || currentTab._isExpandable;
+        })
+    }
+
+    _refresh(size: UISize) {
+        if (this._usingTab()) {
+            var tab = this._tabs![this._selectedTabIndex];
+            this._uiConstructor.refreshTab(tab, size);
+        } else {
+            this._uiConstructor.refresh(this._singleContentView!, size);
         }
     }
 
@@ -344,21 +436,37 @@ class UIWindow {
             return this;
         }
 
-        var contentView = this._contentView.spacing(this._spacing).padding(this._padding);
-        var constructed = this._uiConstructor.construct(contentView, this._interactor);
-        var size = constructed.size;
+        this._initialExpandableState = this._isExpandable;
+
+        var singlecontentView = this._singleContentView?.spacing(this._spacing).padding(this._padding);
+        var singleContentViewWidget: Widget[] | undefined;
+        if (typeof singlecontentView !== 'undefined') {
+            var constructed = this._uiConstructor.construct(singlecontentView, this._interactor);
+            singleContentViewWidget = constructed.widgets;
+            this._minSize = constructed.size;
+        };
+
+        var tabDescriptions: WindowTabDesc[] | undefined;
+        if (typeof this._tabs !== 'undefined') {
+            var constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor);
+            tabDescriptions = constructed.tabs;
+            this._minSize = constructed.size;
+            this._isExpandable ||= this._tabs?.[this._selectedTabIndex]._isExpandable ?? false;
+        }
 
         var windowDesc: WindowDesc = {
             classification: this._title,
-            width: size.width,
-            height: size.height,
+            width: this._minSize.width,
+            height: this._minSize.height,
             title: this._title,
-            minWidth: this._isExpandable ? size.width : undefined,
-            maxWidth: this._isExpandable ? ui.width : undefined,
-            minHeight: this._isExpandable ? size.height : undefined,
-            maxHeight: this._isExpandable ? ui.height : undefined,
-            widgets: constructed.widgets,
+            minWidth: this._isExpandable ? this._minSize.width : undefined,
+            maxWidth: this._isExpandable ? this._maxSize.width : undefined,
+            minHeight: this._isExpandable ? this._minSize.height : undefined,
+            maxHeight: this._isExpandable ? this._maxSize.height : undefined,
+            widgets: singleContentViewWidget,
             colours: this._convertColors(),
+            tabs: tabDescriptions,
+            tabIndex: this._selectedTabIndex,
             onClose: () => {
                 this._onClose?.call(this, this);
             },
@@ -366,8 +474,9 @@ class UIWindow {
                 this._onUpdate();
             },
             onTabChange: () => {
-                var tabIndex = this._window?.tabIndex ?? 0;
-                this._onTabChange?.call(this, this, tabIndex);
+                this._selectedTabIndex = this._window?.tabIndex ?? 0;
+                this._internalOnTabChange();
+                this._onTabChange?.call(this, this, this._selectedTabIndex);
             }
         }
 
@@ -382,7 +491,12 @@ class UIWindow {
             return this.findWidget(name);
         });
 
-        this._uiConstructor.didLoad(contentView);
+        if (typeof singlecontentView !== 'undefined') {
+            this._uiConstructor.didLoad(singlecontentView);
+        }
+        if (typeof this._tabs !== 'undefined') {
+            this._uiConstructor.didLoadTabs(this._tabs);
+        }
 
         return this;
     }
@@ -433,6 +547,11 @@ class UIWindow {
         return this;
     }
 
+    selectedTabIndex(val: number): this {
+        this._selectedTabIndex = val;
+        return this;
+    }
+
     colorPalette(val: UIWindowColorPalette): this {
         this._colorPalette = val;
         return this;
@@ -465,6 +584,8 @@ class UIWidget<T extends Widget> {
     _minSize: UISize = UISizeZero;
     _initialSize: UIOptionalSize | undefined;
 
+    _offset: UIPoint = UIPointZero;
+
     constructor() {
         //https://stackoverflow.com/questions/13613524/get-an-objects-class-name-at-runtime
         this._name = this.constructor.name + '-' + uuid();
@@ -491,10 +612,10 @@ class UIWidget<T extends Widget> {
     _isUndefinedSize(axis: UIAxis): boolean {
         switch (axis) {
             case UIAxis.Vertical: {
-                return typeof this._size.width === 'undefined';
+                return typeof this._size.height === 'undefined';
             }
             case UIAxis.Horizontal: {
-                return typeof this._size.height === 'undefined';
+                return typeof this._size.width === 'undefined';
             }
         }
     }
@@ -504,7 +625,10 @@ class UIWidget<T extends Widget> {
             this._initialSize = this._size;
         }
 
-        this._origin = origin;
+        this._origin = {
+            x: origin.x + this._offset.x,
+            y: origin.y + this._offset.y
+        };
         this._size = {
             width: this._size.width ?? estimatedSize.width,
             height: this._size.height ?? estimatedSize.height
@@ -552,7 +676,7 @@ class UIWidget<T extends Widget> {
         }
     }
 
-    _didLoad() {
+    _loadWidget() {
         this._interactor.update(this._name, (widget: T) => {
             this._widget = widget;
         });
@@ -616,6 +740,11 @@ class UIWidget<T extends Widget> {
 
     isVisible(val: boolean): this {
         this._isVisible = val;
+        return this;
+    }
+
+    offset(val: UIPoint): this {
+        this._offset = val;
         return this;
     }
 }
@@ -724,24 +853,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     _isUndefinedSize(axis: UIAxis): boolean {
-        var sizeUndefinedChilds = this._childs.filter((val) => val._isUndefinedSize(this._axis));
-        if (sizeUndefinedChilds.length == 0) {
-            switch (this._axis) {
-                case UIAxis.Vertical: {
-                    this._size = {
-                        width: this._estimatedSize().width,
-                        height: this._size.height
-                    }
-                }
-                case UIAxis.Horizontal: {
-                    this._size = {
-                        width: this._size.width,
-                        height: this._estimatedSize().height
-                    }
-                }
-            }
-        }
-        return sizeUndefinedChilds.length > 0;
+        return this._childs.filter((val) => val._isUndefinedSize(axis)).length > 0;
     }
 
     _layout(axis: UIAxis, origin: UIPoint, estimatedSize: UISize): UIPoint {
@@ -776,37 +888,40 @@ class UIStack extends UIWidget<GroupBoxWidget> {
             height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect
         };
         var childOrigin: UIPoint = {
-            x: this._origin.x + this._insets.left + this._padding.left,
-            y: this._origin.y + this._insets.top + this._padding.top
+            x: this._origin.x + this._insets.left + this._padding.left + this._offset.x,
+            y: this._origin.y + this._insets.top + this._padding.top + this._offset.y
         }
         var point = childOrigin;
+
+        var exactSizeChilds = this._childs.filter((val) => !val._isUndefinedSize(this._axis));
+        var undefinedSizeChilds = this._childs.filter((val) => val._isUndefinedSize(this._axis));
+        var numberOfUndefinedSizeChilds = undefinedSizeChilds.length;
+        var undefinedSizeStacks = undefinedSizeChilds.filter((val) => val instanceof UIStack);
 
         var sumOfSpacing = this._spacing * (this._childs.length - 1);
 
         switch (this._axis) {
             case UIAxis.Vertical: {
-                var undefinedHeightChilds = this._childs.filter((val) => typeof val._size.height === 'undefined');
-                var numberOfUndefinedHeightChilds = undefinedHeightChilds.length;
-                var sumOfExactChildHeights: number = this._childs.map((val) => val._size.height ?? 0).reduce((acc, val) => acc + val);
+                var sumOfExactChildHeights: number = exactSizeChilds.map((val) => val._estimatedSize().height).reduce((acc, val) => acc + val);
+
                 var autoHeight: number = 0;
-                if (numberOfUndefinedHeightChilds > 0) {
-                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights) / numberOfUndefinedHeightChilds);
+                if (numberOfUndefinedSizeChilds > 0) {
+                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights) / numberOfUndefinedSizeChilds);
                 }
                 var storedAutoHeight = autoHeight;
 
-                var stacks = undefinedHeightChilds.filter((val) => val instanceof UIStack);
                 var stackMaxHeights = 0;
-                if (stacks.length > 0) {
-                    stackMaxHeights = stacks.map((val) => Math.max(autoHeight, val._estimatedSize().height)).reduce((acc, val) => acc + val);
+                if (undefinedSizeStacks.length > 0) {
+                    stackMaxHeights = undefinedSizeStacks.map((val) => Math.max(autoHeight, val._estimatedSize().height)).reduce((acc, val) => acc + val);
                 }
-                var othersCount = numberOfUndefinedHeightChilds - stacks.length;
+                var othersCount = numberOfUndefinedSizeChilds - undefinedSizeStacks.length;
                 if (othersCount > 0) {
                     autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights - stackMaxHeights) / othersCount);
                 }
 
                 for (var child of this._childs) {
                     var isStack = child instanceof UIStack;
-                    var isHeightUndefined = typeof child._size.height === 'undefined';
+                    var isHeightUndefined = child._isUndefinedSize(this._axis);
                     var childEstimatedHeight = child._estimatedSize().height;
                     var childEstimatedSize: UISize = {
                         width: childContainerSize.width,
@@ -820,34 +935,29 @@ class UIStack extends UIWidget<GroupBoxWidget> {
                     point = { x: point.x, y: point.y + this._spacing }
                 }
 
-                return {
-                    x: this._origin.x + this._size.width!,
-                    y: this._origin.y + this._size.height!
-                }
+                break;
             }
             case UIAxis.Horizontal: {
-                var undefinedWidthChilds = this._childs.filter((val) => typeof val._size.width === 'undefined');
-                var numberOfUndefinedWidthChilds = undefinedWidthChilds.length;
-                var sumOfExactChildWidths: number = this._childs.map((val) => val._size.width ?? 0).reduce((acc, val) => acc + val);
+                var sumOfExactChildWidths: number = exactSizeChilds.map((val) => val._estimatedSize().width).reduce((acc, val) => acc + val);
+
                 var autoWidth: number = 0;
-                if (numberOfUndefinedWidthChilds > 0) {
-                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths) / numberOfUndefinedWidthChilds);
+                if (numberOfUndefinedSizeChilds > 0) {
+                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths) / numberOfUndefinedSizeChilds);
                 }
                 var storedAutoWidth = autoWidth;
 
-                var stacks = undefinedWidthChilds.filter((val) => val instanceof UIStack);
                 var stackMaxWidths = 0;
-                if (stacks.length > 0) {
-                    stackMaxWidths = stacks.map((val) => Math.max(autoWidth, val._estimatedSize().width)).reduce((acc, val) => acc + val);
+                if (undefinedSizeStacks.length > 0) {
+                    stackMaxWidths = undefinedSizeStacks.map((val) => Math.max(autoWidth, val._estimatedSize().width)).reduce((acc, val) => acc + val);
                 }
-                var othersCount = numberOfUndefinedWidthChilds - stacks.length;
+                var othersCount = numberOfUndefinedSizeChilds - undefinedSizeStacks.length;
                 if (othersCount > 0) {
                     autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths - stackMaxWidths) / othersCount);
                 }
 
                 for (var child of this._childs) {
                     var isStack = child instanceof UIStack;
-                    var isWidthUndefined = typeof child._size.width === 'undefined';
+                    var isWidthUndefined = child._isUndefinedSize(this._axis);
                     var childEstimatedWidth = child._estimatedSize().width;
                     var childEstimatedSize: UISize = {
                         width: isWidthUndefined ? (isStack ? Math.max(childEstimatedWidth, storedAutoWidth) : autoWidth) : childEstimatedWidth,
@@ -861,19 +971,21 @@ class UIStack extends UIWidget<GroupBoxWidget> {
                     point = { x: point.x + this._spacing, y: point.y }
                 }
 
-                return {
-                    x: this._origin.x + this._size.width!,
-                    y: this._origin.y + this._size.height!
-                }
+                break;
             }
+        }
+
+        return {
+            x: this._origin.x + this._size.width!,
+            y: this._origin.y + this._size.height!
         }
     }
 
-    _didLoad() {
+    _loadWidget() {
         if (this._isGrouped) {
-            super._didLoad();
+            super._loadWidget();
         }
-        this._childs.forEach((val) => val._didLoad());
+        this._childs.forEach((val) => val._loadWidget());
     }
 
     _build() {
@@ -1026,7 +1138,8 @@ class UIButton extends UIWidget<ButtonWidget> {
 class UISpacer extends UIWidget<LabelWidget> {
 
     _spacing: number | undefined;
-    _axis: UIAxis = UIAxis.Vertical;
+    _fixVertical: boolean = false;
+    _fixHorizontal: boolean = false;
 
     constructor(spacing: number | undefined = undefined) {
         super();
@@ -1042,17 +1155,31 @@ class UISpacer extends UIWidget<LabelWidget> {
     //Private
 
     _isUndefinedSize(axis: UIAxis): boolean {
-        return false;
+        switch (axis) {
+            case UIAxis.Vertical: {
+                return this._fixVertical === false;
+            }
+            case UIAxis.Horizontal: {
+                return this._fixHorizontal === false;
+            }
+        }
     }
 
     _confirm(axis: UIAxis) {
-        this._axis = axis;
         switch (axis) {
             case UIAxis.Vertical: {
                 this._size = { width: undefined, height: this._spacing };
+                if (typeof this._spacing !== 'undefined') {
+                    this._fixVertical ||= true;
+                }
+                break;
             }
             case UIAxis.Horizontal: {
                 this._size = { width: this._spacing, height: undefined };
+                if (typeof this._spacing !== 'undefined') {
+                    this._fixHorizontal ||= true;
+                }
+                break;
             }
         }
     }
@@ -1064,9 +1191,20 @@ class UISpacer extends UIWidget<LabelWidget> {
         }
     }
 
-    _update(widget: LabelWidget) {
-        this._confirm(this._axis);
-        super._update(widget);
+    //Public
+
+    fixAxis(axis: UIAxis, flag: boolean): this {
+        switch (axis) {
+            case UIAxis.Vertical: {
+                this._fixVertical = flag;
+                break;
+            }
+            case UIAxis.Horizontal: {
+                this._fixHorizontal = flag;
+                break;
+            }
+        }
+        return this;
     }
 }
 
@@ -1548,8 +1686,8 @@ class UIViewport extends UIWidget<ViewportWidget> {
         this.moveTo(this._position);
     }
 
-    _didLoad() {
-        super._didLoad();
+    _loadWidget() {
+        super._loadWidget();
 
         this._viewport = this._widget.viewport!;
 
@@ -1867,77 +2005,14 @@ class UIListView extends UIWidget<ListView> {
     }
 }
 
-class UIImage {
-
-    _frames: number[] = [];
-    _duration: number = 1.0;
-    _offset: UIPoint = UIPointZero;
-
-    constructor(frames: number[]) {
-        this._frames = frames;
-    }
-
-    //Convenience
-
-    static $(single: number): UIImage {
-        var image = new UIImage([single]);
-        return image;
-    }
-    
-    static $A(base: number, count: number): UIImage {
-        var frames = [...Array(count)].map((_,i) => base+i);
-        var image = new UIImage(frames);
-        return image;
-    }
-
-    static $F(frames: number[]): UIImage {
-        var image = new UIImage(frames);
-        return image;
-    }
-
-    //Private
-
-    _data(): number | ImageAnimation {
-        var frameCount = this._frames.length;
-        if (frameCount > 1) {
-            var isContiguous = this._frames.reduce((acc, val) => val === acc+1 ? val: acc) == this._frames.reverse()[0];
-            if (isContiguous) {
-                return {
-                    frameBase: this._frames[0],
-                    frameCount: this._frames.length,
-                    frameDuration: this._duration,
-                    offset: this._offset
-                }
-            } else {
-                return -1;
-            }
-        } else if (frameCount > 0) {
-            return this._frames[0];
-        } else {
-            return -1;
-        }
-    }
-
-    _isAnimatable(): boolean {
-        return this._frames.length > 1;
-    }
-
-    //Public
-
-    duration(val: number): this {
-        this._duration = val;
-        return this;
-    }
-
-    offset(val: UIPoint): this {
-        this._offset = val;
-        return this;
-    }
-}
-const UIImageTabGears = UIImage.$A(5201, 4);
-const UIImageNone = UIImage.$(-1);
-
 class UITab {
+
+    _minSize: UISize = UISizeZero;
+    _maxSize: UISize = { width: ui.width, height: ui.height };
+
+    _spacing = 0;
+    _padding: UIEdgeInsets = UIEdgeInsetsZero;
+    _isExpandable: boolean = false;
 
     _image: UIImage;
     _contentView: UIStack;
@@ -1949,8 +2024,9 @@ class UITab {
 
     //Convenience
 
-    static $(contentView: UIStack): UITab {
-        var tab = new UITab(contentView);
+    static $(...widgets: UIWidget<any>[]): UITab {
+        var stack = new UIStack(UIAxis.Vertical, widgets);
+        var tab = new UITab(stack);
         return tab;
     }
 
@@ -1963,7 +2039,35 @@ class UITab {
         }
     }
 
+    _build() {
+        var estimatedSize = this._contentView._estimatedSize();
+
+        this._contentView._isUndefinedSize(UIAxis.Vertical);
+        this._contentView._layout(UIAxis.Vertical, UIPointZero, estimatedSize);
+        this._contentView._build();
+    }
+
     //Public
+
+    spacing(val: number): this {
+        this._spacing = val;
+        return this;
+    }
+
+    padding(val: UIEdgeInsets): this {
+        this._padding = val;
+        return this;
+    }
+
+    isExpandable(val: boolean): this {
+        this._isExpandable = val;
+        return this;
+    }
+
+    maxSize(val: UISize): this {
+        this._maxSize = val;
+        return this;
+    }
 
     image(val: UIImage): this {
         this._image = val;
@@ -2001,67 +2105,97 @@ var openWindow = function () {
     //     })
     //     .show();
 
-    UIWindow.$('직원',
-        UIStack.$H(
-            UIStack.$V(
-                UISpacer.$(),
-                UIStack.$H(
-                    UILabel.$('유니폼 색상:')
-                        .width(100),
-                    UIColorPicker.$(UIColor.BrightRed)
-                )
-            ),
-            UISpacer.$(),
-            UIButton.$I(5179)
-                .onClick((val) => {
-                    val.updateUI((widget) => {
-                        if (widget._image == 5179) {
-                            widget.image(5180);
-                        } else {
-                            widget.image(5179);
-                        }
-                    })
-                }),
-            UIButton.$I(5180)
-                .onClick((val) => {
-                    val.updateUI((widget) => {
-                        widget.isPressed(!widget._isPressed);
-                    })
-                }),
-            UIButton.$I(5181)
-        ),
-        UIListView.$([
-            UIListViewColumn.$W('이름', 2)
-                .tooltip('tooltip')
-                .sortOrder(UISortOrder.Ascending)
-                .canSort(true),
-            UIListViewColumn.$('역할'),
-            UIListViewColumn.$('상태')
-        ]).showColumnHeaders(true)
-            .scrollbarType(UIScrollbarType.both)
-            .isStriped(true)
-            .canSelect(true)
-            .addItems([
-                UIListViewItem.$(['미화원 1', '쓸기, 가꾸기, 비우기', '걷는 중']),
-                UIListViewItem.$S()
-            ])
-            .onHeighlight((listView, column, item) => {
-                var itemData = listView.getItemData(item);
-                console.log(itemData?._textList[column]);
-            })
-            .onClick((listView, column, item) => {
-                var itemData = listView.getItemData(item);
-                console.log(itemData?._textList[column]);
-            }),
-        UILabel.$('1 미화원')
-        // UISpinner.$()
-        //     .onClick((val) => {
-        //         console.log(val._value);
-        //     })
-    ).isExpandable(true)
+    var customFrameImage = UIImage.$F([5153, 5154, 5155, 5154]).duration(5);
+
+    UIWindow.$T('직원',
+        UITab.$(
+            UIStack.$H(
+                UIStack.$V(
+                    UISpacer.$(10),
+                    UIStack.$H(
+                        UILabel.$('유니폼 색상:')
+                            .width(100),
+                        UIColorPicker.$(UIColor.BrightRed)
+                    )
+                ),
+                UISpacer.$(20)
+                    .fixAxis(UIAxis.Vertical, true),
+                UIButton.$I(5179)
+                    .onClick((val) => {
+                        val.updateUI((widget) => {
+                            if (widget._image == 5179) {
+                                widget.image(5180);
+                            } else {
+                                widget.image(5179);
+                            }
+                        })
+                    }),
+                UIButton.$I(5180)
+                    .onClick((val) => {
+                        val.updateUI((widget) => {
+                            widget.isPressed(!widget._isPressed);
+                        })
+                    }),
+                UIButton.$I(5181)
+            ).offset({x: 0, y: -26}),
+            UIListView.$([
+                UIListViewColumn.$W('이름', 2)
+                    .tooltip('tooltip')
+                    .sortOrder(UISortOrder.Ascending)
+                    .canSort(true),
+                UIListViewColumn.$('역할'),
+                UIListViewColumn.$('상태')
+            ]).showColumnHeaders(true)
+                .scrollbarType(UIScrollbarType.both)
+                .isStriped(true)
+                .canSelect(true)
+                .addItems([
+                    UIListViewItem.$(['미화원 1', '쓸기, 가꾸기, 비우기', '걷는 중']),
+                    UIListViewItem.$S()
+                ]),
+            UILabel.$('1 미화원')
+        ).image(UIImageTabGears)
+            .isExpandable(true)
+            .maxSize({ width: 500, height: 500 }),
+        UITab.$(
+            UILabel.$('두번째 탭')
+        ).image(UIImageTabFinancesResearch),
+        UITab.$(
+            UILabel.$('세번째 탭')
+        ).image(UIImageTabKiosksAndFacilities)
+            .isExpandable(true),
+        UITab.$(
+            UILabel.$('네번째 탭')
+        ).image(UIImageTabFinancesSummary)
+            .isExpandable(true)
+            .maxSize({ width: 300, height: 100 }),
+        UITab.$(
+            UILabel.$('다섯번째 탭')
+        ).image(UIImageTabStats),
+        UITab.$(
+            UILabel.$('다섯번째 탭')
+        ).image(UIImageTabStats),
+        UITab.$(
+            UILabel.$('다섯번째 탭')
+        ).image(UIImageTabStats),
+        UITab.$(
+            UILabel.$('다섯번째 탭')
+        ).image(UIImageTabStats),
+        UITab.$(
+            UILabel.$('다섯번째 탭')
+        ).image(UIImageTabStats),
+        UITab.$(
+            UILabel.$('여섯번째 탭')
+        ).image(UIImageTabRide),
+        UITab.$(
+            UILabel.$('일곱번째 탭')
+        ).image(UIImageTabPark)
+    )
+        // .isExpandable(true)
         .colorPalette({
             primary: UIColor.Gray,
-            secondary: UIColor.LightPurple
+            secondary: UIColor.DarkOliveGreen,
+            tertiary: UIColor.LightOrange
         })
         .show();
 
