@@ -158,7 +158,7 @@ var UIEdgeInsetsContainer = { top: 16, left: 2, bottom: 2, right: 2 };
 var UIEdgeInsetsTabContainer = { top: 45, left: 2, bottom: 2, right: 2 };
 var UIOptionalSizeDefulat = { width: undefined, height: undefined };
 var UISizeZero = { width: 0, height: 0 };
-var UIWindowColorPaletteDefault = { primary: UIColor.Gray, secondary: UIColor.Gray, tertiary: UIColor.Gray };
+var UIWindowThemeDefault = { primary: UIColor.Gray, secondary: UIColor.Gray, tertiary: UIColor.Gray };
 var UIInteractor = (function () {
     function UIInteractor() {
     }
@@ -176,14 +176,17 @@ var UIInteractor = (function () {
 var UIConstructor = (function () {
     function UIConstructor() {
     }
-    UIConstructor.prototype.constructTabs = function (tabs, selectedIndex, interactor) {
+    UIConstructor.prototype.constructTabs = function (tabs, selectedIndex, interactor, spacing, padding) {
+        var _a, _b;
         if (selectedIndex >= tabs.length || selectedIndex < 0) {
             throw new Error('SelectedIndex is less than the count of tabs and must be at least 0.');
         }
         var minWidth = 31 * tabs.length + 6;
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
-            var stack = tab._contentView.spacing(tab._spacing).padding(tab._padding);
+            var stack = tab._contentView
+                .spacing((_a = tab._spacing) !== null && _a !== void 0 ? _a : spacing)
+                .padding((_b = tab._padding) !== null && _b !== void 0 ? _b : padding);
             var results = this.construct(stack, interactor, UIEdgeInsetsTabContainer);
             tab._minSize = {
                 width: Math.max(minWidth, results.size.width),
@@ -262,7 +265,7 @@ var UIWindow = (function () {
         this._uiConstructor = new UIConstructor();
         this._interactor = new UIInteractor();
         this._selectedTabIndex = 0;
-        this._colorPalette = UIWindowColorPaletteDefault;
+        this._theme = UIWindowThemeDefault;
         this._spacing = 0;
         this._padding = UIEdgeInsetsZero;
         this._initialExpandableState = false;
@@ -304,9 +307,9 @@ var UIWindow = (function () {
     UIWindow.prototype._convertColors = function () {
         var _a, _b, _c;
         return [
-            (_a = this._colorPalette.primary) !== null && _a !== void 0 ? _a : UIColor.Gray,
-            (_b = this._colorPalette.secondary) !== null && _b !== void 0 ? _b : UIColor.Gray,
-            (_c = this._colorPalette.tertiary) !== null && _c !== void 0 ? _c : UIColor.Gray
+            (_a = this._theme.primary) !== null && _a !== void 0 ? _a : UIColor.Gray,
+            (_b = this._theme.secondary) !== null && _b !== void 0 ? _b : UIColor.Gray,
+            (_c = this._theme.tertiary) !== null && _c !== void 0 ? _c : UIColor.Gray
         ];
     };
     UIWindow.prototype._isOpened = function () {
@@ -323,7 +326,7 @@ var UIWindow = (function () {
                 width: window.width,
                 height: window.height
             };
-            this._colorPalette = {
+            this._theme = {
                 primary: window.colours[0],
                 secondary: window.colours[1],
                 tertiary: window.colours[2]
@@ -402,7 +405,7 @@ var UIWindow = (function () {
         ;
         var tabDescriptions;
         if (typeof this._tabs !== 'undefined') {
-            var constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor);
+            var constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
             tabDescriptions = constructed.tabs;
             this._minSize = constructed.size;
             this._isExpandable || (this._isExpandable = (_c = (_b = this._tabs) === null || _b === void 0 ? void 0 : _b[this._selectedTabIndex]._isExpandable) !== null && _c !== void 0 ? _c : false);
@@ -493,8 +496,32 @@ var UIWindow = (function () {
         this._selectedTabIndex = val;
         return this;
     };
-    UIWindow.prototype.colorPalette = function (val) {
-        this._colorPalette = val;
+    UIWindow.prototype.theme = function (val) {
+        this._theme = val;
+        return this;
+    };
+    UIWindow.prototype.themePrimaryColor = function (val) {
+        this._theme = {
+            primary: val,
+            secondary: this._theme.secondary,
+            tertiary: this._theme.tertiary
+        };
+        return this;
+    };
+    UIWindow.prototype.themeSecondaryColor = function (val) {
+        this._theme = {
+            primary: this._theme.primary,
+            secondary: val,
+            tertiary: this._theme.tertiary
+        };
+        return this;
+    };
+    UIWindow.prototype.themeTertiaryColor = function (val) {
+        this._theme = {
+            primary: this._theme.primary,
+            secondary: this._theme.secondary,
+            tertiary: val
+        };
         return this;
     };
     UIWindow.prototype.onClose = function (block) {
@@ -612,7 +639,7 @@ var UIWidget = (function () {
     UIWidget.prototype.updateUI = function (block) {
         if (block === void 0) { block = undefined; }
         block === null || block === void 0 ? void 0 : block(this);
-        this._update(this._widget);
+        this._refreshUI();
     };
     UIWidget.prototype.minSize = function (val) {
         this._minSize = val;
@@ -809,7 +836,10 @@ var UIStack = (function (_super) {
         var sumOfSpacing = this._spacing * (this._childs.length - 1);
         switch (this._axis) {
             case UIAxis.Vertical: {
-                var sumOfExactChildHeights = exactSizeChilds.map(function (val) { return val._estimatedSize().height; }).reduce(function (acc, val) { return acc + val; });
+                var sumOfExactChildHeights = 0;
+                if (exactSizeChilds.length > 0) {
+                    sumOfExactChildHeights = exactSizeChilds.map(function (val) { return val._estimatedSize().height; }).reduce(function (acc, val) { return acc + val; });
+                }
                 var autoHeight = 0;
                 if (numberOfUndefinedSizeChilds > 0) {
                     autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights) / numberOfUndefinedSizeChilds);
@@ -838,7 +868,10 @@ var UIStack = (function (_super) {
                 break;
             }
             case UIAxis.Horizontal: {
-                var sumOfExactChildWidths = exactSizeChilds.map(function (val) { return val._estimatedSize().width; }).reduce(function (acc, val) { return acc + val; });
+                var sumOfExactChildWidths = 0;
+                if (exactSizeChilds.length > 0) {
+                    sumOfExactChildWidths = exactSizeChilds.map(function (val) { return val._estimatedSize().width; }).reduce(function (acc, val) { return acc + val; });
+                }
                 var autoWidth = 0;
                 if (numberOfUndefinedSizeChilds > 0) {
                     autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths) / numberOfUndefinedSizeChilds);
@@ -1651,8 +1684,6 @@ var UITab = (function () {
         if (image === void 0) { image = undefined; }
         this._minSize = UISizeZero;
         this._maxSize = { width: ui.width, height: ui.height };
-        this._spacing = 0;
-        this._padding = UIEdgeInsetsZero;
         this._isExpandable = false;
         this._image = image !== null && image !== void 0 ? image : UIImageNone;
         this._contentView = contentView;
@@ -1701,9 +1732,21 @@ var UITab = (function () {
     return UITab;
 }());
 var openWindow = function () {
+    var containerPadding = { top: 2, left: 2, bottom: 0, right: 2 };
     var customFrameImage = UIImage.$F([5153, 5154, 5155, 5154]).duration(5);
-    UIWindow.$T('직원', UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(10), UIStack.$H(UILabel.$('유니폼 색상:')
-        .width(100), UIColorPicker.$(UIColor.BrightRed))), UISpacer.$(20)
+    var window = UIWindow.$T('직원', UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(10), UIStack.$H(UILabel.$('유니폼 색상:')
+        .width(100), UIColorPicker.$(UIColor.BrightRed)
+        .onChange(function (picker, color) {
+        window.updateUI(function (window) {
+            window.themePrimaryColor(color);
+        });
+    }), UISpacer.$(10)
+        .fixAxis(UIAxis.Vertical, true), UIColorPicker.$(UIColor.BrightRed)
+        .onChange(function (picker, color) {
+        window.updateUI(function (window) {
+            window.themeSecondaryColor(color);
+        });
+    }))), UISpacer.$(20)
         .fixAxis(UIAxis.Vertical, true), UIButton.$I(5179)
         .onClick(function (val) {
         val.updateUI(function (widget) {
@@ -1719,7 +1762,12 @@ var openWindow = function () {
         val.updateUI(function (widget) {
             widget.isPressed(!widget._isPressed);
         });
-    }), UIButton.$I(5181)).offset({ x: 0, y: -26 }), UIListView.$([
+    }), UIButton.$I(5181)
+        .onClick(function (val) {
+        window.updateUI(function (window) {
+            window.selectedTabIndex(4);
+        });
+    })), UIListView.$([
         UIListViewColumn.$W('이름', 2)
             .tooltip('tooltip')
             .sortOrder(UISortOrder.Ascending)
@@ -1735,15 +1783,16 @@ var openWindow = function () {
         UIListViewItem.$S()
     ]), UILabel.$('1 미화원')).image(UIImageTabGears)
         .isExpandable(true)
-        .maxSize({ width: 500, height: 500 }), UITab.$(UILabel.$('두번째 탭')).image(UIImageTabFinancesResearch), UITab.$(UILabel.$('세번째 탭')).image(UIImageTabKiosksAndFacilities)
+        .maxSize({ width: 500, height: 500 }), UITab.$(UILabel.$('두번째 탭'), UISpinner.$()).image(UIImageTabFinancesResearch), UITab.$(UILabel.$('세번째 탭')).image(UIImageTabKiosksAndFacilities)
         .isExpandable(true), UITab.$(UILabel.$('네번째 탭')).image(UIImageTabFinancesSummary)
         .isExpandable(true)
-        .maxSize({ width: 300, height: 100 }), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('여섯번째 탭')).image(UIImageTabRide), UITab.$(UILabel.$('일곱번째 탭')).image(UIImageTabPark))
-        .colorPalette({
+        .maxSize({ width: 400, height: 100 }), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('여섯번째 탭')).image(UIImageTabRide), UITab.$(UILabel.$('일곱번째 탭')).image(UIImageTabPark))
+        .theme({
         primary: UIColor.Gray,
         secondary: UIColor.DarkOliveGreen,
         tertiary: UIColor.LightOrange
     })
+        .padding(containerPadding)
         .show();
 };
 var main = function () {
