@@ -64,17 +64,87 @@ class UIImage {
         this._offset = val;
         return this;
     }
+
+    singleFrame(): number {
+        return this._frames[0];
+    }
+
+    isImage(val: UIImage): boolean {
+        var left = this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
+        var right = val._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
+        return left === right;
+    }
 }
 
 //UIImage constants
 const UIImageNone = UIImage.$(-1);
 
-// const UIImage = UIImage.$();
-// TODO: -
+//Ride
+const UIImageRideConstructionStraight = UIImage.$(5137);
+const UIImageRideConstructionLeftCurve = UIImage.$(5138);
+const UIImageRideConstructionRightCurve = UIImage.$(5139);
+const UIImageRideConstructionLeftCurveSmall = UIImage.$(5140);
+const UIImageRideConstructionRightCurveSmall = UIImage.$(5141);
+const UIImageRideConstructionLeftCurveLarge = UIImage.$(5142);
+const UIImageRideConstructionRightCurveLarge = UIImage.$(5143);
+const UIImageRideConstructionSlopeDownSteep = UIImage.$(5144);
+const UIImageRideConstructionSlopeDown = UIImage.$(5145);
+const UIImageRideConstructionSlopeLevel = UIImage.$(5146);
+const UIImageRideConstructionSlopeUp = UIImage.$(5147);
+const UIImageRideConstructionSlopeUpSteep = UIImage.$(5148);
+const UIImageRideConstructionVerticalRise = UIImage.$(5149);
+const UIImageRideConstructionVerticalDrop = UIImage.$(5150);
+const UIImageRideConstructionHelixDown = UIImage.$(5151);
+const UIImageRideConstructionHelixUp = UIImage.$(5152);
+const UIImageRideConstructionLeftBank = UIImage.$(5153);
+const UIImageRideConstructionNoBank = UIImage.$(5154);
+const UIImageRideConstructionRightBank = UIImage.$(5155);
+const UIImageRideConstructionUShapedTrack = UIImage.$(5156);
+const UIImageRideConstructionOShapedTrack = UIImage.$(5157);
+const UIImageRideConstructionRCTrack = UIImage.$(5158);
+const UIImageRideConstructionWaterChannel = UIImage.$(5159);
+const UIImagePrevious = UIImage.$(5160);
+const UIImageNext = UIImage.$(5161);
+const UIImageDemolishCurrentSection = UIImage.$(5162);
+const UIImageChainLift = UIImage.$(5163);
+const UIImageConstruction = UIImage.$(5164);
+const UIImageDemolish = UIImage.$(5165);
+const UIImageHearingViewport = UIImage.$(5166);
+const UIImageLocate = UIImage.$(5167);
+const UIImageRename = UIImage.$(5168);
+const UIImageRotateArrow = UIImage.$(5169);
+const UIImageMirrorArrow = UIImage.$(5170);
+const UIImageScenery = UIImage.$(5171);
+const UIImageSceneryCluster = UIImage.$(5172);
+const UIImagePaintbrush = UIImage.$(5173);
+const UIImagePickup = UIImage.$(5174);
+const UIImagePatrol = UIImage.$(5175);
+const UIImageBuyLandRights = UIImage.$(5176);
+const UIImageBuyConstructionRights = UIImage.$(5177);
+const UIImageNoEntry = UIImage.$(5178);
+const UIImageClosed = UIImage.$(5179);
+const UIImageOpen = UIImage.$(5180);
+const UIImageTesting = UIImage.$(5181);
+const UIImageToggleOpenClose = UIImage.$(5182);
+const UIImageFloppy = UIImage.$(5183);
+const UIImageShowGuestsThoughtsAboutThisRideAttraction = UIImage.$(5184);
+const UIImageShowGuestsQueuingForThisRideAttraction = UIImage.$(5185);
+const UIImageShowGuestsOnThisRideAttraction = UIImage.$(5186);
+const UIImageRide = UIImage.$(5187);
+const UIImageTrackPeep = UIImage.$(5188);
+const UIImageNewRide = UIImage.$(5189);
+const UIImageFinance = UIImage.$(5190);
+const UIImageNewScenery = UIImage.$(5191);
+const UIImageMap = UIImage.$(5192);
+const UIImageGuests = UIImage.$(5193);
+const UIImageAward = UIImage.$(5194);
+const UIImageGraph = UIImage.$(5195);
+const UIImageMechanic = UIImage.$(5196);
+const UIImageParkEntrance = UIImage.$(5197);
 
-//TAB
+//Tab
 const UIImageTabParkEntrance = UIImage.$(5200);
-const UIImageTabGears = UIImage.$A(5201, 4);
+const UIImageTabGears = UIImage.$A(5201, 4).duration(2);
 const UIImageTabWrench = UIImage.$A(5205, 16);
 const UIImageTabPaint = UIImage.$A(5221, 8);
 const UIImageTabTimer = UIImage.$A(5229, 8);
@@ -95,7 +165,7 @@ const UIImageTabKiosksAndFacilities = UIImage.$A(5367, 8);
 const UIImageTabFinancesFinancialGraph = UIImage.$A(5375, 16);
 const UIImageTabFinancesProfitGraph = UIImage.$A(5391, 16);
 const UIImageTabFinancesValueGraph = UIImage.$A(5407, 16);
-const UIImageTabFinancesMarketing = UIImage.$A(5423, 16);
+const UIImageTabFinancesMarketing = UIImage.$A(5423, 19);
 
 const UIImageTabRide = UIImage.$A(5442, 16);
 const UIImageTabRideOne = UIImage.$(5448);
@@ -115,7 +185,7 @@ const UIImageTabStatsOne = UIImage.$(5468);
 // const UIImageTab = UIImage.$A();
 // TODO: -
 
-//PEEP
+//Peep
 const UIImagePeepLargeFaceVeryVeryUnhappy = UIImage.$(5284);
 const UIImagePeepLargeFaceVeryUnhappy = UIImage.$(5285);
 const UIImagePeepLargeFaceUnhappy = UIImage.$(5286);

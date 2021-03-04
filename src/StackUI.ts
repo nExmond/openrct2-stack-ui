@@ -371,7 +371,7 @@ class UIWindow {
         }
 
         window.title = this._title;
-        
+
         //Property does not have getter or setter.
         // window.tabIndex = this._selectedTabIndex;
 
@@ -438,6 +438,7 @@ class UIWindow {
     show(): this {
 
         if (this._isOpened()) {
+            this.bringToFront();
             return this;
         }
 
@@ -553,7 +554,11 @@ class UIWindow {
     }
 
     selectedTabIndex(val: number): this {
-        this._selectedTabIndex = val;
+        if (this._isOpened()) {
+            console.log('WARNING: The tab index can set only before opening the window.');
+        } else {
+            this._selectedTabIndex = val;
+        }
         return this;
     }
 
@@ -1082,6 +1087,32 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 }
 
+class IntervalHelper {
+
+    _delay: number;
+    _block: (() => void);
+
+    _currentInterval: number | undefined;
+
+    constructor(delay: number, block: () => void) {
+        this._delay = delay;
+        this._block = block;
+    }
+
+    start(): this {
+        this._currentInterval = context.setInterval(this._block, this._delay);
+        return this;
+    }
+
+    end(): this {
+        var intervalId = this._currentInterval;
+        if (typeof intervalId !== 'undefined') {
+            context.clearInterval(intervalId);
+        }
+        return this;
+    }
+}
+
 class UIButton extends UIWidget<ButtonWidget> {
 
     _border: boolean = true;
@@ -1089,6 +1120,9 @@ class UIButton extends UIWidget<ButtonWidget> {
     _isPressed: boolean = false;
     _title: string | undefined;
     _onClick: ((button: this) => void) | undefined;
+
+    _intervalHelper: IntervalHelper | undefined;
+    _uiImage: UIImage | undefined;
 
     constructor() {
         super();
@@ -1102,7 +1136,7 @@ class UIButton extends UIWidget<ButtonWidget> {
             .minSize({ width: 50, height: 15 });
     }
 
-    static $I(image: number): UIButton {
+    static $I(image: UIImage): UIButton {
         var button = new UIButton();
         return button
             .image(image)
@@ -1136,23 +1170,43 @@ class UIButton extends UIWidget<ButtonWidget> {
         }
     }
 
-    _isImage(): boolean {
+    _isImageType(): boolean {
         return typeof this._image !== 'undefined';
     }
 
     //Public
 
     border(val: boolean): this {
-        if (!this._isImage()) {
+        if (!this._isImageType()) {
             this._border = val;
         }
         return this;
     }
 
-    image(val: number): this {
-        this._image = val;
+    image(val: UIImage): this {
+
+        this._uiImage = val;
+
+        this._intervalHelper?.end();
+        if (val._isAnimatable()) {
+            var count = 0;
+            this._intervalHelper = new IntervalHelper(val._duration * 20, () => {
+                var index = count % val._frames.length;
+                var frame = val._frames[index];
+                this.updateUI((widget) => {
+                    widget._image = frame;
+                });
+                count += 1;
+            }).start();
+        }
+
+        this._image = val._frames[0];
         this._border = false;
         return this;
+    }
+
+    isImage(val: UIImage): boolean {
+        return this._uiImage?.isImage(val) ?? false;
     }
 
     isPressed(val: boolean): this {
@@ -1161,7 +1215,7 @@ class UIButton extends UIWidget<ButtonWidget> {
     }
 
     title(val: string): this {
-        if (!this._isImage()) {
+        if (!this._isImageType()) {
             this._title = val;
         }
         return this;
@@ -2113,8 +2167,8 @@ class UITab {
 }
 
 class UIWidgetProxy<T extends Widget> {
-//위젯의 이벤트 메서드, 업데이트 메서드 구현. 위젯 간의 통신 담당
-//구현 목표는 초기 UI 코드에서 로직 완전히 분리하는 것.
+    //위젯의 이벤트 메서드, 업데이트 메서드 구현. 위젯 간의 통신 담당
+    //구현 목표는 초기 UI 코드에서 로직 완전히 분리하는 것.
 }
 
 var openWindow = function () {
@@ -2177,26 +2231,73 @@ var openWindow = function () {
                 ),
                 UISpacer.$(20)
                     .fixAxis(UIAxis.Vertical, true),
-                UIButton.$I(5179)
+                UIButton.$I(UIImageClosed)
                     .onClick((val) => {
                         val.updateUI((widget) => {
-                            if (widget._image == 5179) {
-                                widget.image(5180);
+                            if (widget.isImage(UIImageClosed)) {
+                                widget.image(UIImageOpen);
                             } else {
-                                widget.image(5179);
+                                widget.image(UIImageClosed);
                             }
                         })
                     }),
-                UIButton.$I(5180)
+                UIButton.$I(UIImageOpen)
                     .onClick((val) => {
                         val.updateUI((widget) => {
                             widget.isPressed(!widget._isPressed);
                         })
                     }),
-                UIButton.$I(5181)
+                UIButton.$I(UIImageTabGears)
+                    .size({ width: 30, height: 27 })
                     .onClick((val) => {
-                        window.updateUI((window) => {
-                            window.selectedTabIndex(4);
+                        val.updateUI((widget) => {
+                            if (widget.isImage(UIImageTabGears)) {
+                                widget.image(UIImageTabWrench);
+                            } else if (widget.isImage(UIImageTabWrench)) {
+                                widget.image(UIImageTabPaint);
+                            } else if (widget.isImage(UIImageTabPaint)) {
+                                widget.image(UIImageTabTimer);
+                            } else if (widget.isImage(UIImageTabTimer)) {
+                                widget.image(UIImageTabGraphA);
+                            } else if (widget.isImage(UIImageTabGraphA)) {
+                                widget.image(UIImageTabGraph);
+                            } else if (widget.isImage(UIImageTabGraph)) {
+                                widget.image(UIImageTabAdmission);
+                            } else if (widget.isImage(UIImageTabAdmission)) {
+                                widget.image(UIImageTabFinancesSummary);
+                            } else if (widget.isImage(UIImageTabFinancesSummary)) {
+                                widget.image(UIImageTabThoughts);
+                            } else if (widget.isImage(UIImageTabThoughts)) {
+                                widget.image(UIImageTabStats);
+                            } else if (widget.isImage(UIImageTabStats)) {
+                                widget.image(UIImageTabStaffOptions);
+                            } else if (widget.isImage(UIImageTabStaffOptions)) {
+                                widget.image(UIImageTabFinancesResearch);
+                            } else if (widget.isImage(UIImageTabFinancesResearch)) {
+                                widget.image(UIImageTabMusic);
+                            } else if (widget.isImage(UIImageTabMusic)) {
+                                widget.image(UIImageTabShopsAndStalls);
+                            } else if (widget.isImage(UIImageTabShopsAndStalls)) {
+                                widget.image(UIImageTabKiosksAndFacilities);
+                            } else if (widget.isImage(UIImageTabKiosksAndFacilities)) {
+                                widget.image(UIImageTabFinancesFinancialGraph);
+                            } else if (widget.isImage(UIImageTabFinancesFinancialGraph)) {
+                                widget.image(UIImageTabFinancesProfitGraph);
+                            } else if (widget.isImage(UIImageTabFinancesProfitGraph)) {
+                                widget.image(UIImageTabFinancesValueGraph);
+                            } else if (widget.isImage(UIImageTabFinancesValueGraph)) {
+                                widget.image(UIImageTabFinancesMarketing);
+                            } else if (widget.isImage(UIImageTabFinancesMarketing)) {
+                                widget.image(UIImageTabRide);
+                            } else if (widget.isImage(UIImageTabRide)) {
+                                widget.image(UIImagePeepLargeFaceVerySick);
+                            } else if (widget.isImage(UIImagePeepLargeFaceVerySick)) {
+                                widget.image(UIImagePeepLargeFaceVeryVerySick);
+                            } else if (widget.isImage(UIImagePeepLargeFaceVeryVerySick)) {
+                                widget.image(UIImagePeepLargeFaceAngry);
+                            } else if (widget.isImage(UIImagePeepLargeFaceAngry)) {
+                                widget.image(UIImageTabGears);
+                            }
                         })
                     })
             ),

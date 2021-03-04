@@ -392,6 +392,7 @@ var UIWindow = (function () {
         var _this = this;
         var _a, _b, _c;
         if (this._isOpened()) {
+            this.bringToFront();
             return this;
         }
         this._initialExpandableState = this._isExpandable;
@@ -493,7 +494,12 @@ var UIWindow = (function () {
         return this;
     };
     UIWindow.prototype.selectedTabIndex = function (val) {
-        this._selectedTabIndex = val;
+        if (this._isOpened()) {
+            console.log('WARNING: The tab index can set only before opening the window.');
+        }
+        else {
+            this._selectedTabIndex = val;
+        }
         return this;
     };
     UIWindow.prototype.theme = function (val) {
@@ -957,6 +963,24 @@ var UIStack = (function (_super) {
     };
     return UIStack;
 }(UIWidget));
+var IntervalHelper = (function () {
+    function IntervalHelper(delay, block) {
+        this._delay = delay;
+        this._block = block;
+    }
+    IntervalHelper.prototype.start = function () {
+        this._currentInterval = context.setInterval(this._block, this._delay);
+        return this;
+    };
+    IntervalHelper.prototype.end = function () {
+        var intervalId = this._currentInterval;
+        if (typeof intervalId !== 'undefined') {
+            context.clearInterval(intervalId);
+        }
+        return this;
+    };
+    return IntervalHelper;
+}());
 var UIButton = (function (_super) {
     __extends(UIButton, _super);
     function UIButton() {
@@ -994,26 +1018,45 @@ var UIButton = (function (_super) {
             widget.text = this._title;
         }
     };
-    UIButton.prototype._isImage = function () {
+    UIButton.prototype._isImageType = function () {
         return typeof this._image !== 'undefined';
     };
     UIButton.prototype.border = function (val) {
-        if (!this._isImage()) {
+        if (!this._isImageType()) {
             this._border = val;
         }
         return this;
     };
     UIButton.prototype.image = function (val) {
-        this._image = val;
+        var _this = this;
+        var _a;
+        this._uiImage = val;
+        (_a = this._intervalHelper) === null || _a === void 0 ? void 0 : _a.end();
+        if (val._isAnimatable()) {
+            var count = 0;
+            this._intervalHelper = new IntervalHelper(val._duration * 20, function () {
+                var index = count % val._frames.length;
+                var frame = val._frames[index];
+                _this.updateUI(function (widget) {
+                    widget._image = frame;
+                });
+                count += 1;
+            }).start();
+        }
+        this._image = val._frames[0];
         this._border = false;
         return this;
+    };
+    UIButton.prototype.isImage = function (val) {
+        var _a, _b;
+        return (_b = (_a = this._uiImage) === null || _a === void 0 ? void 0 : _a.isImage(val)) !== null && _b !== void 0 ? _b : false;
     };
     UIButton.prototype.isPressed = function (val) {
         this._isPressed = val;
         return this;
     };
     UIButton.prototype.title = function (val) {
-        if (!this._isImage()) {
+        if (!this._isImageType()) {
             this._title = val;
         }
         return this;
@@ -1731,6 +1774,11 @@ var UITab = (function () {
     };
     return UITab;
 }());
+var UIWidgetProxy = (function () {
+    function UIWidgetProxy() {
+    }
+    return UIWidgetProxy;
+}());
 var openWindow = function () {
     var containerPadding = { top: 2, left: 2, bottom: 0, right: 2 };
     var customFrameImage = UIImage.$F([5153, 5154, 5155, 5154]).duration(5);
@@ -1747,25 +1795,94 @@ var openWindow = function () {
             window.themeSecondaryColor(color);
         });
     }))), UISpacer.$(20)
-        .fixAxis(UIAxis.Vertical, true), UIButton.$I(5179)
+        .fixAxis(UIAxis.Vertical, true), UIButton.$I(UIImageClosed)
         .onClick(function (val) {
         val.updateUI(function (widget) {
-            if (widget._image == 5179) {
-                widget.image(5180);
+            if (widget.isImage(UIImageClosed)) {
+                widget.image(UIImageOpen);
             }
             else {
-                widget.image(5179);
+                widget.image(UIImageClosed);
             }
         });
-    }), UIButton.$I(5180)
+    }), UIButton.$I(UIImageOpen)
         .onClick(function (val) {
         val.updateUI(function (widget) {
             widget.isPressed(!widget._isPressed);
         });
-    }), UIButton.$I(5181)
+    }), UIButton.$I(UIImageTabGears)
+        .size({ width: 30, height: 27 })
         .onClick(function (val) {
-        window.updateUI(function (window) {
-            window.selectedTabIndex(4);
+        val.updateUI(function (widget) {
+            if (widget.isImage(UIImageTabGears)) {
+                widget.image(UIImageTabWrench);
+            }
+            else if (widget.isImage(UIImageTabWrench)) {
+                widget.image(UIImageTabPaint);
+            }
+            else if (widget.isImage(UIImageTabPaint)) {
+                widget.image(UIImageTabTimer);
+            }
+            else if (widget.isImage(UIImageTabTimer)) {
+                widget.image(UIImageTabGraphA);
+            }
+            else if (widget.isImage(UIImageTabGraphA)) {
+                widget.image(UIImageTabGraph);
+            }
+            else if (widget.isImage(UIImageTabGraph)) {
+                widget.image(UIImageTabAdmission);
+            }
+            else if (widget.isImage(UIImageTabAdmission)) {
+                widget.image(UIImageTabFinancesSummary);
+            }
+            else if (widget.isImage(UIImageTabFinancesSummary)) {
+                widget.image(UIImageTabThoughts);
+            }
+            else if (widget.isImage(UIImageTabThoughts)) {
+                widget.image(UIImageTabStats);
+            }
+            else if (widget.isImage(UIImageTabStats)) {
+                widget.image(UIImageTabStaffOptions);
+            }
+            else if (widget.isImage(UIImageTabStaffOptions)) {
+                widget.image(UIImageTabFinancesResearch);
+            }
+            else if (widget.isImage(UIImageTabFinancesResearch)) {
+                widget.image(UIImageTabMusic);
+            }
+            else if (widget.isImage(UIImageTabMusic)) {
+                widget.image(UIImageTabShopsAndStalls);
+            }
+            else if (widget.isImage(UIImageTabShopsAndStalls)) {
+                widget.image(UIImageTabKiosksAndFacilities);
+            }
+            else if (widget.isImage(UIImageTabKiosksAndFacilities)) {
+                widget.image(UIImageTabFinancesFinancialGraph);
+            }
+            else if (widget.isImage(UIImageTabFinancesFinancialGraph)) {
+                widget.image(UIImageTabFinancesProfitGraph);
+            }
+            else if (widget.isImage(UIImageTabFinancesProfitGraph)) {
+                widget.image(UIImageTabFinancesValueGraph);
+            }
+            else if (widget.isImage(UIImageTabFinancesValueGraph)) {
+                widget.image(UIImageTabFinancesMarketing);
+            }
+            else if (widget.isImage(UIImageTabFinancesMarketing)) {
+                widget.image(UIImageTabRide);
+            }
+            else if (widget.isImage(UIImageTabRide)) {
+                widget.image(UIImagePeepLargeFaceVerySick);
+            }
+            else if (widget.isImage(UIImagePeepLargeFaceVerySick)) {
+                widget.image(UIImagePeepLargeFaceVeryVerySick);
+            }
+            else if (widget.isImage(UIImagePeepLargeFaceVeryVerySick)) {
+                widget.image(UIImagePeepLargeFaceAngry);
+            }
+            else if (widget.isImage(UIImagePeepLargeFaceAngry)) {
+                widget.image(UIImageTabGears);
+            }
         });
     })), UIListView.$([
         UIListViewColumn.$W('이름', 2)
@@ -1866,11 +1983,80 @@ var UIImage = (function () {
         this._offset = val;
         return this;
     };
+    UIImage.prototype.singleFrame = function () {
+        return this._frames[0];
+    };
+    UIImage.prototype.isImage = function (val) {
+        var left = this._frames.map(function (val) { return val.toString(); }).reduce(function (acc, val) { return acc + '-' + val; });
+        var right = val._frames.map(function (val) { return val.toString(); }).reduce(function (acc, val) { return acc + '-' + val; });
+        return left === right;
+    };
     return UIImage;
 }());
 var UIImageNone = UIImage.$(-1);
+var UIImageRideConstructionStraight = UIImage.$(5137);
+var UIImageRideConstructionLeftCurve = UIImage.$(5138);
+var UIImageRideConstructionRightCurve = UIImage.$(5139);
+var UIImageRideConstructionLeftCurveSmall = UIImage.$(5140);
+var UIImageRideConstructionRightCurveSmall = UIImage.$(5141);
+var UIImageRideConstructionLeftCurveLarge = UIImage.$(5142);
+var UIImageRideConstructionRightCurveLarge = UIImage.$(5143);
+var UIImageRideConstructionSlopeDownSteep = UIImage.$(5144);
+var UIImageRideConstructionSlopeDown = UIImage.$(5145);
+var UIImageRideConstructionSlopeLevel = UIImage.$(5146);
+var UIImageRideConstructionSlopeUp = UIImage.$(5147);
+var UIImageRideConstructionSlopeUpSteep = UIImage.$(5148);
+var UIImageRideConstructionVerticalRise = UIImage.$(5149);
+var UIImageRideConstructionVerticalDrop = UIImage.$(5150);
+var UIImageRideConstructionHelixDown = UIImage.$(5151);
+var UIImageRideConstructionHelixUp = UIImage.$(5152);
+var UIImageRideConstructionLeftBank = UIImage.$(5153);
+var UIImageRideConstructionNoBank = UIImage.$(5154);
+var UIImageRideConstructionRightBank = UIImage.$(5155);
+var UIImageRideConstructionUShapedTrack = UIImage.$(5156);
+var UIImageRideConstructionOShapedTrack = UIImage.$(5157);
+var UIImageRideConstructionRCTrack = UIImage.$(5158);
+var UIImageRideConstructionWaterChannel = UIImage.$(5159);
+var UIImagePrevious = UIImage.$(5160);
+var UIImageNext = UIImage.$(5161);
+var UIImageDemolishCurrentSection = UIImage.$(5162);
+var UIImageChainLift = UIImage.$(5163);
+var UIImageConstruction = UIImage.$(5164);
+var UIImageDemolish = UIImage.$(5165);
+var UIImageHearingViewport = UIImage.$(5166);
+var UIImageLocate = UIImage.$(5167);
+var UIImageRename = UIImage.$(5168);
+var UIImageRotateArrow = UIImage.$(5169);
+var UIImageMirrorArrow = UIImage.$(5170);
+var UIImageScenery = UIImage.$(5171);
+var UIImageSceneryCluster = UIImage.$(5172);
+var UIImagePaintbrush = UIImage.$(5173);
+var UIImagePickup = UIImage.$(5174);
+var UIImagePatrol = UIImage.$(5175);
+var UIImageBuyLandRights = UIImage.$(5176);
+var UIImageBuyConstructionRights = UIImage.$(5177);
+var UIImageNoEntry = UIImage.$(5178);
+var UIImageClosed = UIImage.$(5179);
+var UIImageOpen = UIImage.$(5180);
+var UIImageTesting = UIImage.$(5181);
+var UIImageToggleOpenClose = UIImage.$(5182);
+var UIImageFloppy = UIImage.$(5183);
+var UIImageShowGuestsThoughtsAboutThisRideAttraction = UIImage.$(5184);
+var UIImageShowGuestsQueuingForThisRideAttraction = UIImage.$(5185);
+var UIImageShowGuestsOnThisRideAttraction = UIImage.$(5186);
+var UIImageRide = UIImage.$(5187);
+var UIImageTrackPeep = UIImage.$(5188);
+var UIImageNewRide = UIImage.$(5189);
+var UIImageFinance = UIImage.$(5190);
+var UIImageNewScenery = UIImage.$(5191);
+var UIImageMap = UIImage.$(5192);
+var UIImageGuests = UIImage.$(5193);
+var UIImageAward = UIImage.$(5194);
+var UIImageGraph = UIImage.$(5195);
+var UIImageMechanic = UIImage.$(5196);
+var UIImageParkEntrance = UIImage.$(5197);
 var UIImageTabParkEntrance = UIImage.$(5200);
-var UIImageTabGears = UIImage.$A(5201, 4);
+var UIImageTabGears = UIImage.$A(5201, 4).duration(2);
 var UIImageTabWrench = UIImage.$A(5205, 16);
 var UIImageTabPaint = UIImage.$A(5221, 8);
 var UIImageTabTimer = UIImage.$A(5229, 8);
@@ -1889,7 +2075,7 @@ var UIImageTabKiosksAndFacilities = UIImage.$A(5367, 8);
 var UIImageTabFinancesFinancialGraph = UIImage.$A(5375, 16);
 var UIImageTabFinancesProfitGraph = UIImage.$A(5391, 16);
 var UIImageTabFinancesValueGraph = UIImage.$A(5407, 16);
-var UIImageTabFinancesMarketing = UIImage.$A(5423, 16);
+var UIImageTabFinancesMarketing = UIImage.$A(5423, 19);
 var UIImageTabRide = UIImage.$A(5442, 16);
 var UIImageTabRideOne = UIImage.$(5448);
 var UIImageTabSceneryTrees = UIImage.$(5459);
