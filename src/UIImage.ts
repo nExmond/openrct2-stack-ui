@@ -15,15 +15,15 @@ class UIImage {
         return image;
     }
 
-    static $A(base: number, count: number): UIImage {
+    static $A(base: number, count: number, duration: number): UIImage {
         var frames = [...Array(count)].map((_, i) => base + i);
         var image = new UIImage(frames);
-        return image;
+        return image.duration(duration);
     }
 
-    static $F(frames: number[]): UIImage {
+    static $F(frames: number[], duration: number): UIImage {
         var image = new UIImage(frames);
-        return image;
+        return image.duration(duration);
     }
 
     //Private
@@ -73,6 +73,10 @@ class UIImage {
         var left = this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
         var right = val._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
         return left === right;
+    }
+
+    description(): string {
+        return 'Duration: '+this._duration+'\nFrames: '+this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
     }
 }
 
@@ -144,30 +148,31 @@ const UIImageParkEntrance = UIImage.$(5197);
 
 //Tab
 const UIImageTabParkEntrance = UIImage.$(5200);
-const UIImageTabGears = UIImage.$A(5201, 4).duration(2);
-const UIImageTabWrench = UIImage.$A(5205, 16);
-const UIImageTabPaint = UIImage.$A(5221, 8);
-const UIImageTabTimer = UIImage.$A(5229, 8);
-const UIImageTabGraphA = UIImage.$A(5237, 8);
-const UIImageTabGraph = UIImage.$A(5245, 8);
-const UIImageTabAdmission = UIImage.$A(5253, 8);
-const UIImageTabFinancesSummary = UIImage.$A(5261, 8);
-const UIImageTabThoughts = UIImage.$A(5269, 8);
-const UIImageTabStats = UIImage.$A(5277, 7);
+const UIImageTabGears = UIImage.$A(5201, 4, 2);
+const UIImageTabWrench = UIImage.$A(5205, 16, 2);
+const UIImageTabPaint = UIImage.$A(5221, 8, 4);
+const UIImageTabTimer = UIImage.$A(5229, 8, 8);
+const UIImageTabGraphA = UIImage.$A(5237, 8, 4);
+const UIImageTabGraph = UIImage.$A(5245, 8, 4);
+const UIImageTabAdmission = UIImage.$A(5253, 8, 2);
+const UIImageTabFinancesSummary = UIImage.$A(5261, 8, 2);
+const UIImageTabThoughts = UIImage.$A(5269, 8, 2);
+const UIImageTabStats = UIImage.$A(5277, 7, 4);
 
-const UIImageTabStaffOptions = UIImage.$A(5318, 8);
+const UIImageTabStaffOptions = UIImage.$A(5318, 7, 2);
+const UIImageTabStaffOptionsOne = UIImage.$(5325);
 const UIImageTabGuestInventory = UIImage.$(5326);
-const UIImageTabFinancesResearch = UIImage.$A(5327, 8);
-const UIImageTabMusic = UIImage.$A(5335, 16);
-const UIImageTabShopsAndStalls = UIImage.$A(5351, 16);
-const UIImageTabKiosksAndFacilities = UIImage.$A(5367, 8);
+const UIImageTabFinancesResearch = UIImage.$A(5327, 8, 2);
+const UIImageTabMusic = UIImage.$A(5335, 16, 2);
+const UIImageTabShopsAndStalls = UIImage.$A(5351, 16, 4);
+const UIImageTabKiosksAndFacilities = UIImage.$A(5367, 8, 4);
 
-const UIImageTabFinancesFinancialGraph = UIImage.$A(5375, 16);
-const UIImageTabFinancesProfitGraph = UIImage.$A(5391, 16);
-const UIImageTabFinancesValueGraph = UIImage.$A(5407, 16);
-const UIImageTabFinancesMarketing = UIImage.$A(5423, 19);
+const UIImageTabFinancesFinancialGraph = UIImage.$A(5375, 16, 2);
+const UIImageTabFinancesProfitGraph = UIImage.$A(5391, 16, 2);
+const UIImageTabFinancesValueGraph = UIImage.$A(5407, 16, 2);
+const UIImageTabFinancesMarketing = UIImage.$A(5423, 19, 2);
 
-const UIImageTabRide = UIImage.$A(5442, 16);
+const UIImageTabRide = UIImage.$A(5442, 16, 4);
 const UIImageTabRideOne = UIImage.$(5448);
 
 const UIImageTabSceneryTrees = UIImage.$(5459);
@@ -182,8 +187,20 @@ const UIImageTabPark = UIImage.$(5466);
 const UIImageTabWater = UIImage.$(5467);
 const UIImageTabStatsOne = UIImage.$(5468);
 
-// const UIImageTab = UIImage.$A();
-// TODO: -
+//여기부터
+const UIImageTabObjective = UIImage.$A(5511, 16, 2);
+const UIImageTabAwards = UIImage.$(5527);
+const UIImageTabRidesShop = UIImage.$A(5530, 7, 4);
+const UIImageTabRidesTransport = UIImage.$A(5537, 5, 4);
+const UIImageTabRidesGentle = UIImage.$A(5542, 4, 4);
+const UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 4);
+const UIImageTabRidesWater = UIImage.$A(5551, 6, 4);
+const UIImageTabRidesThrill = UIImage.$A(5557, 7, 4);
+const UIImageTabGuests = UIImage.$A(5568, 8, 4);
+
+const UIImageTabLand = UIImage.$(29362);
+const UIImageTabNews = UIImage.$(29414);
+//여기까지 duration 미정
 
 //Peep
 const UIImagePeepLargeFaceVeryVeryUnhappy = UIImage.$(5284);
@@ -196,6 +213,6 @@ const UIImagePeepLargeFaceVeryVeryHappy = UIImage.$(5290);
 const UIImagePeepLargeFaceTired = UIImage.$(5291);
 const UIImagePeepLargeFaceVeryTired = UIImage.$(5292);
 const UIImagePeepLargeFaceSick = UIImage.$(5293);
-const UIImagePeepLargeFaceVerySick = UIImage.$A(5294, 4);
-const UIImagePeepLargeFaceVeryVerySick = UIImage.$A(5298, 16);
-const UIImagePeepLargeFaceAngry = UIImage.$A(5314, 4);
+const UIImagePeepLargeFaceVerySick = UIImage.$A(5294, 4, 8);
+const UIImagePeepLargeFaceVeryVerySick = UIImage.$A(5298, 16, 4);
+const UIImagePeepLargeFaceAngry = UIImage.$A(5314, 4, 8);

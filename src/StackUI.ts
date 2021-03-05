@@ -1113,6 +1113,8 @@ class IntervalHelper {
     }
 }
 
+type StaticThis<T> = { new(): T };
+
 class UIButton extends UIWidget<ButtonWidget> {
 
     _border: boolean = true;
@@ -1120,6 +1122,7 @@ class UIButton extends UIWidget<ButtonWidget> {
     _isPressed: boolean = false;
     _title: string | undefined;
     _onClick: ((button: this) => void) | undefined;
+    _onChange: ((button: this) => void) | undefined;
 
     _intervalHelper: IntervalHelper | undefined;
     _uiImage: UIImage | undefined;
@@ -1130,14 +1133,14 @@ class UIButton extends UIWidget<ButtonWidget> {
 
     //Convenience
 
-    static $(title: string): UIButton {
-        var button = new UIButton();
+    static $<T extends UIButton>(this: StaticThis<T>, title: string): T {
+        const button = new this();
         return button.title(title)
             .minSize({ width: 50, height: 15 });
     }
 
-    static $I(image: UIImage): UIButton {
-        var button = new UIButton();
+    static $I<T extends UIButton>(this: StaticThis<T>, image: UIImage): T {
+        const button = new this();
         return button
             .image(image)
             .size({ width: 24, height: 24 })
@@ -1156,6 +1159,7 @@ class UIButton extends UIWidget<ButtonWidget> {
             text: this._title,
             onClick: () => {
                 this._onClick?.call(this, this);
+                this._onChange?.call(this, this);
             }
         }
     }
@@ -1172,6 +1176,11 @@ class UIButton extends UIWidget<ButtonWidget> {
 
     _isImageType(): boolean {
         return typeof this._image !== 'undefined';
+    }
+
+    _internalOnChange(block: (button: this) => void): this {
+        this._onChange = block;
+        return this;
     }
 
     //Public
@@ -1227,8 +1236,55 @@ class UIButton extends UIWidget<ButtonWidget> {
     }
 }
 
+class UIToggleButton extends UIButton {
+
+    //Public
+
+    onPress(block: (button: this, isPressed: boolean) => void): this {
+        return super._internalOnChange((button) => {
+            var toggled = !button._isPressed;
+            button.updateUI((widget) => widget.isPressed(toggled));
+            block(button, toggled);
+        });
+    }
+}
+
+class UIPageImageButton extends UIButton {
+
+    _images: UIImage[];
+
+    constructor(images: UIImage[]) {
+        super();
+        this._images = images;
+    }
+
+    //Convenience
+
+    static $IP(...images: UIImage[]): UIPageImageButton {
+        var button = new UIPageImageButton(images);
+        var first = images.length > 0 ? images[0] : UIImageNone;
+        return button
+            .image(first)
+            .size({ width: 24, height: 24 })
+            .minSize({ width: 50, height: 15 });
+    }
+
+    //Public
+
+    onPage(block: (button: this, image: UIImage) => void): this {
+        var index = 0;
+        return super._internalOnChange((button) => {
+            index = (index + 1) % this._images.length;
+            var image = this._images[index];
+            button.updateUI((widget) => widget.image(image));
+            block(button, image);
+        });
+    }
+}
+
 class UISpacer extends UIWidget<LabelWidget> {
 
+    _axis!: UIAxis;
     _spacing: number | undefined;
     _fixVertical: boolean = false;
     _fixHorizontal: boolean = false;
@@ -1247,17 +1303,15 @@ class UISpacer extends UIWidget<LabelWidget> {
     //Private
 
     _isUndefinedSize(axis: UIAxis): boolean {
-        switch (axis) {
-            case UIAxis.Vertical: {
-                return this._fixVertical === false;
-            }
-            case UIAxis.Horizontal: {
-                return this._fixHorizontal === false;
-            }
+        if (axis === this._axis) {
+            return super._isUndefinedSize(axis);
+        } else {
+            return false;
         }
     }
 
     _confirm(axis: UIAxis) {
+        this._axis = axis;
         switch (axis) {
             case UIAxis.Vertical: {
                 this._size = { width: undefined, height: this._spacing };
@@ -1630,7 +1684,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         return this;
     }
 
-    step(step: number, fixed: number | undefined): this {
+    step(step: number, fixed: number | undefined = undefined): this {
         this._step = step;
 
         if (typeof fixed === 'undefined') {
@@ -2174,42 +2228,46 @@ class UIWidgetProxy<T extends Widget> {
 var openWindow = function () {
 
     var containerPadding: UIEdgeInsets = { top: 2, left: 2, bottom: 0, right: 2 };
+    var customFrameImage = UIImage.$F([5153, 5154, 5155, 5154], 4);
 
-    // UIWindow.$('솜사탕 가게 1',
-    //     UIStack.$H(
-    //         UIStack.$V(
-    //             UIStack.$H(
-    //                 UISpacer.$(33),
-    //                 UIDropdown.$(
-    //                     ['전경']
-    //                 ),
-    //                 UISpacer.$(33)
-    //             ),
-    //             UIViewport.$(),
-    //             UILabel.$('열림')
-    //                 .align(UITextAlignment.Center)
-    //         ),
-    //         UIStack.$V(
-    //             UIButton.$I(29360).width(24),
-    //             UIButton.$I(29362).width(24),
-    //             UIButton.$I(29364).width(24),
-    //             UIButton.$I(29366).width(24)
-    //         )
-    //     )
-    // ).isExpandable(true)
-    //     .theme({
-    //         primary: UIColor.Gray,
-    //         secondary: UIColor.BordeauxRed
-    //     })
-    //     .show();
+    // var images: UIImage[][] = [
+    //     [UIImageTabGears, UIImageTabWrench, UIImageTabPaint, UIImageTabTimer],
+    //     [UIImageTabGraphA, UIImageTabGraph, UIImageTabAdmission, UIImageTabFinancesSummary],
+    //     [UIImageTabThoughts, UIImageTabStats, UIImageTabStaffOptions, UIImageTabFinancesResearch],
+    //     [UIImageTabMusic, UIImageTabShopsAndStalls, UIImageTabKiosksAndFacilities, UIImageTabFinancesFinancialGraph],
+    //     [UIImageTabFinancesProfitGraph, UIImageTabFinancesValueGraph, UIImageTabFinancesMarketing, UIImageTabRide],
+    //     [UIImagePeepLargeFaceVerySick, UIImagePeepLargeFaceVeryVerySick, UIImagePeepLargeFaceAngry]
+    // ];
+    // var buttons = images.map((val) => val.map((val) => UIButton.$I(val).size({ width: 31, height: 27 })));
+    // var hstacks = buttons.map((val) => new UIStack(UIAxis.Horizontal, val));
 
-    var customFrameImage = UIImage.$F([5153, 5154, 5155, 5154]).duration(5);
+    // UIWindow.$('',
+    //     UISpinner.$().range(1, 10).step(1).value(2)
+    //         .onChange((spinner, value) => {
+    //             buttons.forEach((val) => val.forEach((val) => {
+    //                 val.updateUI((widget) => {
+    //                     var newImage = widget._uiImage!.duration(value);
+    //                     widget.image(newImage);
+    //                 });
+    //             }));
+    //         }),
+    //     ...hstacks
+    // ).show();
+
+    var images: UIImage[] = [
+        UIImageTabGears, UIImageTabWrench, UIImageTabPaint, UIImageTabTimer,
+        UIImageTabGraphA, UIImageTabGraph, UIImageTabAdmission, UIImageTabFinancesSummary,
+        UIImageTabThoughts, UIImageTabStats, UIImageTabStaffOptions, UIImageTabFinancesResearch,
+        UIImageTabMusic, UIImageTabShopsAndStalls, UIImageTabKiosksAndFacilities, UIImageTabFinancesFinancialGraph,
+        UIImageTabFinancesProfitGraph, UIImageTabFinancesValueGraph, UIImageTabFinancesMarketing, UIImageTabRide,
+        UIImagePeepLargeFaceVerySick, UIImagePeepLargeFaceVeryVerySick, UIImagePeepLargeFaceAngry
+    ];
 
     var window = UIWindow.$T('직원',
         UITab.$(
             UIStack.$H(
                 UIStack.$V(
-                    UISpacer.$(10),
+                    UISpacer.$(12),
                     UIStack.$H(
                         UILabel.$('유니폼 색상:')
                             .width(100),
@@ -2219,8 +2277,7 @@ var openWindow = function () {
                                     window.themePrimaryColor(color);
                                 })
                             }),
-                        UISpacer.$(10)
-                            .fixAxis(UIAxis.Vertical, true),
+                        UISpacer.$(10),
                         UIColorPicker.$(UIColor.BrightRed)
                             .onChange((picker, color) => {
                                 window.updateUI((window) => {
@@ -2229,8 +2286,7 @@ var openWindow = function () {
                             })
                     )
                 ),
-                UISpacer.$(20)
-                    .fixAxis(UIAxis.Vertical, true),
+                UISpacer.$(),
                 UIButton.$I(UIImageClosed)
                     .onClick((val) => {
                         val.updateUI((widget) => {
@@ -2241,64 +2297,14 @@ var openWindow = function () {
                             }
                         })
                     }),
-                UIButton.$I(UIImageOpen)
-                    .onClick((val) => {
-                        val.updateUI((widget) => {
-                            widget.isPressed(!widget._isPressed);
-                        })
+                UIToggleButton.$I(UIImageOpen)
+                    .onPress((button, isPressed) => {
+                        console.log(button._name, isPressed);
                     }),
-                UIButton.$I(UIImageTabGears)
+                UIPageImageButton.$IP(...images)
                     .size({ width: 30, height: 27 })
-                    .onClick((val) => {
-                        val.updateUI((widget) => {
-                            if (widget.isImage(UIImageTabGears)) {
-                                widget.image(UIImageTabWrench);
-                            } else if (widget.isImage(UIImageTabWrench)) {
-                                widget.image(UIImageTabPaint);
-                            } else if (widget.isImage(UIImageTabPaint)) {
-                                widget.image(UIImageTabTimer);
-                            } else if (widget.isImage(UIImageTabTimer)) {
-                                widget.image(UIImageTabGraphA);
-                            } else if (widget.isImage(UIImageTabGraphA)) {
-                                widget.image(UIImageTabGraph);
-                            } else if (widget.isImage(UIImageTabGraph)) {
-                                widget.image(UIImageTabAdmission);
-                            } else if (widget.isImage(UIImageTabAdmission)) {
-                                widget.image(UIImageTabFinancesSummary);
-                            } else if (widget.isImage(UIImageTabFinancesSummary)) {
-                                widget.image(UIImageTabThoughts);
-                            } else if (widget.isImage(UIImageTabThoughts)) {
-                                widget.image(UIImageTabStats);
-                            } else if (widget.isImage(UIImageTabStats)) {
-                                widget.image(UIImageTabStaffOptions);
-                            } else if (widget.isImage(UIImageTabStaffOptions)) {
-                                widget.image(UIImageTabFinancesResearch);
-                            } else if (widget.isImage(UIImageTabFinancesResearch)) {
-                                widget.image(UIImageTabMusic);
-                            } else if (widget.isImage(UIImageTabMusic)) {
-                                widget.image(UIImageTabShopsAndStalls);
-                            } else if (widget.isImage(UIImageTabShopsAndStalls)) {
-                                widget.image(UIImageTabKiosksAndFacilities);
-                            } else if (widget.isImage(UIImageTabKiosksAndFacilities)) {
-                                widget.image(UIImageTabFinancesFinancialGraph);
-                            } else if (widget.isImage(UIImageTabFinancesFinancialGraph)) {
-                                widget.image(UIImageTabFinancesProfitGraph);
-                            } else if (widget.isImage(UIImageTabFinancesProfitGraph)) {
-                                widget.image(UIImageTabFinancesValueGraph);
-                            } else if (widget.isImage(UIImageTabFinancesValueGraph)) {
-                                widget.image(UIImageTabFinancesMarketing);
-                            } else if (widget.isImage(UIImageTabFinancesMarketing)) {
-                                widget.image(UIImageTabRide);
-                            } else if (widget.isImage(UIImageTabRide)) {
-                                widget.image(UIImagePeepLargeFaceVerySick);
-                            } else if (widget.isImage(UIImagePeepLargeFaceVerySick)) {
-                                widget.image(UIImagePeepLargeFaceVeryVerySick);
-                            } else if (widget.isImage(UIImagePeepLargeFaceVeryVerySick)) {
-                                widget.image(UIImagePeepLargeFaceAngry);
-                            } else if (widget.isImage(UIImagePeepLargeFaceAngry)) {
-                                widget.image(UIImageTabGears);
-                            }
-                        })
+                    .onPage((button, image) => {
+                        console.log(image.description());
                     })
             ),
             UIListView.$([
@@ -2313,7 +2319,7 @@ var openWindow = function () {
                 .isStriped(true)
                 .canSelect(true)
                 .addItems([
-                    UIListViewItem.$(['미화원 1', '쓸기, 가꾸기, 비우기', '걷는 중']),
+                    UIListViewItem.$(['미화원 1', '{TINYFONT}1234567890', '걷는 중']),
                     UIListViewItem.$S()
                 ]),
             UILabel.$('1 미화원')
@@ -2364,7 +2370,33 @@ var openWindow = function () {
         .padding(containerPadding)
         .show();
 
-
+    // UIWindow.$('솜사탕 가게 1',
+    //     UIStack.$H(
+    //         UIStack.$V(
+    //             UIStack.$H(
+    //                 UISpacer.$(33),
+    //                 UIDropdown.$(
+    //                     ['전경']
+    //                 ),
+    //                 UISpacer.$(33)
+    //             ),
+    //             UIViewport.$(),
+    //             UILabel.$('열림')
+    //                 .align(UITextAlignment.Center)
+    //         ),
+    //         UIStack.$V(
+    //             UIButton.$I(29360).width(24),
+    //             UIButton.$I(29362).width(24),
+    //             UIButton.$I(29364).width(24),
+    //             UIButton.$I(29366).width(24)
+    //         )
+    //     )
+    // ).isExpandable(true)
+    //     .theme({
+    //         primary: UIColor.Gray,
+    //         secondary: UIColor.BordeauxRed
+    //     })
+    //     .show();
 
     // var viewport = UIViewport.$()
     //     .size({ width: 200, height: 200 })

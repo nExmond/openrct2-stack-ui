@@ -990,12 +990,12 @@ var UIButton = (function (_super) {
         return _this;
     }
     UIButton.$ = function (title) {
-        var button = new UIButton();
+        var button = new this();
         return button.title(title)
             .minSize({ width: 50, height: 15 });
     };
     UIButton.$I = function (image) {
-        var button = new UIButton();
+        var button = new this();
         return button
             .image(image)
             .size({ width: 24, height: 24 })
@@ -1004,8 +1004,9 @@ var UIButton = (function (_super) {
     UIButton.prototype._build = function () {
         var _this = this;
         this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'button', border: this._border, image: this._image, isPressed: this._isPressed, text: this._title, onClick: function () {
-                var _a;
+                var _a, _b;
                 (_a = _this._onClick) === null || _a === void 0 ? void 0 : _a.call(_this, _this);
+                (_b = _this._onChange) === null || _b === void 0 ? void 0 : _b.call(_this, _this);
             } });
     };
     UIButton.prototype._update = function (widget) {
@@ -1020,6 +1021,10 @@ var UIButton = (function (_super) {
     };
     UIButton.prototype._isImageType = function () {
         return typeof this._image !== 'undefined';
+    };
+    UIButton.prototype._internalOnChange = function (block) {
+        this._onChange = block;
+        return this;
     };
     UIButton.prototype.border = function (val) {
         if (!this._isImageType()) {
@@ -1067,6 +1072,51 @@ var UIButton = (function (_super) {
     };
     return UIButton;
 }(UIWidget));
+var UIToggleButton = (function (_super) {
+    __extends(UIToggleButton, _super);
+    function UIToggleButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    UIToggleButton.prototype.onPress = function (block) {
+        return _super.prototype._internalOnChange.call(this, function (button) {
+            var toggled = !button._isPressed;
+            button.updateUI(function (widget) { return widget.isPressed(toggled); });
+            block(button, toggled);
+        });
+    };
+    return UIToggleButton;
+}(UIButton));
+var UIPageButton = (function (_super) {
+    __extends(UIPageButton, _super);
+    function UIPageButton(images) {
+        var _this = _super.call(this) || this;
+        _this._images = images;
+        return _this;
+    }
+    UIPageButton.$IP = function () {
+        var images = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            images[_i] = arguments[_i];
+        }
+        var button = new UIPageButton(images);
+        var first = images.length > 0 ? images[0] : UIImageNone;
+        return button
+            .image(first)
+            .size({ width: 24, height: 24 })
+            .minSize({ width: 50, height: 15 });
+    };
+    UIPageButton.prototype.onPage = function (block) {
+        var _this = this;
+        var index = 0;
+        return _super.prototype._internalOnChange.call(this, function (button) {
+            index = (index + 1) % _this._images.length;
+            var image = _this._images[index];
+            button.updateUI(function (widget) { return widget.image(image); });
+            block(button, image);
+        });
+    };
+    return UIPageButton;
+}(UIButton));
 var UISpacer = (function (_super) {
     __extends(UISpacer, _super);
     function UISpacer(spacing) {
@@ -1082,16 +1132,15 @@ var UISpacer = (function (_super) {
         return new UISpacer(spacing);
     };
     UISpacer.prototype._isUndefinedSize = function (axis) {
-        switch (axis) {
-            case UIAxis.Vertical: {
-                return this._fixVertical === false;
-            }
-            case UIAxis.Horizontal: {
-                return this._fixHorizontal === false;
-            }
+        if (axis === this._axis) {
+            return _super.prototype._isUndefinedSize.call(this, axis);
+        }
+        else {
+            return false;
         }
     };
     UISpacer.prototype._confirm = function (axis) {
+        this._axis = axis;
         switch (axis) {
             case UIAxis.Vertical: {
                 this._size = { width: undefined, height: this._spacing };
@@ -1369,6 +1418,7 @@ var UISpinner = (function (_super) {
         return this;
     };
     UISpinner.prototype.step = function (step, fixed) {
+        if (fixed === void 0) { fixed = undefined; }
         this._step = step;
         if (typeof fixed === 'undefined') {
             for (var i = 0; i < Infinity; i++) {
@@ -1781,21 +1831,27 @@ var UIWidgetProxy = (function () {
 }());
 var openWindow = function () {
     var containerPadding = { top: 2, left: 2, bottom: 0, right: 2 };
-    var customFrameImage = UIImage.$F([5153, 5154, 5155, 5154]).duration(5);
-    var window = UIWindow.$T('직원', UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(10), UIStack.$H(UILabel.$('유니폼 색상:')
+    var customFrameImage = UIImage.$F([5153, 5154, 5155, 5154], 4);
+    var images = [
+        UIImageTabGears, UIImageTabWrench, UIImageTabPaint, UIImageTabTimer,
+        UIImageTabGraphA, UIImageTabGraph, UIImageTabAdmission, UIImageTabFinancesSummary,
+        UIImageTabThoughts, UIImageTabStats, UIImageTabStaffOptions, UIImageTabFinancesResearch,
+        UIImageTabMusic, UIImageTabShopsAndStalls, UIImageTabKiosksAndFacilities, UIImageTabFinancesFinancialGraph,
+        UIImageTabFinancesProfitGraph, UIImageTabFinancesValueGraph, UIImageTabFinancesMarketing, UIImageTabRide,
+        UIImagePeepLargeFaceVerySick, UIImagePeepLargeFaceVeryVerySick, UIImagePeepLargeFaceAngry
+    ];
+    var window = UIWindow.$T('직원', UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(12), UIStack.$H(UILabel.$('유니폼 색상:')
         .width(100), UIColorPicker.$(UIColor.BrightRed)
         .onChange(function (picker, color) {
         window.updateUI(function (window) {
             window.themePrimaryColor(color);
         });
-    }), UISpacer.$(10)
-        .fixAxis(UIAxis.Vertical, true), UIColorPicker.$(UIColor.BrightRed)
+    }), UISpacer.$(10), UIColorPicker.$(UIColor.BrightRed)
         .onChange(function (picker, color) {
         window.updateUI(function (window) {
             window.themeSecondaryColor(color);
         });
-    }))), UISpacer.$(20)
-        .fixAxis(UIAxis.Vertical, true), UIButton.$I(UIImageClosed)
+    }))), UISpacer.$(), UIButton.$I(UIImageClosed)
         .onClick(function (val) {
         val.updateUI(function (widget) {
             if (widget.isImage(UIImageClosed)) {
@@ -1805,85 +1861,12 @@ var openWindow = function () {
                 widget.image(UIImageClosed);
             }
         });
-    }), UIButton.$I(UIImageOpen)
-        .onClick(function (val) {
-        val.updateUI(function (widget) {
-            widget.isPressed(!widget._isPressed);
-        });
-    }), UIButton.$I(UIImageTabGears)
-        .size({ width: 30, height: 27 })
-        .onClick(function (val) {
-        val.updateUI(function (widget) {
-            if (widget.isImage(UIImageTabGears)) {
-                widget.image(UIImageTabWrench);
-            }
-            else if (widget.isImage(UIImageTabWrench)) {
-                widget.image(UIImageTabPaint);
-            }
-            else if (widget.isImage(UIImageTabPaint)) {
-                widget.image(UIImageTabTimer);
-            }
-            else if (widget.isImage(UIImageTabTimer)) {
-                widget.image(UIImageTabGraphA);
-            }
-            else if (widget.isImage(UIImageTabGraphA)) {
-                widget.image(UIImageTabGraph);
-            }
-            else if (widget.isImage(UIImageTabGraph)) {
-                widget.image(UIImageTabAdmission);
-            }
-            else if (widget.isImage(UIImageTabAdmission)) {
-                widget.image(UIImageTabFinancesSummary);
-            }
-            else if (widget.isImage(UIImageTabFinancesSummary)) {
-                widget.image(UIImageTabThoughts);
-            }
-            else if (widget.isImage(UIImageTabThoughts)) {
-                widget.image(UIImageTabStats);
-            }
-            else if (widget.isImage(UIImageTabStats)) {
-                widget.image(UIImageTabStaffOptions);
-            }
-            else if (widget.isImage(UIImageTabStaffOptions)) {
-                widget.image(UIImageTabFinancesResearch);
-            }
-            else if (widget.isImage(UIImageTabFinancesResearch)) {
-                widget.image(UIImageTabMusic);
-            }
-            else if (widget.isImage(UIImageTabMusic)) {
-                widget.image(UIImageTabShopsAndStalls);
-            }
-            else if (widget.isImage(UIImageTabShopsAndStalls)) {
-                widget.image(UIImageTabKiosksAndFacilities);
-            }
-            else if (widget.isImage(UIImageTabKiosksAndFacilities)) {
-                widget.image(UIImageTabFinancesFinancialGraph);
-            }
-            else if (widget.isImage(UIImageTabFinancesFinancialGraph)) {
-                widget.image(UIImageTabFinancesProfitGraph);
-            }
-            else if (widget.isImage(UIImageTabFinancesProfitGraph)) {
-                widget.image(UIImageTabFinancesValueGraph);
-            }
-            else if (widget.isImage(UIImageTabFinancesValueGraph)) {
-                widget.image(UIImageTabFinancesMarketing);
-            }
-            else if (widget.isImage(UIImageTabFinancesMarketing)) {
-                widget.image(UIImageTabRide);
-            }
-            else if (widget.isImage(UIImageTabRide)) {
-                widget.image(UIImagePeepLargeFaceVerySick);
-            }
-            else if (widget.isImage(UIImagePeepLargeFaceVerySick)) {
-                widget.image(UIImagePeepLargeFaceVeryVerySick);
-            }
-            else if (widget.isImage(UIImagePeepLargeFaceVeryVerySick)) {
-                widget.image(UIImagePeepLargeFaceAngry);
-            }
-            else if (widget.isImage(UIImagePeepLargeFaceAngry)) {
-                widget.image(UIImageTabGears);
-            }
-        });
+    }), UIToggleButton.$I(UIImageOpen)
+        .onPress(function (button, isPressed) {
+        console.log(button._name, isPressed);
+    }), UIPageButton.$IP.apply(UIPageButton, images).size({ width: 30, height: 27 })
+        .onPage(function (button, image) {
+        console.log(image.description());
     })), UIListView.$([
         UIListViewColumn.$W('이름', 2)
             .tooltip('tooltip')
@@ -1896,7 +1879,7 @@ var openWindow = function () {
         .isStriped(true)
         .canSelect(true)
         .addItems([
-        UIListViewItem.$(['미화원 1', '쓸기, 가꾸기, 비우기', '걷는 중']),
+        UIListViewItem.$(['미화원 1', '{TINYFONT}1234567890', '걷는 중']),
         UIListViewItem.$S()
     ]), UILabel.$('1 미화원')).image(UIImageTabGears)
         .isExpandable(true)
@@ -1940,14 +1923,14 @@ var UIImage = (function () {
         var image = new UIImage([single]);
         return image;
     };
-    UIImage.$A = function (base, count) {
+    UIImage.$A = function (base, count, duration) {
         var frames = __spreadArrays(Array(count)).map(function (_, i) { return base + i; });
         var image = new UIImage(frames);
-        return image;
+        return image.duration(duration);
     };
-    UIImage.$F = function (frames) {
+    UIImage.$F = function (frames, duration) {
         var image = new UIImage(frames);
-        return image;
+        return image.duration(duration);
     };
     UIImage.prototype._data = function () {
         var frameCount = this._frames.length;
@@ -1990,6 +1973,9 @@ var UIImage = (function () {
         var left = this._frames.map(function (val) { return val.toString(); }).reduce(function (acc, val) { return acc + '-' + val; });
         var right = val._frames.map(function (val) { return val.toString(); }).reduce(function (acc, val) { return acc + '-' + val; });
         return left === right;
+    };
+    UIImage.prototype.description = function () {
+        return 'Duration: ' + this._duration + '\nFrames: ' + this._frames.map(function (val) { return val.toString(); }).reduce(function (acc, val) { return acc + '-' + val; });
     };
     return UIImage;
 }());
@@ -2056,27 +2042,28 @@ var UIImageGraph = UIImage.$(5195);
 var UIImageMechanic = UIImage.$(5196);
 var UIImageParkEntrance = UIImage.$(5197);
 var UIImageTabParkEntrance = UIImage.$(5200);
-var UIImageTabGears = UIImage.$A(5201, 4).duration(2);
-var UIImageTabWrench = UIImage.$A(5205, 16);
-var UIImageTabPaint = UIImage.$A(5221, 8);
-var UIImageTabTimer = UIImage.$A(5229, 8);
-var UIImageTabGraphA = UIImage.$A(5237, 8);
-var UIImageTabGraph = UIImage.$A(5245, 8);
-var UIImageTabAdmission = UIImage.$A(5253, 8);
-var UIImageTabFinancesSummary = UIImage.$A(5261, 8);
-var UIImageTabThoughts = UIImage.$A(5269, 8);
-var UIImageTabStats = UIImage.$A(5277, 7);
-var UIImageTabStaffOptions = UIImage.$A(5318, 8);
+var UIImageTabGears = UIImage.$A(5201, 4, 2);
+var UIImageTabWrench = UIImage.$A(5205, 16, 2);
+var UIImageTabPaint = UIImage.$A(5221, 8, 4);
+var UIImageTabTimer = UIImage.$A(5229, 8, 8);
+var UIImageTabGraphA = UIImage.$A(5237, 8, 4);
+var UIImageTabGraph = UIImage.$A(5245, 8, 4);
+var UIImageTabAdmission = UIImage.$A(5253, 8, 2);
+var UIImageTabFinancesSummary = UIImage.$A(5261, 8, 2);
+var UIImageTabThoughts = UIImage.$A(5269, 8, 2);
+var UIImageTabStats = UIImage.$A(5277, 7, 4);
+var UIImageTabStaffOptions = UIImage.$A(5318, 7, 2);
+var UIImageTabStaffOptionsOne = UIImage.$(5325);
 var UIImageTabGuestInventory = UIImage.$(5326);
-var UIImageTabFinancesResearch = UIImage.$A(5327, 8);
-var UIImageTabMusic = UIImage.$A(5335, 16);
-var UIImageTabShopsAndStalls = UIImage.$A(5351, 16);
-var UIImageTabKiosksAndFacilities = UIImage.$A(5367, 8);
-var UIImageTabFinancesFinancialGraph = UIImage.$A(5375, 16);
-var UIImageTabFinancesProfitGraph = UIImage.$A(5391, 16);
-var UIImageTabFinancesValueGraph = UIImage.$A(5407, 16);
-var UIImageTabFinancesMarketing = UIImage.$A(5423, 19);
-var UIImageTabRide = UIImage.$A(5442, 16);
+var UIImageTabFinancesResearch = UIImage.$A(5327, 8, 2);
+var UIImageTabMusic = UIImage.$A(5335, 16, 2);
+var UIImageTabShopsAndStalls = UIImage.$A(5351, 16, 4);
+var UIImageTabKiosksAndFacilities = UIImage.$A(5367, 8, 4);
+var UIImageTabFinancesFinancialGraph = UIImage.$A(5375, 16, 2);
+var UIImageTabFinancesProfitGraph = UIImage.$A(5391, 16, 2);
+var UIImageTabFinancesValueGraph = UIImage.$A(5407, 16, 2);
+var UIImageTabFinancesMarketing = UIImage.$A(5423, 19, 2);
+var UIImageTabRide = UIImage.$A(5442, 16, 4);
 var UIImageTabRideOne = UIImage.$(5448);
 var UIImageTabSceneryTrees = UIImage.$(5459);
 var UIImageTabSceneryUrban = UIImage.$(5460);
@@ -2088,6 +2075,17 @@ var UIImageTabSceneryStatues = UIImage.$(5465);
 var UIImageTabPark = UIImage.$(5466);
 var UIImageTabWater = UIImage.$(5467);
 var UIImageTabStatsOne = UIImage.$(5468);
+var UIImageTabObjective = UIImage.$A(5511, 16, 2);
+var UIImageTabAwards = UIImage.$(5527);
+var UIImageTabRidesShop = UIImage.$A(5530, 7, 4);
+var UIImageTabRidesTransport = UIImage.$A(5537, 5, 4);
+var UIImageTabRidesGentle = UIImage.$A(5542, 4, 4);
+var UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 4);
+var UIImageTabRidesWater = UIImage.$A(5551, 6, 4);
+var UIImageTabRidesThrill = UIImage.$A(5557, 7, 4);
+var UIImageTabGuests = UIImage.$A(5568, 8, 4);
+var UIImageTabLand = UIImage.$(29362);
+var UIImageTabNews = UIImage.$(29414);
 var UIImagePeepLargeFaceVeryVeryUnhappy = UIImage.$(5284);
 var UIImagePeepLargeFaceVeryUnhappy = UIImage.$(5285);
 var UIImagePeepLargeFaceUnhappy = UIImage.$(5286);
@@ -2098,6 +2096,6 @@ var UIImagePeepLargeFaceVeryVeryHappy = UIImage.$(5290);
 var UIImagePeepLargeFaceTired = UIImage.$(5291);
 var UIImagePeepLargeFaceVeryTired = UIImage.$(5292);
 var UIImagePeepLargeFaceSick = UIImage.$(5293);
-var UIImagePeepLargeFaceVerySick = UIImage.$A(5294, 4);
-var UIImagePeepLargeFaceVeryVerySick = UIImage.$A(5298, 16);
-var UIImagePeepLargeFaceAngry = UIImage.$A(5314, 4);
+var UIImagePeepLargeFaceVerySick = UIImage.$A(5294, 4, 8);
+var UIImagePeepLargeFaceVeryVerySick = UIImage.$A(5298, 16, 4);
+var UIImagePeepLargeFaceAngry = UIImage.$A(5314, 4, 8);
