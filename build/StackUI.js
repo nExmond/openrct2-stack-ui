@@ -7,6 +7,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -23,12 +25,10 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
 Array.prototype.flatMapFunc = function (d) {
     if (d === void 0) { d = 1; }
@@ -1086,26 +1086,26 @@ var UIToggleButton = (function (_super) {
     };
     return UIToggleButton;
 }(UIButton));
-var UIPageButton = (function (_super) {
-    __extends(UIPageButton, _super);
-    function UIPageButton(images) {
+var UIPageImageButton = (function (_super) {
+    __extends(UIPageImageButton, _super);
+    function UIPageImageButton(images) {
         var _this = _super.call(this) || this;
         _this._images = images;
         return _this;
     }
-    UIPageButton.$IP = function () {
+    UIPageImageButton.$IP = function () {
         var images = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             images[_i] = arguments[_i];
         }
-        var button = new UIPageButton(images);
+        var button = new UIPageImageButton(images);
         var first = images.length > 0 ? images[0] : UIImageNone;
         return button
             .image(first)
             .size({ width: 24, height: 24 })
             .minSize({ width: 50, height: 15 });
     };
-    UIPageButton.prototype.onPage = function (block) {
+    UIPageImageButton.prototype.onPage = function (block) {
         var _this = this;
         var index = 0;
         return _super.prototype._internalOnChange.call(this, function (button) {
@@ -1115,7 +1115,7 @@ var UIPageButton = (function (_super) {
             block(button, image);
         });
     };
-    return UIPageButton;
+    return UIPageImageButton;
 }(UIButton));
 var UISpacer = (function (_super) {
     __extends(UISpacer, _super);
@@ -1840,6 +1840,8 @@ var openWindow = function () {
         UIImageTabFinancesProfitGraph, UIImageTabFinancesValueGraph, UIImageTabFinancesMarketing, UIImageTabRide,
         UIImagePeepLargeFaceVerySick, UIImagePeepLargeFaceVeryVerySick, UIImagePeepLargeFaceAngry
     ];
+    var strDefault = 1;
+    var strBoardHire = 10;
     var window = UIWindow.$T('직원', UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(12), UIStack.$H(UILabel.$('유니폼 색상:')
         .width(100), UIColorPicker.$(UIColor.BrightRed)
         .onChange(function (picker, color) {
@@ -1864,22 +1866,26 @@ var openWindow = function () {
     }), UIToggleButton.$I(UIImageOpen)
         .onPress(function (button, isPressed) {
         console.log(button._name, isPressed);
-    }), UIPageButton.$IP.apply(UIPageButton, images).size({ width: 30, height: 27 })
+    }), UIPageImageButton.$IP.apply(UIPageImageButton, images).size({ width: 30, height: 27 })
         .onPage(function (button, image) {
         console.log(image.description());
     })), UIListView.$([
-        UIListViewColumn.$W('이름', 2)
-            .tooltip('tooltip')
-            .sortOrder(UISortOrder.Ascending)
-            .canSort(true),
-        UIListViewColumn.$('역할'),
-        UIListViewColumn.$('상태')
+        UIListViewColumn.$('이름')
     ]).showColumnHeaders(true)
         .scrollbarType(UIScrollbarType.both)
         .isStriped(true)
         .canSelect(true)
         .addItems([
-        UIListViewItem.$(['미화원 1', '{TINYFONT}1234567890', '걷는 중']),
+        UIListViewItem.$(['{TINYFONT}1234567890']),
+        UIListViewItem.$([context.formatString("{RED}{STRING} {INT32} has broken down due to '{STRING}'.", "Twist", 2, "Mechanical failure")]),
+        UIListViewItem.$([context.formatString("Queuing for {STRINGID}", 84)]),
+        UIListViewItem.$(['{INLINE_SPRITE}{247}{19}{00}{00}A']),
+        UIListViewItem.$(['{INLINE_SPRITE}{248}{19}{00}{00}A']),
+        UIListViewItem.$(['{INLINE_SPRITE}{249}{19}{00}{00}A']),
+        UIListViewItem.$(['{INLINE_SPRITE}{250}{19}{00}{00}A']),
+        UIListViewItem.$(['{INLINE_SPRITE}{250}{20}{00}{00}A']),
+        UIListViewItem.$(['{INLINE_SPRITE}{09}{20}{00}{00}{SPRITE} {STRINGID}{NEWLINE}({STRINGID})']),
+        UIListViewItem.$([context.formatString('{STRINGID} {SPRITE} {SMALLFONT}{WHITE}{COMMA16}g', "1468", 1519, 1111)]),
         UIListViewItem.$S()
     ]), UILabel.$('1 미화원')).image(UIImageTabGears)
         .isExpandable(true)
@@ -1924,7 +1930,7 @@ var UIImage = (function () {
         return image;
     };
     UIImage.$A = function (base, count, duration) {
-        var frames = __spreadArrays(Array(count)).map(function (_, i) { return base + i; });
+        var frames = __spreadArray([], Array(count)).map(function (_, i) { return base + i; });
         var image = new UIImage(frames);
         return image.duration(duration);
     };

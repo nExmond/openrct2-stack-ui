@@ -2263,6 +2263,9 @@ var openWindow = function () {
         UIImagePeepLargeFaceVerySick, UIImagePeepLargeFaceVeryVerySick, UIImagePeepLargeFaceAngry
     ];
 
+    const strDefault = 1;
+    const strBoardHire = 10;
+
     var window = UIWindow.$T('직원',
         UITab.$(
             UIStack.$H(
@@ -2308,18 +2311,25 @@ var openWindow = function () {
                     })
             ),
             UIListView.$([
-                UIListViewColumn.$W('이름', 2)
-                    .tooltip('tooltip')
-                    .sortOrder(UISortOrder.Ascending)
-                    .canSort(true),
-                UIListViewColumn.$('역할'),
-                UIListViewColumn.$('상태')
+                UIListViewColumn.$('이름')
             ]).showColumnHeaders(true)
                 .scrollbarType(UIScrollbarType.both)
                 .isStriped(true)
                 .canSelect(true)
                 .addItems([
-                    UIListViewItem.$(['미화원 1', '{TINYFONT}1234567890', '걷는 중']),
+                    //인라인 스프라이트 {INLINE_SPRITE}{a}{b}{00}{00}
+                    //a = 0~255, b = a 섹션 인덱스
+                    //스프라이트 id = b*256 + a
+                    UIListViewItem.$(['{TINYFONT}1234567890']),
+                    UIListViewItem.$([context.formatString("{RED}{STRING} {INT32} has broken down due to '{STRING}'.", "Twist", 2, "Mechanical failure")]),
+                    UIListViewItem.$([context.formatString("Queuing for {STRINGID}", 84)]),
+                    UIListViewItem.$(['{INLINE_SPRITE}{247}{19}{00}{00}A']),
+                    UIListViewItem.$(['{INLINE_SPRITE}{248}{19}{00}{00}A']),
+                    UIListViewItem.$(['{INLINE_SPRITE}{249}{19}{00}{00}A']),
+                    UIListViewItem.$(['{INLINE_SPRITE}{250}{19}{00}{00}A']),
+                    UIListViewItem.$(['{INLINE_SPRITE}{250}{20}{00}{00}A']),
+                    UIListViewItem.$(['{INLINE_SPRITE}{09}{20}{00}{00}{SPRITE} {STRINGID}{NEWLINE}({STRINGID})']),
+                    UIListViewItem.$([context.formatString('{STRINGID} {SPRITE} {SMALLFONT}{WHITE}{COMMA16}g', "1468", 1519, 1111)]),
                     UIListViewItem.$S()
                 ]),
             UILabel.$('1 미화원')
