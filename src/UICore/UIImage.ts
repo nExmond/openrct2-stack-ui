@@ -1,3 +1,5 @@
+/// <reference path='../UICore/UIPoint.ts' />
+
 class UIImage {
 
     _frames: number[] = [];

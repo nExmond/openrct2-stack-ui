@@ -1,10 +1,10 @@
 {
-  "name": "stack-ui",
+  "name": "stack-ui-demo",
   "version": "0.0.1",
-  "description": "Easy to use UI plugin for OpenRCT2",
+  "description": "Easy to use UI framework for OpenRCT2",
   "license": "MIT",
   "author": "nexmond",
-  "main": "StackUI.js",
+  "main": "StackUI-Demo.js",
   "scripts": {
     "build": "tsc",
     "minify": "uglifyjs --compress --mangle --output out/title-editor.min.js -- out/title-editor.js",

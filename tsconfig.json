@@ -10,7 +10,7 @@
         "strictNullChecks": true,
         "strictPropertyInitialization": true,
         "strictBindCallApply": true,
-        "outFile": "build/StackUI.js",
+        "outFile": "demo/StackUI-Demo.js",
         "lib": [
             "ES5"
         ]
