@@ -85,6 +85,9 @@ class UIImage {
 //UIImage constants
 const UIImageNone = UIImage.$(-1);
 
+
+
+
 //Ride
 const UIImageRideConstructionStraight = UIImage.$(5137);
 const UIImageRideConstructionLeftCurve = UIImage.$(5138);
@@ -189,20 +192,18 @@ const UIImageTabPark = UIImage.$(5466);
 const UIImageTabWater = UIImage.$(5467);
 const UIImageTabStatsOne = UIImage.$(5468);
 
-//여기부터
-const UIImageTabObjective = UIImage.$A(5511, 16, 2);
+const UIImageTabObjective = UIImage.$A(5511, 16, 4);
 const UIImageTabAwards = UIImage.$(5527);
 const UIImageTabRidesShop = UIImage.$A(5530, 7, 4);
 const UIImageTabRidesTransport = UIImage.$A(5537, 5, 4);
-const UIImageTabRidesGentle = UIImage.$A(5542, 4, 4);
-const UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 4);
+const UIImageTabRidesGentle = UIImage.$A(5542, 4, 8);
+const UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 2);
 const UIImageTabRidesWater = UIImage.$A(5551, 6, 4);
-const UIImageTabRidesThrill = UIImage.$A(5557, 7, 4);
+const UIImageTabRidesThrill = UIImage.$F([5562, 5563, 5562, 5561, 5560, 5559, 5558, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5558, 5559, 5560, 5561, ], 4)
 const UIImageTabGuests = UIImage.$A(5568, 8, 4);
 
 const UIImageTabLand = UIImage.$(29362);
 const UIImageTabNews = UIImage.$(29414);
-//여기까지 duration 미정
 
 //Peep
 const UIImagePeepLargeFaceVeryVeryUnhappy = UIImage.$(5284);
@@ -218,3 +219,134 @@ const UIImagePeepLargeFaceSick = UIImage.$(5293);
 const UIImagePeepLargeFaceVerySick = UIImage.$A(5294, 4, 8);
 const UIImagePeepLargeFaceVeryVerySick = UIImage.$A(5298, 16, 4);
 const UIImagePeepLargeFaceAngry = UIImage.$A(5314, 4, 8);
+
+//Texture
+const UIImageFloorTextureGrass = UIImage.$(5579);
+const UIImageFloorTextureSand = UIImage.$(5580);
+const UIImageFloorTextureDirt = UIImage.$(5581);
+const UIImageFloorTextureRock = UIImage.$(5582);
+const UIImageFloorTextureMartian = UIImage.$(5583);
+const UIImageFloorTextureCheckerboard = UIImage.$(5584);
+const UIImageFloorTextureGrassClumps = UIImage.$(5585);
+const UIImageFloorTextureIce = UIImage.$(5586);
+const UIImageFloorTextureGridRed = UIImage.$(5587);
+const UIImageFloorTextureGridYellow = UIImage.$(5588);
+const UIImageFloorTextureGridBlue = UIImage.$(5589);
+const UIImageFloorTextureGridGreen = UIImage.$(5590);
+const UIImageFloorTextureSandDark = UIImage.$(5591);
+const UIImageFloorTextureSandLight = UIImage.$(5592);
+const UIImageWallTextureRock = UIImage.$(5593);
+const UIImageWallTextureWoodRed = UIImage.$(5594);
+const UIImageWallTextureWoodBlack = UIImage.$(5595);
+const UIImageWallTextureIce = UIImage.$(5596);
+
+//Construction
+const UIImageMazeConstructionMove = UIImage.$(5577);
+const UIImageConstructionDirectionNE = UIImage.$(5635);
+const UIImageConstructionDirectionSE = UIImage.$(5636);
+const UIImageConstructionDirectionSW = UIImage.$(5637);
+const UIImageConstructionDirectionNW = UIImage.$(5638);
+const UIImageConstructionFootpathLand = UIImage.$(5639);
+const UIImageConstructionFootpathBridge = UIImage.$(5640);
+
+//??
+const UIImageFirecracker = UIImage.$A(22927, 28, 2);
+
+//Land
+const UIImageLandOwnershipAvailable = UIImage.$(22955);
+const UIImageLandConstructionRightsAvailable = UIImage.$(22956);
+
+//Weather
+const UIImageNextWeather = UIImage.$(23189);
+const UIImageWeatherSun = UIImage.$(23190);
+const UIImageWeatherSunCloud = UIImage.$(23191);
+const UIImageWeatherCloud = UIImage.$(23192);
+const UIImageWeatherLightRain = UIImage.$(23193);
+const UIImageWeatherHeavyRain = UIImage.$(23194);
+const UIImageWeatherStorm = UIImage.$(23195);
+const UIImageWeatherSnow = UIImage.$(23196);
+
+//Rating
+const UIImageRatingLow = UIImage.$(23197);
+const UIImageRatingHigh = UIImage.$(23198);
+
+
+//Menu
+const UIImageMenuCheckmark = UIImage.$(23199);
+const UIImageMenuNewGame = UIImage.$(23207);
+const UIImageMenuLoadGame = UIImage.$(23208);
+const UIImageMenuTutorial = UIImage.$(23209);
+const UIImageMenuExit = UIImage.$(23210);
+const UIImageMenuToolbox = UIImage.$(23211);
+const UIImageMenuLogo = UIImage.$(23212);
+const UIImageMenuLogoSmall = UIImage.$(23213);
+
+//Flat Texture
+const UIImageFlatTextureGrass1 = UIImage.$(28959);
+const UIImageFlatTextureGrass2 = UIImage.$(28960);
+const UIImageFlatTextureGrass3 = UIImage.$(28961);
+const UIImageFlatTextureGrass4 = UIImage.$(28962);
+const UIImageFlatTextureGrass5 = UIImage.$(28963);
+const UIImageFlatTextureGrass6 = UIImage.$(28964);
+
+const UIImageFlatTextureSandLight1 = UIImage.$(28965);
+const UIImageFlatTextureSandLight2 = UIImage.$(28966);
+const UIImageFlatTextureSandLight3 = UIImage.$(28967);
+const UIImageFlatTextureSandLight4 = UIImage.$(28968);
+const UIImageFlatTextureSandLight5 = UIImage.$(28969);
+const UIImageFlatTextureSandLight6 = UIImage.$(28970);
+
+const UIImageFlatTextureSandDark1 = UIImage.$(28971);
+const UIImageFlatTextureSandDark2 = UIImage.$(28972);
+const UIImageFlatTextureSandDark3 = UIImage.$(28973);
+const UIImageFlatTextureSandDark4 = UIImage.$(28974);
+const UIImageFlatTextureSandDark5 = UIImage.$(28975);
+const UIImageFlatTextureSandDark6 = UIImage.$(28976);
+
+const UIImageFlatTextureDirt1 = UIImage.$(28977);
+const UIImageFlatTextureDirt2 = UIImage.$(28978);
+const UIImageFlatTextureDirt3 = UIImage.$(28979);
+const UIImageFlatTextureDirt4 = UIImage.$(28980);
+const UIImageFlatTextureDirt5 = UIImage.$(28981);
+const UIImageFlatTextureDirt6 = UIImage.$(28982);
+
+const UIImageFlatTextureSand1 = UIImage.$(28983);
+const UIImageFlatTextureSand2 = UIImage.$(28984);
+const UIImageFlatTextureSand3 = UIImage.$(28985);
+const UIImageFlatTextureSand4 = UIImage.$(28986);
+const UIImageFlatTextureSand5 = UIImage.$(28987);
+const UIImageFlatTextureSand6 = UIImage.$(28988);
+
+const UIImageFlatTextureRock1 = UIImage.$(28989);
+const UIImageFlatTextureRock2 = UIImage.$(28990);
+const UIImageFlatTextureRock3 = UIImage.$(28991);
+const UIImageFlatTextureRock4 = UIImage.$(28992);
+const UIImageFlatTextureRock5 = UIImage.$(28993);
+const UIImageFlatTextureRock6 = UIImage.$(28994);
+
+const UIImageFlatTextureMartian1 = UIImage.$(28995);
+const UIImageFlatTextureMartian2 = UIImage.$(28996);
+const UIImageFlatTextureMartian3 = UIImage.$(28997);
+const UIImageFlatTextureMartian4 = UIImage.$(28998);
+const UIImageFlatTextureMartian5 = UIImage.$(28999);
+const UIImageFlatTextureMartian6 = UIImage.$(29000);
+
+const UIImageFlatTextureGrassClumps1 = UIImage.$(29001);
+const UIImageFlatTextureGrassClumps2 = UIImage.$(29002);
+const UIImageFlatTextureGrassClumps3 = UIImage.$(29003);
+const UIImageFlatTextureGrassClumps4 = UIImage.$(29004);
+const UIImageFlatTextureGrassClumps5 = UIImage.$(29005);
+const UIImageFlatTextureGrassClumps6 = UIImage.$(29006);
+
+const UIImageFlatTextureIce1 = UIImage.$(29007);
+const UIImageFlatTextureIce2 = UIImage.$(29008);
+const UIImageFlatTextureIce3 = UIImage.$(29009);
+const UIImageFlatTextureIce4 = UIImage.$(29010);
+const UIImageFlatTextureIce5 = UIImage.$(29011);
+const UIImageFlatTextureIce6 = UIImage.$(29012);
+
+//29357부터
+
+
+
+// const UIImage = UIImage.$();

@@ -1,4 +1,11 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -23,84 +30,22 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 var openWindow = function () {
-    var containerPadding = { top: 2, left: 2, bottom: 0, right: 2 };
-    var customFrameImage = UIImage.$F([5153, 5154, 5155, 5154], 4);
     var images = [
-        UIImageTabGears, UIImageTabWrench, UIImageTabPaint, UIImageTabTimer,
-        UIImageTabGraphA, UIImageTabGraph, UIImageTabAdmission, UIImageTabFinancesSummary,
-        UIImageTabThoughts, UIImageTabStats, UIImageTabStaffOptions, UIImageTabFinancesResearch,
-        UIImageTabMusic, UIImageTabShopsAndStalls, UIImageTabKiosksAndFacilities, UIImageTabFinancesFinancialGraph,
-        UIImageTabFinancesProfitGraph, UIImageTabFinancesValueGraph, UIImageTabFinancesMarketing, UIImageTabRide,
-        UIImagePeepLargeFaceVerySick, UIImagePeepLargeFaceVeryVerySick, UIImagePeepLargeFaceAngry
+        [UIImageTabObjective, UIImageTabRidesShop, UIImageTabRidesTransport, UIImageTabRidesGentle],
+        [UIImageTabRidesRollerCoasters, UIImageTabRidesWater, UIImageTabRidesThrill, UIImageTabGuests]
     ];
-    var strDefault = 1;
-    var strBoardHire = 10;
-    var window = UIWindow.$T('직원', UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(12), UIStack.$H(UILabel.$('유니폼 색상:')
-        .width(100), UIColorPicker.$(UIColor.BrightRed)
-        .onChange(function (picker, color) {
-        window.updateUI(function (window) {
-            window.themePrimaryColor(color);
-        });
-    }), UISpacer.$(10), UIColorPicker.$(UIColor.BrightRed)
-        .onChange(function (picker, color) {
-        window.updateUI(function (window) {
-            window.themeSecondaryColor(color);
-        });
-    }))), UISpacer.$(), UIButton.$I(UIImageClosed)
-        .onClick(function (val) {
-        val.updateUI(function (widget) {
-            if (widget.isImage(UIImageClosed)) {
-                widget.image(UIImageOpen);
-            }
-            else {
-                widget.image(UIImageClosed);
-            }
-        });
-    }), UIToggleButton.$I(UIImageOpen)
-        .onPress(function (button, isPressed) {
-        console.log(button._name, isPressed);
-    }), UIPageImageButton.$IP.apply(UIPageImageButton, images).size({ width: 30, height: 27 })
-        .onPage(function (button, image) {
-        console.log(image.description());
-    })), UIListView.$([
-        UIListViewColumn.$('이름')
-    ]).showColumnHeaders(true)
-        .scrollbarType(UIScrollbarType.both)
-        .isStriped(true)
-        .canSelect(true)
-        .addItems([
-        UIListViewItem.$(['{TINYFONT}1234567890']),
-        UIListViewItem.$([context.formatString("{RED}{STRING} {INT32} has broken down due to '{STRING}'.", "Twist", 2, "Mechanical failure")]),
-        UIListViewItem.$([context.formatString("Queuing for {STRINGID}", 84)]),
-        UIListViewItem.$(['{INLINE_SPRITE}{247}{19}{00}{00}A']),
-        UIListViewItem.$(['{INLINE_SPRITE}{248}{19}{00}{00}A']),
-        UIListViewItem.$(['{INLINE_SPRITE}{249}{19}{00}{00}A']),
-        UIListViewItem.$(['{INLINE_SPRITE}{250}{19}{00}{00}A']),
-        UIListViewItem.$(['{INLINE_SPRITE}{250}{20}{00}{00}A']),
-        UIListViewItem.$(['{INLINE_SPRITE}{09}{20}{00}{00}{SPRITE} {STRINGID}{NEWLINE}({STRINGID})']),
-        UIListViewItem.$([context.formatString('{STRINGID} {SPRITE} {SMALLFONT}{WHITE}{COMMA16}g', "1468", 1519, 1111)]),
-        UIListViewItem.$S()
-    ]), UILabel.$('1 미화원')).image(UIImageTabGears)
-        .isExpandable(true)
-        .maxSize({ width: 500, height: 500 }), UITab.$(UILabel.$('두번째 탭'), UISpinner.$()).image(UIImageTabFinancesResearch), UITab.$(UILabel.$('세번째 탭')).image(UIImageTabKiosksAndFacilities)
-        .isExpandable(true), UITab.$(UILabel.$('네번째 탭')).image(UIImageTabFinancesSummary)
-        .isExpandable(true)
-        .maxSize({ width: 400, height: 100 }), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('다섯번째 탭')).image(UIImageTabStats), UITab.$(UILabel.$('여섯번째 탭')).image(UIImageTabRide), UITab.$(UILabel.$('일곱번째 탭')).image(UIImageTabPark))
-        .theme({
-        primary: UIColor.Gray,
-        secondary: UIColor.DarkOliveGreen,
-        tertiary: UIColor.LightOrange
-    })
-        .padding(containerPadding)
-        .show();
+    var buttons = images.map(function (val) { return val.map(function (val) { return UIButton.$I(val).size({ width: 31, height: 27 }); }); });
+    var hstacks = buttons.map(function (val) { return new UIStack(UIAxis.Horizontal, val); });
+    UIWindow.$.apply(UIWindow, __spreadArrays(['', UISpinner.$().range(1, 10).step(1).value(2)
+            .onChange(function (spinner, value) {
+            buttons.forEach(function (val) { return val.forEach(function (val) {
+                val.updateUI(function (widget) {
+                    var newImage = widget._uiImage.duration(value);
+                    widget.image(newImage);
+                });
+            }); });
+        })], hstacks)).show();
 };
 var main = function () {
     if (typeof ui === 'undefined') {
@@ -953,14 +898,14 @@ var UIImageTabSceneryStatues = UIImage.$(5465);
 var UIImageTabPark = UIImage.$(5466);
 var UIImageTabWater = UIImage.$(5467);
 var UIImageTabStatsOne = UIImage.$(5468);
-var UIImageTabObjective = UIImage.$A(5511, 16, 2);
+var UIImageTabObjective = UIImage.$A(5511, 16, 4);
 var UIImageTabAwards = UIImage.$(5527);
 var UIImageTabRidesShop = UIImage.$A(5530, 7, 4);
 var UIImageTabRidesTransport = UIImage.$A(5537, 5, 4);
-var UIImageTabRidesGentle = UIImage.$A(5542, 4, 4);
-var UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 4);
+var UIImageTabRidesGentle = UIImage.$A(5542, 4, 8);
+var UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 2);
 var UIImageTabRidesWater = UIImage.$A(5551, 6, 4);
-var UIImageTabRidesThrill = UIImage.$A(5557, 7, 4);
+var UIImageTabRidesThrill = UIImage.$F([5562, 5563, 5562, 5561, 5560, 5559, 5558, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5558, 5559, 5560, 5561,], 4);
 var UIImageTabGuests = UIImage.$A(5568, 8, 4);
 var UIImageTabLand = UIImage.$(29362);
 var UIImageTabNews = UIImage.$(29414);
