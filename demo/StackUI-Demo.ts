@@ -2,25 +2,59 @@
 
 var openWindow = function () {
 
-    var images: UIImage[][] = [
-        [UIImageTabObjective, UIImageTabRidesShop, UIImageTabRidesTransport, UIImageTabRidesGentle],
-        [UIImageTabRidesRollerCoasters, UIImageTabRidesWater, UIImageTabRidesThrill, UIImageTabGuests]
-    ];
-    var buttons = images.map((val) => val.map((val) => UIButton.$I(val).size({ width: 31, height: 27 })));
-    var hstacks = buttons.map((val) => new UIStack(UIAxis.Horizontal, val));
+    // var images: UIImage[][] = [
+    //     [UIImageTabObjective, UIImageTabRidesShop, UIImageTabRidesTransport, UIImageTabRidesGentle],
+    //     [UIImageTabRidesRollerCoasters, UIImageTabRidesWater, UIImageTabRidesThrill, UIImageTabGuests]
+    // ];
+    // var buttons = images.map((val) => val.map((val) => UIButton.$I(val).size({ width: 31, height: 27 })));
+    // var hstacks = buttons.map((val) => new UIStack(UIAxis.Horizontal, val));
 
-    UIWindow.$('',
-        UISpinner.$().range(1, 10).step(1).value(2)
-            .onChange((spinner, value) => {
-                buttons.forEach((val) => val.forEach((val) => {
-                    val.updateUI((widget) => {
-                        var newImage = widget._uiImage!.duration(value);
-                        widget.image(newImage);
-                    });
-                }));
-            }),
-        ...hstacks
-    ).show();
+    // UIWindow.$('',
+    //     UISpinner.$().range(1, 10).step(1).value(2)
+    //         .onChange((spinner, value) => {
+    //             buttons.forEach((val) => val.forEach((val) => {
+    //                 val.updateUI((widget) => {
+    //                     var newImage = widget._uiImage!.duration(value);
+    //                     widget.image(newImage);
+    //                 });
+    //             }));
+    //         }),
+    //     ...hstacks
+    // ).show();
+
+    var currency = (1000000).format(TextFormat.Currency);
+    var monthYear = (120).format(TextFormat.MonthYear);
+    var message = `최소 ${currency} 이상의 공원 가치를 ${monthYear}까지 달성하세요`;
+    var stringId = (1347).format(TextFormat.StringId, 30);
+
+    var text = TB.$(message)
+        .font(TextFont.Big)
+        .color(TextColor.PaleLavender)
+        .outline()
+        .build();
+
+    var builder = TB.$(
+        TextNode.$().color(TextColor.Green)
+            .append(ImageNode.$I(UIImageStaffOrdersEmptyBins))
+            .append(MoveNode.$M(10))
+            .append(TextNode.$("Text node").color(TextColor.PearlAqua))
+            .append(TextNode.$("Text node2").color(TextColor.Yellow).outline())
+            .append(TextNode.$("Text node3"))
+    );
+
+    // console.log(builder.description());
+
+    var test = builder.build();
+
+    UIWindow.$('test',
+        UILabel.$(text)
+            .align(UITextAlignment.Center)
+            .width(500),
+        UILabel.$(stringId)
+            .align(UITextAlignment.Center),
+        UILabel.$(test)
+    ).themeSecondaryColor(UIColor.BrightRed)
+        .show();
 
     // var images: UIImage[] = [
     //     UIImageTabGears, UIImageTabWrench, UIImageTabPaint, UIImageTabTimer,

@@ -1,11 +1,4 @@
 "use strict";
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -19,6 +12,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -31,21 +31,27 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 var openWindow = function () {
-    var images = [
-        [UIImageTabObjective, UIImageTabRidesShop, UIImageTabRidesTransport, UIImageTabRidesGentle],
-        [UIImageTabRidesRollerCoasters, UIImageTabRidesWater, UIImageTabRidesThrill, UIImageTabGuests]
-    ];
-    var buttons = images.map(function (val) { return val.map(function (val) { return UIButton.$I(val).size({ width: 31, height: 27 }); }); });
-    var hstacks = buttons.map(function (val) { return new UIStack(UIAxis.Horizontal, val); });
-    UIWindow.$.apply(UIWindow, __spreadArrays(['', UISpinner.$().range(1, 10).step(1).value(2)
-            .onChange(function (spinner, value) {
-            buttons.forEach(function (val) { return val.forEach(function (val) {
-                val.updateUI(function (widget) {
-                    var newImage = widget._uiImage.duration(value);
-                    widget.image(newImage);
-                });
-            }); });
-        })], hstacks)).show();
+    var currency = (1000000).format(TextFormat.Currency);
+    var monthYear = (120).format(TextFormat.MonthYear);
+    var message = "\uCD5C\uC18C " + currency + " \uC774\uC0C1\uC758 \uACF5\uC6D0 \uAC00\uCE58\uB97C " + monthYear + "\uAE4C\uC9C0 \uB2EC\uC131\uD558\uC138\uC694";
+    var stringId = (1347).format(TextFormat.StringId, 30);
+    var text = TB.$(message)
+        .font(TextFont.Big)
+        .color(TextColor.PaleLavender)
+        .outline()
+        .build();
+    var builder = TB.$(TextNode.$().color(TextColor.Green)
+        .append(ImageNode.$I(UIImageStaffOrdersEmptyBins))
+        .append(MoveNode.$M(10))
+        .append(TextNode.$("Text node").color(TextColor.PearlAqua))
+        .append(TextNode.$("Text node2").color(TextColor.Yellow).outline())
+        .append(TextNode.$("Text node3")));
+    var test = builder.build();
+    UIWindow.$('test', UILabel.$(text)
+        .align(UITextAlignment.Center)
+        .width(500), UILabel.$(stringId)
+        .align(UITextAlignment.Center), UILabel.$(test)).themeSecondaryColor(UIColor.BrightRed)
+        .show();
 };
 var main = function () {
     if (typeof ui === 'undefined') {
@@ -82,6 +88,281 @@ var IntervalHelper = (function () {
     };
     return IntervalHelper;
 }());
+var TextFont;
+(function (TextFont) {
+    TextFont["Tiny"] = "TINYFONT";
+    TextFont["Small"] = "SMALLFONT";
+    TextFont["Medium"] = "MEDIUMFONT";
+    TextFont["Big"] = "BIGFONT";
+})(TextFont || (TextFont = {}));
+var TextColor;
+(function (TextColor) {
+    TextColor["WindowPrimary"] = "WINDOW_COLOUR_1";
+    TextColor["WindowSecondary"] = "WINDOW_COLOUR_2";
+    TextColor["WindowTertiary"] = "WINDOW_COLOUR_3";
+    TextColor["Black"] = "BLACK";
+    TextColor["Gray"] = "GREY";
+    TextColor["White"] = "WHITE";
+    TextColor["Red"] = "RED";
+    TextColor["Green"] = "GREEN";
+    TextColor["Yellow"] = "YELLOW";
+    TextColor["Topaz"] = "TOPAZ";
+    TextColor["Celadon"] = "CELADON";
+    TextColor["BabyBlue"] = "BABYBLUE";
+    TextColor["PaleLavender"] = "PALELAVENDER";
+    TextColor["PaleGold"] = "PALEGOLD";
+    TextColor["LightPink"] = "LIGHTPINK";
+    TextColor["PearlAqua"] = "PEARLAQUA";
+    TextColor["PaleSilver"] = "PALESILVER";
+})(TextColor || (TextColor = {}));
+var TextFormat;
+(function (TextFormat) {
+    TextFormat["Comma16"] = "COMMA16";
+    TextFormat["Comma32"] = "COMMA32";
+    TextFormat["Comma1dp16"] = "COMMA1DP16";
+    TextFormat["Comma2dp32"] = "COMMA2DP32";
+    TextFormat["Int32"] = "Int32";
+    TextFormat["UInt16"] = "UINT16";
+    TextFormat["Currency"] = "CURRENCY";
+    TextFormat["Currency2dp"] = "CURRENCY2DP";
+    TextFormat["MonthYear"] = "MONTHYEAR";
+    TextFormat["Month"] = "MONTH";
+    TextFormat["DurationShort"] = "DURATION";
+    TextFormat["DurationLong"] = "REALTIME";
+    TextFormat["Velocity"] = "VELOCITY";
+    TextFormat["Length"] = "LENGTH";
+    TextFormat["StringId"] = "STRINGID";
+})(TextFormat || (TextFormat = {}));
+var TextBuilder = (function () {
+    function TextBuilder(node) {
+        this._outline = false;
+        if (typeof node === 'string' || typeof node === 'undefined') {
+            this._root = new TextNode(node);
+        }
+        else {
+            this._root = node;
+        }
+    }
+    TextBuilder.prototype.build = function () {
+        if (this._root._isInvalid()) {
+            return '';
+        }
+        this._root._unifyColor(this._color);
+        this._root._unifyOutline(this._outline);
+        console.log(this.description());
+        var text = this._root._text();
+        if (typeof text !== 'undefined') {
+            if (typeof this._font !== 'undefined') {
+                text = text.split(TextFont.Tiny).join('')
+                    .split(TextFont.Small).join('')
+                    .split(TextFont.Medium).join('')
+                    .split(TextFont.Big).join('');
+                text = "{" + this._font + "}" + text;
+            }
+        }
+        return text !== null && text !== void 0 ? text : '';
+    };
+    TextBuilder.prototype.font = function (val) {
+        this._font = val;
+        return this;
+    };
+    TextBuilder.prototype.outline = function () {
+        this._outline = true;
+        return this;
+    };
+    TextBuilder.prototype.color = function (val) {
+        this._color = val;
+        return this;
+    };
+    TextBuilder.prototype.description = function () {
+        return this._root._description();
+    };
+    return TextBuilder;
+}());
+var TB = (function (_super) {
+    __extends(TB, _super);
+    function TB() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TB.$ = function (node) {
+        var builder = new TB(node);
+        return builder;
+    };
+    return TB;
+}(TextBuilder));
+var TextNode = (function () {
+    function TextNode(arg) {
+        this._outline = false;
+        if (typeof arg === 'undefined') {
+        }
+        else if (typeof arg === 'string') {
+            this._string = arg;
+        }
+        else {
+            this._childs = arg;
+        }
+    }
+    TextNode.$ = function (arg) {
+        if (arg === void 0) { arg = undefined; }
+        var node = new TextNode(arg);
+        return node;
+    };
+    TextNode.prototype._isLeaf = function () {
+        return typeof this._string !== 'undefined' || (typeof this._childs !== 'undefined' && this._childs.length === 0);
+    };
+    TextNode.prototype._isInternal = function () {
+        return typeof this._childs !== 'undefined' && this._childs.length > 0;
+    };
+    TextNode.prototype._isInvalid = function () {
+        return typeof this._string === 'undefined' && typeof this._childs === 'undefined';
+    };
+    TextNode.prototype._containdNodes = function () {
+        var _a;
+        if (this._isLeaf()) {
+            return [this];
+        }
+        else {
+            return (_a = this._childs) !== null && _a !== void 0 ? _a : [];
+        }
+    };
+    TextNode.prototype._text = function () {
+        var _a;
+        if (this._isLeaf()) {
+            return this._string;
+        }
+        else {
+            return (_a = this._childs) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._text(); }).join('');
+        }
+    };
+    TextNode.prototype._unifyOutline = function (parentExist) {
+        if (parentExist === void 0) { parentExist = false; }
+        if ((this._isLeaf())) {
+            if (parentExist) {
+                this._string = this._string.split("{OUTLINE}").join('')
+                    .split("{OUTLINE_OFF}").join('');
+            }
+            else if (this._outline) {
+                this._string = "{OUTLINE}" + this._string + "{OUTLINE_OFF}";
+            }
+        }
+        else if (this._isInternal()) {
+            var childs = this._childs;
+            if (childs.length > 0) {
+                var apply = parentExist || this._outline;
+                for (var _i = 0, childs_1 = childs; _i < childs_1.length; _i++) {
+                    var child = childs_1[_i];
+                    child._unifyOutline(apply);
+                }
+                if (apply) {
+                    childs[0]._string = "{OUTLINE}" + childs[0]._string;
+                    childs[childs.length - 1]._string = childs[childs.length - 1]._string + "{OUTLINE_OFF}";
+                }
+            }
+        }
+    };
+    TextNode.prototype._unifyColor = function (parentColor) {
+        var _a;
+        if (parentColor === void 0) { parentColor = undefined; }
+        var color = (_a = this._color) !== null && _a !== void 0 ? _a : parentColor;
+        if ((this._isLeaf())) {
+            if (typeof color !== 'undefined') {
+                this._string = "{" + color + "}" + this._string;
+            }
+        }
+        else if (this._isInternal()) {
+            for (var _i = 0, _b = this._childs; _i < _b.length; _i++) {
+                var child = _b[_i];
+                child._unifyColor(color);
+            }
+        }
+    };
+    TextNode.prototype._description = function (depth) {
+        var _a;
+        if (depth === void 0) { depth = 0; }
+        var tabs = __spreadArrays(Array(depth)).map(function (val) { return "\t"; }).join("");
+        var childs = (_a = this._childs) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._description(depth + 1); }).join("\n" + tabs);
+        return tabs + "| outline: " + this._outline + " | color: " + this._color + "\n\t" + tabs + "childs:" + childs;
+    };
+    TextNode.prototype.append = function (val) {
+        var newParent = new TextNode(__spreadArrays(this._containdNodes(), val._containdNodes()));
+        this.outline(false).color(undefined);
+        return newParent.outline(this._outline).color(this._color);
+    };
+    TextNode.prototype.outline = function (val) {
+        if (val === void 0) { val = true; }
+        this._outline = val;
+        return this;
+    };
+    TextNode.prototype.color = function (val) {
+        this._color = val;
+        return this;
+    };
+    return TextNode;
+}());
+var ImageNode = (function (_super) {
+    __extends(ImageNode, _super);
+    function ImageNode(image) {
+        var _this = this;
+        var imageId = image._frames[0];
+        var head = Math.floor(imageId / (256 * 256));
+        var section = Math.floor(imageId / 256);
+        var item = imageId % 256;
+        var string = "{INLINE_SPRITE}{" + item + "}{" + section + "}{" + head + "}{0}";
+        _this = _super.call(this, string) || this;
+        return _this;
+    }
+    ImageNode.$I = function (image) {
+        var node = new ImageNode(image);
+        return node;
+    };
+    return ImageNode;
+}(TextNode));
+var NewlineNode = (function (_super) {
+    __extends(NewlineNode, _super);
+    function NewlineNode(line, isSmall) {
+        if (line === void 0) { line = 1; }
+        if (isSmall === void 0) { isSmall = false; }
+        var _this = this;
+        var string = __spreadArrays(Array(line)).map(function () { return isSmall ? "{NEWLINE_SMALLER}" : "{NEWLINE}"; }).reduce(function (acc, val) { return acc + val; });
+        _this = _super.call(this, string) || this;
+        return _this;
+    }
+    NewlineNode.$NL = function (line, isSmall) {
+        if (line === void 0) { line = 1; }
+        if (isSmall === void 0) { isSmall = false; }
+        var node = new NewlineNode(line, isSmall);
+        return node;
+    };
+    return NewlineNode;
+}(TextNode));
+var MoveNode = (function (_super) {
+    __extends(MoveNode, _super);
+    function MoveNode(x) {
+        var _this = this;
+        var string = "{MOVE_X}{" + x + "}";
+        _this = _super.call(this, string) || this;
+        return _this;
+    }
+    MoveNode.$M = function (x) {
+        var node = new MoveNode(x);
+        return node;
+    };
+    return MoveNode;
+}(TextNode));
+String.prototype.format = function (format) {
+    var arg = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        arg[_i - 1] = arguments[_i];
+    }
+    return context.formatString.apply(context, __spreadArrays(["{" + format + "}", this], arg));
+};
+Number.prototype.format = function (format) {
+    var arg = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        arg[_i - 1] = arguments[_i];
+    }
+    return context.formatString.apply(context, __spreadArrays(["{" + format + "}", this], arg));
+};
 var UIInteractor = (function () {
     function UIInteractor() {
     }
@@ -235,6 +516,14 @@ var UIWidget = (function () {
     UIWidget.prototype._refreshUI = function () {
         this._update(this._widget);
     };
+    UIWidget.prototype._applyFont = function (text) {
+        if (typeof this._font !== 'undefined') {
+            return new TextBuilder(text).font(this._font).build();
+        }
+        else {
+            return text;
+        }
+    };
     UIWidget.prototype.updateUI = function (block) {
         if (block === void 0) { block = undefined; }
         block === null || block === void 0 ? void 0 : block(this);
@@ -279,6 +568,10 @@ var UIWidget = (function () {
     };
     UIWidget.prototype.offset = function (val) {
         this._offset = val;
+        return this;
+    };
+    UIWidget.prototype.font = function (val) {
+        this._font = val;
         return this;
     };
     return UIWidget;
@@ -803,6 +1096,77 @@ var UIImage = (function () {
     return UIImage;
 }());
 var UIImageNone = UIImage.$(-1);
+var UIImageShopItemBalloon = UIImage.$(5061);
+var UIImageShopItemToy = UIImage.$(5062);
+var UIImageShopItemMap = UIImage.$(5063);
+var UIImageShopItemPhoto = UIImage.$(5064);
+var UIImageShopItemUmbrella = UIImage.$(5065);
+var UIImageShopItemDrink = UIImage.$(5066);
+var UIImageShopItemBurger = UIImage.$(5067);
+var UIImageShopItemChips = UIImage.$(5068);
+var UIImageShopItemIceCream = UIImage.$(5069);
+var UIImageShopItemCandyfloss = UIImage.$(5070);
+var UIImageShopItemEmptyCan = UIImage.$(5071);
+var UIImageShopItemRubbish = UIImage.$(5072);
+var UIImageShopItemEmptyBurgerBox = UIImage.$(5073);
+var UIImageShopItemPizza = UIImage.$(5074);
+var UIImageShopItemVoucher = UIImage.$(5075);
+var UIImageShopItemPopcorn = UIImage.$(5076);
+var UIImageShopItemHotDog = UIImage.$(5077);
+var UIImageShopItemTentacle = UIImage.$(5078);
+var UIImageShopItemHat = UIImage.$(5079);
+var UIImageShopItemToffeeApple = UIImage.$(5080);
+var UIImageShopItemTshirt = UIImage.$(5081);
+var UIImageShopItemDoughnut = UIImage.$(5082);
+var UIImageShopItemCoffee = UIImage.$(5083);
+var UIImageShopItemEmptyCup = UIImage.$(5084);
+var UIImageShopItemChicken = UIImage.$(5085);
+var UIImageShopItemLemonade = UIImage.$(5086);
+var UIImageShopItemEmptyBox = UIImage.$(5087);
+var UIImageShopItemEmptyBottle = UIImage.$(5088);
+var UIImageShopItemPhoto2 = UIImage.$(5089);
+var UIImageShopItemPhoto3 = UIImage.$(5090);
+var UIImageShopItemPhoto4 = UIImage.$(5091);
+var UIImageShopItemPretzel = UIImage.$(5092);
+var UIImageShopItemChocolate = UIImage.$(5093);
+var UIImageShopItemIcedTea = UIImage.$(5094);
+var UIImageShopItemFunnelCake = UIImage.$(5095);
+var UIImageShopItemSunglasses = UIImage.$(5096);
+var UIImageShopItemBeefNoodles = UIImage.$(5097);
+var UIImageShopItemFriedRiceNoodles = UIImage.$(5098);
+var UIImageShopItemWontonSoup = UIImage.$(5099);
+var UIImageShopItemMeatballSoup = UIImage.$(5100);
+var UIImageShopItemFruitJuice = UIImage.$(5101);
+var UIImageShopItemSoybeanMilk = UIImage.$(5102);
+var UIImageShopItemSujeonggwa = UIImage.$(5103);
+var UIImageShopItemSubSandwich = UIImage.$(5104);
+var UIImageShopItemCookie = UIImage.$(5105);
+var UIImageShopItemEmptyBowlRed = UIImage.$(5106);
+var UIImageShopItemEmptyDrinkCarton = UIImage.$(5107);
+var UIImageShopItemEmptyJuiceCup = UIImage.$(5108);
+var UIImageShopItemRoastSausage = UIImage.$(5109);
+var UIImageShopItemEmptyBowlBlue = UIImage.$(5110);
+var UIImageStaffOrdersSweeping = UIImage.$(5111);
+var UIImageStaffOrdersWaterFlowers = UIImage.$(5112);
+var UIImageStaffOrdersEmptyBins = UIImage.$(5113);
+var UIImageStaffOrdersMowing = UIImage.$(5114);
+var UIImageStaffOrdersInspectRides = UIImage.$(5115);
+var UIImageStaffOrdersFixRides = UIImage.$(5116);
+var UIImageStaffPatrolPath = UIImage.$(5117);
+var UIImageStaffCostumePanda = UIImage.$(5118);
+var UIImageStaffCostumeTiger = UIImage.$(5119);
+var UIImageStaffCostumeElephant = UIImage.$(5120);
+var UIImageStaffCostumeRoman = UIImage.$(5121);
+var UIImageStaffCostumeGorilla = UIImage.$(5122);
+var UIImageStaffCostumeSnowman = UIImage.$(5123);
+var UIImageStaffCostumeKnight = UIImage.$(5124);
+var UIImageStaffCostumeAstronaut = UIImage.$(5125);
+var UIImageStaffCostumeBandit = UIImage.$(5126);
+var UIImageStaffCostumeSheriff = UIImage.$(5127);
+var UIImageStaffCostumePirate = UIImage.$(5128);
+var UIImageInformationSmall = UIImage.$(5129);
+var UIImageRatingIncrease = UIImage.$(5130);
+var UIImageRatingDecrease = UIImage.$(5131);
 var UIImageRideConstructionStraight = UIImage.$(5137);
 var UIImageRideConstructionLeftCurve = UIImage.$(5138);
 var UIImageRideConstructionRightCurve = UIImage.$(5139);
@@ -907,8 +1271,23 @@ var UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 2);
 var UIImageTabRidesWater = UIImage.$A(5551, 6, 4);
 var UIImageTabRidesThrill = UIImage.$F([5562, 5563, 5562, 5561, 5560, 5559, 5558, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5558, 5559, 5560, 5561,], 4);
 var UIImageTabGuests = UIImage.$A(5568, 8, 4);
-var UIImageTabLand = UIImage.$(29362);
-var UIImageTabNews = UIImage.$(29414);
+var UIImageAwardMostUntidy = UIImage.$(5469);
+var UIImageAwardMostTidy = UIImage.$(5470);
+var UIImageAwardBestRollerCoasters = UIImage.$(5471);
+var UIImageAwardBestValue = UIImage.$(5472);
+var UIImageAwardMostBeautiful = UIImage.$(5473);
+var UIImageAwardWorstValue = UIImage.$(5474);
+var UIImageAwardSafest = UIImage.$(5475);
+var UIImageAwardBestStaff = UIImage.$(5476);
+var UIImageAwardBestFood = UIImage.$(5477);
+var UIImageAwardWorstFood = UIImage.$(5478);
+var UIImageAwardBestRestrooms = UIImage.$(5479);
+var UIImageAwardMostDisappointing = UIImage.$(5480);
+var UIImageAwardBestWaterRides = UIImage.$(5481);
+var UIImageAwardBestCustomDesignedRides = UIImage.$(5482);
+var UIImageAwardMostDazzlingRideColors = UIImage.$(5483);
+var UIImageAwardMostConfusingLayout = UIImage.$(5484);
+var UIImageAwardBestGentleRides = UIImage.$(5485);
 var UIImagePeepLargeFaceVeryVeryUnhappy = UIImage.$(5284);
 var UIImagePeepLargeFaceVeryUnhappy = UIImage.$(5285);
 var UIImagePeepLargeFaceUnhappy = UIImage.$(5286);
@@ -922,6 +1301,196 @@ var UIImagePeepLargeFaceSick = UIImage.$(5293);
 var UIImagePeepLargeFaceVerySick = UIImage.$A(5294, 4, 8);
 var UIImagePeepLargeFaceVeryVerySick = UIImage.$A(5298, 16, 4);
 var UIImagePeepLargeFaceAngry = UIImage.$A(5314, 4, 8);
+var UIImagePeepSmallFaceVeryVeryUnhappy = UIImage.$(5486);
+var UIImagePeepSmallFaceVeryUnhappy = UIImage.$(5487);
+var UIImagePeepSmallFaceUnhappy = UIImage.$(5488);
+var UIImagePeepSmallFaceNormal = UIImage.$(5489);
+var UIImagePeepSmallFaceHappy = UIImage.$(5490);
+var UIImagePeepSmallFaceVeryHappy = UIImage.$(5491);
+var UIImagePeepSmallFaceVeryVeryHappy = UIImage.$(5492);
+var UIImagePeepSmallFaceTired = UIImage.$(5493);
+var UIImagePeepSmallFaceVeryTired = UIImage.$(5494);
+var UIImagePeepSmallFaceSick = UIImage.$(5495);
+var UIImagePeepSmallFaceVerySick = UIImage.$(5496);
+var UIImagePeepSmallFaceVeryVerySick = UIImage.$(5497);
+var UIImagePeepSmallFaceAngry = UIImage.$(5498);
+var UIImageFloorTextureGrass = UIImage.$(5579);
+var UIImageFloorTextureSand = UIImage.$(5580);
+var UIImageFloorTextureDirt = UIImage.$(5581);
+var UIImageFloorTextureRock = UIImage.$(5582);
+var UIImageFloorTextureMartian = UIImage.$(5583);
+var UIImageFloorTextureCheckerboard = UIImage.$(5584);
+var UIImageFloorTextureGrassClumps = UIImage.$(5585);
+var UIImageFloorTextureIce = UIImage.$(5586);
+var UIImageFloorTextureGridRed = UIImage.$(5587);
+var UIImageFloorTextureGridYellow = UIImage.$(5588);
+var UIImageFloorTextureGridPurple = UIImage.$(5589);
+var UIImageFloorTextureGridGreen = UIImage.$(5590);
+var UIImageFloorTextureSandDark = UIImage.$(5591);
+var UIImageFloorTextureSandLight = UIImage.$(5592);
+var UIImageWallTextureRock = UIImage.$(5593);
+var UIImageWallTextureWoodRed = UIImage.$(5594);
+var UIImageWallTextureWoodBlack = UIImage.$(5595);
+var UIImageWallTextureIce = UIImage.$(5596);
+var UIImageMazeConstructionMove = UIImage.$(5577);
+var UIImageConstructionDirectionNE = UIImage.$(5635);
+var UIImageConstructionDirectionSE = UIImage.$(5636);
+var UIImageConstructionDirectionSW = UIImage.$(5637);
+var UIImageConstructionDirectionNW = UIImage.$(5638);
+var UIImageConstructionFootpathLand = UIImage.$(5639);
+var UIImageConstructionFootpathBridge = UIImage.$(5640);
+var UIImageRideMazeWallHedgeThickFull = UIImage.$(21938);
+var UIImageRideMazeWallHedgeThickSWNE = UIImage.$(21939);
+var UIImageRideMazeWallHedgeThickNWSE = UIImage.$(21940);
+var UIImageRideMazeWallHedgeMediumSWNE = UIImage.$(21941);
+var UIImageRideMazeWallHedgeMediumNWSE = UIImage.$(21942);
+var UIImageRideMazeWallHedgeThinSWNE = UIImage.$(21943);
+var UIImageRideMazeWallHedgeThinNWSE = UIImage.$(21944);
+var UIImageRideMazeWallBrickThickFull = UIImage.$(21951);
+var UIImageRideMazeWallBrickThickSWNE = UIImage.$(21952);
+var UIImageRideMazeWallBrickThickNWSE = UIImage.$(21953);
+var UIImageRideMazeWallBrickMediumSWNE = UIImage.$(21954);
+var UIImageRideMazeWallBrickMediumNWSE = UIImage.$(21955);
+var UIImageRideMazeWallBrickThinSWNE = UIImage.$(21956);
+var UIImageRideMazeWallBrickThinNWSE = UIImage.$(21957);
+var UIImageRideMazeWallIceThickFull = UIImage.$(21964);
+var UIImageRideMazeWallIceThickSWNE = UIImage.$(21965);
+var UIImageRideMazeWallIceThickNWSE = UIImage.$(21966);
+var UIImageRideMazeWallIceMediumSWNE = UIImage.$(21967);
+var UIImageRideMazeWallIceMediumNWSE = UIImage.$(21968);
+var UIImageRideMazeWallIceThinSWNE = UIImage.$(21969);
+var UIImageRideMazeWallIceThinNWSE = UIImage.$(21970);
+var UIImageRideMazeWallWoodenThickFull = UIImage.$(21977);
+var UIImageRideMazeWallWoodenThickSWNE = UIImage.$(21978);
+var UIImageRideMazeWallWoodenThickNWSE = UIImage.$(21979);
+var UIImageRideMazeWallWoodenMediumSWNE = UIImage.$(21980);
+var UIImageRideMazeWallWoodenMediumNWSE = UIImage.$(21981);
+var UIImageRideMazeWallWoodenThinSWNE = UIImage.$(21982);
+var UIImageRideMazeWallWoodenThinNWSE = UIImage.$(21983);
+var UIImageFirecracker = UIImage.$A(22927, 28, 2);
+var UIImageLandOwnershipAvailable = UIImage.$(22955);
+var UIImageLandConstructionRightsAvailable = UIImage.$(22956);
+var UIImageNextWeather = UIImage.$(23189);
+var UIImageWeatherSun = UIImage.$(23190);
+var UIImageWeatherSunCloud = UIImage.$(23191);
+var UIImageWeatherCloud = UIImage.$(23192);
+var UIImageWeatherLightRain = UIImage.$(23193);
+var UIImageWeatherHeavyRain = UIImage.$(23194);
+var UIImageWeatherStorm = UIImage.$(23195);
+var UIImageWeatherSnow = UIImage.$(23196);
+var UIImageRatingLow = UIImage.$(23197);
+var UIImageRatingHigh = UIImage.$(23198);
+var UIImageMenuCheckmark = UIImage.$(23199);
+var UIImageMenuNewGame = UIImage.$(23207);
+var UIImageMenuLoadGame = UIImage.$(23208);
+var UIImageMenuTutorial = UIImage.$(23209);
+var UIImageMenuExit = UIImage.$(23210);
+var UIImageMenuToolbox = UIImage.$(23211);
+var UIImageMenuLogo = UIImage.$(23212);
+var UIImageMenuLogoSmall = UIImage.$(23213);
+var UIImageFlatTextureGrass1 = UIImage.$(28959);
+var UIImageFlatTextureGrass2 = UIImage.$(28960);
+var UIImageFlatTextureGrass3 = UIImage.$(28961);
+var UIImageFlatTextureGrass4 = UIImage.$(28962);
+var UIImageFlatTextureGrass5 = UIImage.$(28963);
+var UIImageFlatTextureGrass6 = UIImage.$(28964);
+var UIImageFlatTextureSandLight1 = UIImage.$(28965);
+var UIImageFlatTextureSandLight2 = UIImage.$(28966);
+var UIImageFlatTextureSandLight3 = UIImage.$(28967);
+var UIImageFlatTextureSandLight4 = UIImage.$(28968);
+var UIImageFlatTextureSandLight5 = UIImage.$(28969);
+var UIImageFlatTextureSandLight6 = UIImage.$(28970);
+var UIImageFlatTextureSandDark1 = UIImage.$(28971);
+var UIImageFlatTextureSandDark2 = UIImage.$(28972);
+var UIImageFlatTextureSandDark3 = UIImage.$(28973);
+var UIImageFlatTextureSandDark4 = UIImage.$(28974);
+var UIImageFlatTextureSandDark5 = UIImage.$(28975);
+var UIImageFlatTextureSandDark6 = UIImage.$(28976);
+var UIImageFlatTextureDirt1 = UIImage.$(28977);
+var UIImageFlatTextureDirt2 = UIImage.$(28978);
+var UIImageFlatTextureDirt3 = UIImage.$(28979);
+var UIImageFlatTextureDirt4 = UIImage.$(28980);
+var UIImageFlatTextureDirt5 = UIImage.$(28981);
+var UIImageFlatTextureDirt6 = UIImage.$(28982);
+var UIImageFlatTextureSand1 = UIImage.$(28983);
+var UIImageFlatTextureSand2 = UIImage.$(28984);
+var UIImageFlatTextureSand3 = UIImage.$(28985);
+var UIImageFlatTextureSand4 = UIImage.$(28986);
+var UIImageFlatTextureSand5 = UIImage.$(28987);
+var UIImageFlatTextureSand6 = UIImage.$(28988);
+var UIImageFlatTextureRock1 = UIImage.$(28989);
+var UIImageFlatTextureRock2 = UIImage.$(28990);
+var UIImageFlatTextureRock3 = UIImage.$(28991);
+var UIImageFlatTextureRock4 = UIImage.$(28992);
+var UIImageFlatTextureRock5 = UIImage.$(28993);
+var UIImageFlatTextureRock6 = UIImage.$(28994);
+var UIImageFlatTextureMartian1 = UIImage.$(28995);
+var UIImageFlatTextureMartian2 = UIImage.$(28996);
+var UIImageFlatTextureMartian3 = UIImage.$(28997);
+var UIImageFlatTextureMartian4 = UIImage.$(28998);
+var UIImageFlatTextureMartian5 = UIImage.$(28999);
+var UIImageFlatTextureMartian6 = UIImage.$(29000);
+var UIImageFlatTextureGrassClumps1 = UIImage.$(29001);
+var UIImageFlatTextureGrassClumps2 = UIImage.$(29002);
+var UIImageFlatTextureGrassClumps3 = UIImage.$(29003);
+var UIImageFlatTextureGrassClumps4 = UIImage.$(29004);
+var UIImageFlatTextureGrassClumps5 = UIImage.$(29005);
+var UIImageFlatTextureGrassClumps6 = UIImage.$(29006);
+var UIImageFlatTextureIce1 = UIImage.$(29007);
+var UIImageFlatTextureIce2 = UIImage.$(29008);
+var UIImageFlatTextureIce3 = UIImage.$(29009);
+var UIImageFlatTextureIce4 = UIImage.$(29010);
+var UIImageFlatTextureIce5 = UIImage.$(29011);
+var UIImageFlatTextureIce6 = UIImage.$(29012);
+var UIImageWallMedievalGray = UIImage.$(112511);
+var UIImageWallTin = UIImage.$(124211);
+var UIImageWallSandBrick = UIImage.$(152747);
+var UIImageWallRustyTin = UIImage.$(163772);
+var UIImageWallSand = UIImage.$(163784);
+var UIImageWallLightSand = UIImage.$(168735);
+var UIImageWallBordeauxRed = UIImage.$(171630);
+var UIImageWallViolet = UIImage.$(171641);
+var UIImageG2Logo = UIImage.$(29357);
+var UIImageG2Title = UIImage.$(29358);
+var UIImageG2Fastforward = UIImage.$(29359);
+var UIImageG2SpeedArrow = UIImage.$(29360);
+var UIImageG2HyperArrow = UIImage.$(29361);
+var UIImageG2TabLand = UIImage.$(29362);
+var UIImageG2Placeholder = UIImage.$(29363);
+var UIImageG2ZoomIn = UIImage.$(29364);
+var UIImageG2ZoomOut = UIImage.$(29366);
+var UIImageG2TabTree = UIImage.$(29368);
+var UIImageG2TabPencil = UIImage.$(29369);
+var UIImageG2LargeScenery = UIImage.$(29370);
+var UIImageG2Trees = UIImage.$(29371);
+var UIImageG2Footpath = UIImage.$(29372);
+var UIImageG1CloseDisable = UIImage.$(29373);
+var UIImageG1CloseEnable = UIImage.$(29375);
+var UIImageG1TestDisable = UIImage.$(29377);
+var UIImageG1TestEnable = UIImage.$(29379);
+var UIImageG1OpenDisable = UIImage.$(29381);
+var UIImageG1OpenEnable = UIImage.$(29383);
+var UIImageG2Simulate = UIImage.$(29481);
+var UIImageG1SimulateDisable = UIImage.$(29482);
+var UIImageG1SimulateEnable = UIImage.$(29483);
+var UIImageG2Restart = UIImage.$(29385);
+var UIImageG2Stop = UIImage.$(29386);
+var UIImageG2Play = UIImage.$(29387);
+var UIImageG2Skip = UIImage.$(29388);
+var UIImageG2Sandbox = UIImage.$(29389);
+var UIImageG2TabNews = UIImage.$(29414);
+var UIImageG2Locked = UIImage.$(29415);
+var UIImageG2MenuMultiplayer = UIImage.$(29416);
+var UIImageG2Sort = UIImage.$(29433);
+var UIImageG2Copy = UIImage.$(29434);
+var UIImageG2Paste = UIImage.$(29435);
+var UIImageG2Search = UIImage.$(29461);
+var UIImageG2Pipette = UIImage.$(29467);
+var UIImageG2Chat = UIImage.$(29468);
+var UIImageG2SceneryScatterLow = UIImage.$(29489);
+var UIImageG2SceneryScatterMedium = UIImage.$(29490);
+var UIImageG2SceneryScatterHigh = UIImage.$(29491);
+var UIImageG2View = UIImage.$(29494);
 var UIScrollbarType;
 (function (UIScrollbarType) {
     UIScrollbarType["None"] = "none";
@@ -960,7 +1529,7 @@ var UICheckbox = (function (_super) {
     };
     UICheckbox.prototype._build = function () {
         var _this = this;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'checkbox', text: this._text, isChecked: this._isChecked, onChange: function (isChecked) {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'checkbox', text: this._applyFont(this._text), isChecked: this._isChecked, onChange: function (isChecked) {
                 var _a;
                 _this._isChecked = isChecked;
                 (_a = _this._onChange) === null || _a === void 0 ? void 0 : _a.call(_this, _this, _this._isChecked);
@@ -968,7 +1537,7 @@ var UICheckbox = (function (_super) {
     };
     UICheckbox.prototype._update = function (widget) {
         _super.prototype._update.call(this, widget);
-        widget.text = this._text;
+        widget.text = this._applyFont(this._text);
         widget.isChecked = this._isChecked;
     };
     UICheckbox.prototype._isUnnamed = function () {
@@ -1038,7 +1607,7 @@ var UIDropdown = (function (_super) {
     };
     UIDropdown.prototype._build = function () {
         var _this = this;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'dropdown', textAlign: UITextAlignment.Center, items: this._items, selectedIndex: this._selectedIndex, onChange: function (index) {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'dropdown', textAlign: UITextAlignment.Center, items: this._items.map(function (val) { return _this._applyFont(val); }), selectedIndex: this._selectedIndex, onChange: function (index) {
                 var _a;
                 _this._selectedIndex = index;
                 var item = _this._items[index];
@@ -1046,8 +1615,9 @@ var UIDropdown = (function (_super) {
             } });
     };
     UIDropdown.prototype._update = function (widget) {
+        var _this = this;
         _super.prototype._update.call(this, widget);
-        widget.items = this._items;
+        widget.items = this._items.map(function (val) { return _this._applyFont(val); });
         widget.selectedIndex = this._selectedIndex;
     };
     UIDropdown.prototype.selected = function (val) {
@@ -1066,6 +1636,7 @@ var UILabel = (function (_super) {
         var _this = _super.call(this) || this;
         _this._align = UITextAlignment.Left;
         _this._text = text;
+        console.log(text);
         return _this;
     }
     UILabel.$ = function (text) {
@@ -1075,14 +1646,14 @@ var UILabel = (function (_super) {
     };
     UILabel.prototype._build = function () {
         var _this = this;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'label', text: this._text, textAlign: this._align, onChange: function (index) {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'label', text: this._applyFont(this._text), textAlign: this._align, onChange: function (index) {
                 var _a;
                 (_a = _this._onChange) === null || _a === void 0 ? void 0 : _a.call(_this, _this, index);
             } });
     };
     UILabel.prototype._update = function (widget) {
         _super.prototype._update.call(this, widget);
-        widget.text = this._text;
+        widget.text = this._applyFont(this._text);
         widget.textAlign = this._align;
     };
     UILabel.prototype.align = function (val) {
@@ -1162,7 +1733,7 @@ var UISpinner = (function (_super) {
         else {
             this._text = this._value.toFixed(this._fixed);
         }
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'spinner', text: this._text, onDecrement: function () {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'spinner', text: this._applyFont(this._text), onDecrement: function () {
                 var prev = _this._value;
                 _this._value = Math.max(_this._value - _this._step, _this._min);
                 _this._signal(prev, _this._value);
@@ -1207,7 +1778,7 @@ var UISpinner = (function (_super) {
     };
     UISpinner.prototype._update = function (widget) {
         _super.prototype._update.call(this, widget);
-        widget.text = this._text;
+        widget.text = this._applyFont(this._text);
     };
     UISpinner.prototype.range = function (min, max) {
         if (min > max) {
@@ -1318,7 +1889,7 @@ var UIButton = (function (_super) {
     };
     UIButton.prototype._build = function () {
         var _this = this;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'button', border: this._border, image: this._image, isPressed: this._isPressed, text: this._title, onClick: function () {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'button', border: this._border, image: this._image, isPressed: this._isPressed, text: this._applyFont(this._title), onClick: function () {
                 var _a, _b;
                 (_a = _this._onClick) === null || _a === void 0 ? void 0 : _a.call(_this, _this);
                 (_b = _this._onChange) === null || _b === void 0 ? void 0 : _b.call(_this, _this);
@@ -1331,7 +1902,7 @@ var UIButton = (function (_super) {
         widget.image = (_a = this._image) !== null && _a !== void 0 ? _a : 0;
         widget.isPressed = this._isPressed;
         if (typeof this._title !== 'undefined') {
-            widget.text = this._title;
+            widget.text = this._applyFont(this._title);
         }
     };
     UIButton.prototype._isImageType = function () {
@@ -1459,11 +2030,11 @@ var UIListViewColumn = (function () {
         var listView = new UIListViewColumn(header);
         return listView.weight(weight);
     };
-    UIListViewColumn.prototype._data = function () {
+    UIListViewColumn.prototype._data = function (applyFont) {
         return {
             canSort: this._canSort,
             sortOrder: this._sortOrder,
-            header: this._header,
+            header: applyFont(this._header),
             headerTooltip: this._headerTooltip,
             width: this._width,
             ratioWidth: this._weight,
@@ -1515,16 +2086,16 @@ var UIListViewItem = (function () {
         var val = typeof text === undefined ? [] : [text];
         return new UIListViewItem(val, true);
     };
-    UIListViewItem.prototype._data = function () {
+    UIListViewItem.prototype._data = function (applyFont) {
         if (this._isSeparator) {
             var text = this._textList.length > 0 ? this._textList[0] : undefined;
             return {
                 type: 'seperator',
-                text: text
+                text: applyFont(text)
             };
         }
         else {
-            return this._textList;
+            return this._textList.map(function (val) { return applyFont(val); });
         }
     };
     return UIListViewItem;
@@ -1551,7 +2122,7 @@ var UIListView = (function (_super) {
     UIListView.prototype._build = function () {
         var _this = this;
         var _a;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'listview', scrollbars: this._scrollbarType, isStriped: this._isStriped, showColumnHeaders: this._showColumnHeaders, columns: (_a = this._columns) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._data(); }), items: this._items.map(function (val) { return val._data(); }), selectedCell: this._selectedCell, canSelect: this._canSelect, onHighlight: function (item, column) {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'listview', scrollbars: this._scrollbarType, isStriped: this._isStriped, showColumnHeaders: this._showColumnHeaders, columns: (_a = this._columns) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._data(_this._applyFont); }), items: this._items.map(function (val) { return val._data(_this._applyFont); }), selectedCell: this._selectedCell, canSelect: this._canSelect, onHighlight: function (item, column) {
                 var _a;
                 (_a = _this._onHeighlight) === null || _a === void 0 ? void 0 : _a.call(_this, _this, column, item);
             }, onClick: function (item, column) {
@@ -1560,13 +2131,14 @@ var UIListView = (function (_super) {
             } });
     };
     UIListView.prototype._update = function (widget) {
+        var _this = this;
         var _a;
         _super.prototype._update.call(this, widget);
         widget.scrollbars = this._scrollbarType;
         widget.isStriped = this._isStriped;
         widget.showColumnHeaders = this._showColumnHeaders;
-        widget.columns = (_a = this._columns) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._data(); });
-        widget.items = this._items.map(function (val) { return val._data(); });
+        widget.columns = (_a = this._columns) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._data(_this._applyFont); });
+        widget.items = this._items.map(function (val) { return val._data(_this._applyFont); });
         widget.selectedCell = this._selectedCell;
         widget.canSelect = this._canSelect;
     };
