@@ -38,7 +38,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         this._widget = {
             ...this._buildBaseValues(),
             type: 'spinner',
-            text: this._text,
+            text: this._applyFont(this._text),
             onDecrement: () => {
                 var prev = this._value;
                 this._value = Math.max(this._value - this._step, this._min);
@@ -85,7 +85,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     _update(widget: SpinnerWidget) {
         super._update(widget);
-        widget.text = this._text;
+        widget.text = this._applyFont(this._text);
     }
 
     //Public

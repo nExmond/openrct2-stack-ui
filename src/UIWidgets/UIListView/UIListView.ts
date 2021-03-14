@@ -40,8 +40,8 @@ class UIListView extends UIWidget<ListView> {
             scrollbars: this._scrollbarType,
             isStriped: this._isStriped,
             showColumnHeaders: this._showColumnHeaders,
-            columns: this._columns?.map((val) => val._data()),
-            items: this._items.map((val) => val._data()),
+            columns: this._columns?.map((val) => val._data(this._applyFont)),
+            items: this._items.map((val) => val._data(this._applyFont)!),
             selectedCell: this._selectedCell,
             canSelect: this._canSelect,
             onHighlight: (item: number, column: number) => {
@@ -58,8 +58,8 @@ class UIListView extends UIWidget<ListView> {
         widget.scrollbars = this._scrollbarType;
         widget.isStriped = this._isStriped;
         widget.showColumnHeaders = this._showColumnHeaders;
-        widget.columns = this._columns?.map((val) => val._data());
-        widget.items = this._items.map((val) => val._data());
+        widget.columns = this._columns?.map((val) => val._data(this._applyFont));
+        widget.items = this._items.map((val) => val._data(this._applyFont)!);
         widget.selectedCell = this._selectedCell;
         widget.canSelect = this._canSelect;
     }

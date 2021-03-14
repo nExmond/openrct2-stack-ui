@@ -47,11 +47,11 @@ class UIListViewColumn {
 
     //Private
 
-    _data(): ListViewColumn {
+    _data(applyFont: (val: string | undefined) => string | undefined): ListViewColumn {
         return {
             canSort: this._canSort,
             sortOrder: this._sortOrder,
-            header: this._header,
+            header: applyFont(this._header),
             headerTooltip: this._headerTooltip,
             width: this._width,
             ratioWidth: this._weight,

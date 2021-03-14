@@ -42,7 +42,7 @@ class UIButton extends UIWidget<ButtonWidget> {
             border: this._border,
             image: this._image,
             isPressed: this._isPressed,
-            text: this._title,
+            text: this._applyFont(this._title),
             onClick: () => {
                 this._onClick?.call(this, this);
                 this._onChange?.call(this, this);
@@ -56,7 +56,7 @@ class UIButton extends UIWidget<ButtonWidget> {
         widget.image = this._image ?? 0;
         widget.isPressed = this._isPressed;
         if (typeof this._title !== 'undefined') {
-            widget.text = this._title;
+            widget.text = this._applyFont(this._title);
         }
     }
 

@@ -20,6 +20,8 @@ class UIWidget<T extends Widget> {
 
     _offset: UIPoint = UIPointZero;
 
+    _font: TextFont | undefined;
+
     constructor() {
         //https://stackoverflow.com/questions/13613524/get-an-objects-class-name-at-runtime
         this._name = this.constructor.name + '-' + uuid();
@@ -126,6 +128,14 @@ class UIWidget<T extends Widget> {
         this._update(this._widget);
     }
 
+    _applyFont(text: string | undefined): string | undefined {
+        if (typeof this._font !== 'undefined') {
+            return new TextBuilder(text).font(this._font).build();
+        } else {
+            return text;
+        }
+    }
+
     //Public
 
     updateUI(block: ((widget: this) => void) | undefined = undefined) {
@@ -179,6 +189,11 @@ class UIWidget<T extends Widget> {
 
     offset(val: UIPoint): this {
         this._offset = val;
+        return this;
+    }
+
+    font(val: TextFont): this {
+        this._font = val;
         return this;
     }
 }

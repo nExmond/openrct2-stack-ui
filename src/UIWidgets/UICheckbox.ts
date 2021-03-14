@@ -31,7 +31,7 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
         this._widget = {
             ...this._buildBaseValues(),
             type: 'checkbox',
-            text: this._text,
+            text: this._applyFont(this._text),
             isChecked: this._isChecked,
             onChange: (isChecked: boolean) => {
                 this._isChecked = isChecked;
@@ -42,7 +42,7 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
 
     _update(widget: CheckboxWidget) {
         super._update(widget);
-        widget.text = this._text;
+        widget.text = this._applyFont(this._text);
         widget.isChecked = this._isChecked;
     }
 

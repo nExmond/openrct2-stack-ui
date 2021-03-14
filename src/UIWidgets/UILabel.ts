@@ -10,6 +10,7 @@ class UILabel extends UIWidget<LabelWidget> {
     constructor(text: string) {
         super();
         this._text = text;
+        console.log(text);
     }
 
     //Convenience
@@ -26,7 +27,7 @@ class UILabel extends UIWidget<LabelWidget> {
         this._widget = {
             ...this._buildBaseValues(),
             type: 'label',
-            text: this._text,
+            text: this._applyFont(this._text),
             textAlign: this._align,
             onChange: (index: number) => {
                 this._onChange?.call(this, this, index);
@@ -36,7 +37,7 @@ class UILabel extends UIWidget<LabelWidget> {
 
     _update(widget: LabelWidget) {
         super._update(widget);
-        widget.text = this._text;
+        widget.text = this._applyFont(this._text);
         widget.textAlign = this._align;
     }
 

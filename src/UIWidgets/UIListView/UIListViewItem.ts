@@ -19,15 +19,15 @@ class UIListViewItem {
 
     //Private
 
-    _data(): ListViewItem {
+    _data(applyFont: (val: string | undefined) => string | undefined): ListViewItem {
         if (this._isSeparator) {
             var text = this._textList.length > 0 ? this._textList[0] : undefined;
             return {
                 type: 'seperator',
-                text: text
+                text: applyFont(text)
             }
         } else {
-            return this._textList;
+            return this._textList.map(val => applyFont(val)!);
         }
     }
 }

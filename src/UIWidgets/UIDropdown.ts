@@ -27,7 +27,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
             ...this._buildBaseValues(),
             type: 'dropdown',
             textAlign: UITextAlignment.Center,
-            items: this._items,
+            items: this._items.map(val => this._applyFont(val)!),
             selectedIndex: this._selectedIndex,
             onChange: (index: number) => {
                 this._selectedIndex = index;
@@ -39,7 +39,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
 
     _update(widget: DropdownWidget) {
         super._update(widget);
-        widget.items = this._items;
+        widget.items = this._items.map(val => this._applyFont(val)!);
         widget.selectedIndex = this._selectedIndex;
     }
 
