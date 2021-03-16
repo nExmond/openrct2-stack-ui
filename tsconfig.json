@@ -12,7 +12,7 @@
         "strictBindCallApply": true,
         "outFile": "demo/StackUI-Demo.js",
         "lib": [
-            "ES5"
+            "ES6"
         ]
     }
 }

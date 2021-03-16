@@ -84,9 +84,9 @@ class UIImage {
     }
 
     size(): UISize {
-        //포함된 이미지의 최대 크기 반환
+        var graphicsContext = imageHelper.graphicsContext();
         return this._frames.map(val => {
-            var info = imageHelper.getImage(val)
+            var info = graphicsContext?.getImage(val);
             return <UISize>{
                 width: info?.width ?? 0,
                 height: info?.height ?? 0
@@ -96,11 +96,11 @@ class UIImage {
                 width: Math.max(acc.width, val.width),
                 height: Math.max(acc.height, val.height)
             }
-        })
+        });
     }
 
     description(): string {
-        return 'Duration: '+this._duration+'\nFrames: '+this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
+        return 'Duration: ' + this._duration + '\nFrames: ' + this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
     }
 }
 
@@ -294,7 +294,7 @@ const UIImageTabRidesTransport = UIImage.$A(5537, 5, 4);
 const UIImageTabRidesGentle = UIImage.$A(5542, 4, 8);
 const UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 2);
 const UIImageTabRidesWater = UIImage.$A(5551, 6, 4);
-const UIImageTabRidesThrill = UIImage.$F([5562, 5563, 5562, 5561, 5560, 5559, 5558, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5558, 5559, 5560, 5561, ], 4)
+const UIImageTabRidesThrill = UIImage.$F([5562, 5563, 5562, 5561, 5560, 5559, 5558, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5558, 5559, 5560, 5561], 4)
 const UIImageTabGuests = UIImage.$A(5568, 8, 4);
 
 //Award

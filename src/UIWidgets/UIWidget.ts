@@ -129,7 +129,7 @@ class UIWidget<T extends Widget> {
     }
 
     _applyFont(text: string | undefined): string | undefined {
-        if (typeof this._font !== 'undefined') {
+        if (typeof this._font !== 'undefined' && typeof text !== 'undefined') {
             return new TextBuilder(text).font(this._font).build();
         } else {
             return text;

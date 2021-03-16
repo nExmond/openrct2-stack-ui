@@ -1,44 +1,52 @@
 
+interface GraphicsContextWrapper {
+    colour: number | undefined;
+    secondaryColour: number | undefined;
+    ternaryColour: number | undefined;
+    paletteId: number | undefined;
+
+    getImage(id: number): ImageInfo | undefined;
+    measureText(text: string): ScreenSize;
+}
+
 class ImageHelper {
 
-    private _graphincsContext!: GraphicsContext;
+    private _graphicsContext: GraphicsContext | undefined;
 
     constructor() {
-        var widget = <CustomWidget>{
+        this._open();
+    }
+
+    private _open() {
+        var window = ui.openWindow({
+            classification: "_GC_",
             x: 0,
             y: 0,
-            width: 0,
-            height: 0,
-            isDisabled: true,
-            isVisible: true,
-            type: "custom",
-            onDraw: (g: GraphicsContext) => {
-                this._graphincsContext = g;
-            }
-        }
-
-        var window = <WindowDesc>{
-            classification: '',
-            x: -100,
-            y: 0,
-            width: 0,
-            height: 0,
+            width: 15,
+            height: 15,
             title: '',
-            widgets: [widget]
-        }
-
-        ui.openWindow(window).close();
+            widgets: [{
+                x: 0,
+                y: 0,
+                width: 15,
+                height: 15,
+                type: "custom",
+                onDraw: (g: GraphicsContext) => {
+                    this._graphicsContext = g;
+                    window.x = -20;
+                }
+            }],
+            onClose: () => {
+                context.setTimeout(() => {
+                    this._open();
+                }, 1);
+            }
+        });
     }
 
-    //Public
-    getImage(id: number): ImageInfo | undefined {
-        return this._graphincsContext.getImage(id);
-    }
-
-    measureText(text: string): UISize {
-        return this._graphincsContext.measureText(text);
+    graphicsContext(): GraphicsContextWrapper | undefined {
+        return this._graphicsContext;
     }
 }
 
-//TODO: _graphincsContext 할당이 제대로 되는 지 확인 필요
 const imageHelper = new ImageHelper();

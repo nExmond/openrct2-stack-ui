@@ -1,3 +1,5 @@
+/// <reference path='../UICore/UIImage.ts' />
+
 enum TextFont {
     Tiny = "TINYFONT",
     Small = "SMALLFONT",
@@ -95,8 +97,9 @@ class TextBuilder {
         }
 
         //convert newline
-        text = text.replace('\N', "{NEWLINE}");
-        text = text.replace('\n', "{NEWLINE_SMALLER}");
+        //TODO: 태그에 의해 반으로 나뉘는 경우 이전 태그가 유지되지 않으므로, 줄바꿈 태그를 기준으로 같은 속성값을 갖는 두 노드로 나눈다.
+        text = text.replace('\\N', "{NEWLINE}");
+        text = text.replace('\\n', "{NEWLINE_SMALLER}");
 
         return text ?? '';
     }
@@ -148,16 +151,6 @@ class TextNode {
 
     static $I(image: UIImage): ImageNode {
         var node = new ImageNode(image);
-        return node;
-    }
-
-    // static $NL(line: number = 1, isSmall: boolean = false): ImageNode {
-    //     var node = new NewlineNode(line, isSmall);
-    //     return node;
-    // }
-
-    static $M(x: number): ImageNode {
-        var node = new MoveNode(x);
         return node;
     }
 
@@ -269,22 +262,6 @@ class ImageNode extends StringNode {
         var width = image.size().width;
         //TODO: 이미지가 텍스트 중간에 들어가는 경우? 앞 텍스트의 너비를 계산해서 수평 위치 지정, 다음 텍스트는 이미지의 너비만큼 띄운 후 그려지도록 해야 함!
         var string = `{INLINE_SPRITE}{${item}}{${section}}{${head}}{0}{MOVE_X}{${width}}`;
-        super(string);
-    }
-}
-
-// class NewlineNode extends StringNode {
-
-//     constructor(line: number = 1, isSmall: boolean = false) {
-//         var string = [...Array(line)].map((): string => isSmall ? "{NEWLINE_SMALLER}" : "{NEWLINE}").join('');
-//         super(string);
-//     }
-// }
-
-class MoveNode extends StringNode {
-
-    constructor(x: number) {
-        var string = `{MOVE_X}{${x}}`;
         super(string);
     }
 }

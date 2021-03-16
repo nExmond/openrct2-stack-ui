@@ -36,11 +36,11 @@ var openWindow = function () {
     var builder = TB.$(
         TN.$(
             TN.$I(UIImageStaffOrdersEmptyBins),
-            TN.$M(14),
             TN.$(
                 TN.$(
-                    TN.$S("Text node")
+                    TN.$S("Text\\Nnode")
                 ).color(TextColor.PearlAqua)
+                    .outline()
             ),
             TN.$S("Text node2").color(TextColor.Yellow),
             TN.$(
