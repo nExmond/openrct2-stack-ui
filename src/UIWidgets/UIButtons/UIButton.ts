@@ -82,17 +82,17 @@ class UIButton extends UIWidget<ButtonWidget> {
 
         this._uiImage = val;
 
-        this._intervalHelper?.end();
+        intervalHelper.end(this._name);
         if (val._isAnimatable()) {
             var count = 0;
-            this._intervalHelper = new IntervalHelper(val._duration * 20, () => {
+            intervalHelper.start(this._name, val._duration * 20, () => {
                 var index = count % val._frames.length;
                 var frame = val._frames[index];
                 this.updateUI((widget) => {
                     widget._image = frame;
                 });
                 count += 1;
-            }).start();
+            })
         }
 
         this._image = val._frames[0];
@@ -100,8 +100,8 @@ class UIButton extends UIWidget<ButtonWidget> {
         return this;
     }
 
-    isImage(val: UIImage): boolean {
-        return this._uiImage?.isImage(val) ?? false;
+    isImageEqual(val: UIImage): boolean {
+        return this._uiImage?.isEqual(val) ?? false;
     }
 
     isPressed(val: boolean): this {

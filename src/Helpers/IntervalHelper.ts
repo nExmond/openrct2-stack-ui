@@ -1,26 +1,20 @@
 
 class IntervalHelper {
 
-    _delay: number;
-    _block: (() => void);
+    private _intervalInfos: { [ui: string]: number } = {}; 
 
-    _currentInterval: number | undefined;
+    constructor() {}
 
-    constructor(delay: number, block: () => void) {
-        this._delay = delay;
-        this._block = block;
+    start(key: string, delay: number, block: () => void) {
+        var id = context.setInterval(block, delay)
+        this._intervalInfos[key] = id;
     }
 
-    start(): this {
-        this._currentInterval = context.setInterval(this._block, this._delay);
-        return this;
-    }
-
-    end(): this {
-        var intervalId = this._currentInterval;
-        if (typeof intervalId !== 'undefined') {
-            context.clearInterval(intervalId);
-        }
-        return this;
+    end(key: string) {
+        var id = this._intervalInfos[key]
+        context.clearInterval(id);
+        delete this._intervalInfos[key];
     }
 }
+
+const intervalHelper = new IntervalHelper();
