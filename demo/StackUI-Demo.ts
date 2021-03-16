@@ -34,12 +34,19 @@ var openWindow = function () {
         .build();
 
     var builder = TB.$(
-        TextNode.$().color(TextColor.Green)
-            .append(ImageNode.$I(UIImageStaffOrdersEmptyBins))
-            .append(MoveNode.$M(10))
-            .append(TextNode.$("Text node").color(TextColor.PearlAqua))
-            .append(TextNode.$("Text node2").color(TextColor.Yellow).outline())
-            .append(TextNode.$("Text node3"))
+        TN.$(
+            TN.$I(UIImageStaffOrdersEmptyBins),
+            TN.$M(14),
+            TN.$(
+                TN.$(
+                    TN.$S("Text node")
+                ).color(TextColor.PearlAqua)
+            ),
+            TN.$S("Text node2").color(TextColor.Yellow),
+            TN.$(
+                TN.$S("Text node3")
+            ).outline()
+        ).color(TextColor.Green)
     );
 
     // console.log(builder.description());
