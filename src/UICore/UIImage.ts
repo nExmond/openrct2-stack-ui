@@ -77,10 +77,26 @@ class UIImage {
         return this._frames[0];
     }
 
-    isImage(val: UIImage): boolean {
+    isEqual(val: UIImage): boolean {
         var left = this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
         var right = val._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
         return left === right;
+    }
+
+    size(): UISize {
+        //포함된 이미지의 최대 크기 반환
+        return this._frames.map(val => {
+            var info = imageHelper.getImage(val)
+            return <UISize>{
+                width: info?.width ?? 0,
+                height: info?.height ?? 0
+            }
+        }).reduce((acc, val) => {
+            return {
+                width: Math.max(acc.width, val.width),
+                height: Math.max(acc.height, val.height)
+            }
+        })
     }
 
     description(): string {
