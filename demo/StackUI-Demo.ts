@@ -38,18 +38,21 @@ var openWindow = function () {
             TN.$I(UIImageStaffOrdersEmptyBins),
             TN.$(
                 TN.$(
-                    TN.$S("Text\\Nnode")
+                    TN.$S("T\next\nno\nde")
                 ).color(TextColor.PearlAqua)
-                    .outline()
-            ),
-            TN.$S("Text node2").color(TextColor.Yellow),
+                    .outline(),
+                TN.$S("ABC"),
+                TN.$I(UIImageStaffCostumeTiger),
+                TN.$S("abc"),
+                TN.$I(UIImageStaffOrdersSweeping)
+            ).outline(),
+            TN.$S("Tex\nt node2").color(TextColor.Yellow).outline(),
             TN.$(
                 TN.$S("Text node3")
             ).outline()
         ).color(TextColor.Green)
-    );
+    )
 
-    // console.log(builder.description());
 
     var test = builder.build();
 

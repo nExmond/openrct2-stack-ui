@@ -40,8 +40,8 @@ var openWindow = function () {
         .color(TextColor.PaleLavender)
         .outline()
         .build();
-    var builder = TB.$(TN.$(TN.$I(UIImageStaffOrdersEmptyBins), TN.$(TN.$(TN.$S("Text||node")).color(TextColor.PearlAqua)
-        .outline()), TN.$S("Text node2").color(TextColor.Yellow), TN.$(TN.$S("Text node3")).outline()).color(TextColor.Green));
+    var builder = TB.$(TN.$(TN.$I(UIImageStaffOrdersEmptyBins), TN.$(TN.$(TN.$S("T\next\nno\nde")).color(TextColor.PearlAqua)
+        .outline(), TN.$S("ABC"), TN.$I(UIImageStaffCostumeTiger), TN.$S("abc"), TN.$I(UIImageStaffOrdersSweeping)).outline(), TN.$S("Tex\nt node2").color(TextColor.Yellow).outline(), TN.$(TN.$S("Text node3")).outline()).color(TextColor.Green));
     var test = builder.build();
     UIWindow.$('test', UILabel.$(text)
         .align(UITextAlignment.Center)
@@ -119,6 +119,128 @@ var IntervalHelper = (function () {
     return IntervalHelper;
 }());
 var intervalHelper = new IntervalHelper();
+var UIInteractor = (function () {
+    function UIInteractor() {
+    }
+    UIInteractor.prototype.update = function (name, block) {
+        var widget = this._findWidget(name);
+        if (typeof widget !== 'undefined') {
+            block(widget);
+        }
+    };
+    UIInteractor.prototype.findWidget = function (block) {
+        this._findWidget = block;
+    };
+    return UIInteractor;
+}());
+var UIWidgetProxy = (function () {
+    function UIWidgetProxy() {
+    }
+    return UIWidgetProxy;
+}());
+var UIOptionalSizeDefulat = { width: undefined, height: undefined };
+var UISizeZero = { width: 0, height: 0 };
+var TextFormat;
+(function (TextFormat) {
+    TextFormat["Comma16"] = "COMMA16";
+    TextFormat["Comma32"] = "COMMA32";
+    TextFormat["Comma1dp16"] = "COMMA1DP16";
+    TextFormat["Comma2dp32"] = "COMMA2DP32";
+    TextFormat["Int32"] = "Int32";
+    TextFormat["UInt16"] = "UINT16";
+    TextFormat["Currency"] = "CURRENCY";
+    TextFormat["Currency2dp"] = "CURRENCY2DP";
+    TextFormat["MonthYear"] = "MONTHYEAR";
+    TextFormat["Month"] = "MONTH";
+    TextFormat["DurationShort"] = "DURATION";
+    TextFormat["DurationLong"] = "REALTIME";
+    TextFormat["Velocity"] = "VELOCITY";
+    TextFormat["Length"] = "LENGTH";
+    TextFormat["StringId"] = "STRINGID";
+})(TextFormat || (TextFormat = {}));
+Array.prototype.flatMapFunc = function (d) {
+    if (d === void 0) { d = 1; }
+    return d > 0 ? this.reduce(function (acc, val) { return acc.concat(Array.isArray(val) ? val.flatMapFunc(d - 1) : val); }, []) : this.slice();
+};
+Array.prototype.flatMap = function () {
+    return this.flatMapFunc(1);
+};
+Array.prototype.compactMap = function () {
+    return this.filter(function (val) { return val !== undefined; });
+};
+function uuid() {
+    var uuidValue = '', k, randomValue;
+    for (k = 0; k < 32; k++) {
+        randomValue = Math.random() * 16 | 0;
+        if (k == 8 || k == 12 || k == 16 || k == 20) {
+            uuidValue += '-';
+        }
+        uuidValue += (k == 12 ? 4 : (k == 16 ? (randomValue & 3 | 8) : randomValue)).toString(16);
+    }
+    return uuidValue;
+}
+String.prototype.size = function () {
+    var _a, _b;
+    return (_b = (_a = imageHelper.graphicsContext()) === null || _a === void 0 ? void 0 : _a.measureText(this.toString())) !== null && _b !== void 0 ? _b : UISizeZero;
+};
+String.prototype.remove = function () {
+    var strings = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        strings[_i] = arguments[_i];
+    }
+    var newString = this.toString();
+    for (var _a = 0, strings_1 = strings; _a < strings_1.length; _a++) {
+        var string = strings_1[_a];
+        newString = newString.split(string).join('');
+    }
+    return newString;
+};
+String.prototype.toClearString = function () {
+    var strings = this.toString().split('{').map(function (val) { return val.split('}'); }).flatMap();
+    var cleared = strings.filter(function (_, index) { return index % 2 === 0; }).join('');
+    return cleared;
+};
+String.prototype.format = function (format) {
+    var arg = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        arg[_i - 1] = arguments[_i];
+    }
+    return context.formatString.apply(context, __spreadArray(["{" + format + "}", this], arg));
+};
+Number.prototype.format = function (format) {
+    var arg = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        arg[_i - 1] = arguments[_i];
+    }
+    return context.formatString.apply(context, __spreadArray(["{" + format + "}", this], arg));
+};
+var TextColor;
+(function (TextColor) {
+    TextColor["WindowPrimary"] = "WINDOW_COLOUR_1";
+    TextColor["WindowSecondary"] = "WINDOW_COLOUR_2";
+    TextColor["WindowTertiary"] = "WINDOW_COLOUR_3";
+    TextColor["Black"] = "BLACK";
+    TextColor["Gray"] = "GREY";
+    TextColor["White"] = "WHITE";
+    TextColor["Red"] = "RED";
+    TextColor["Green"] = "GREEN";
+    TextColor["Yellow"] = "YELLOW";
+    TextColor["Topaz"] = "TOPAZ";
+    TextColor["Celadon"] = "CELADON";
+    TextColor["BabyBlue"] = "BABYBLUE";
+    TextColor["PaleLavender"] = "PALELAVENDER";
+    TextColor["PaleGold"] = "PALEGOLD";
+    TextColor["LightPink"] = "LIGHTPINK";
+    TextColor["PearlAqua"] = "PEARLAQUA";
+    TextColor["PaleSilver"] = "PALESILVER";
+})(TextColor || (TextColor = {}));
+var TextFont;
+(function (TextFont) {
+    TextFont["Tiny"] = "TINYFONT";
+    TextFont["Small"] = "SMALLFONT";
+    TextFont["Medium"] = "MEDIUMFONT";
+    TextFont["Big"] = "BIGFONT";
+})(TextFont || (TextFont = {}));
 var UIPointZero = { x: 0, y: 0 };
 var UIImage = (function () {
     function UIImage(frames) {
@@ -377,7 +499,7 @@ var UIImageTabRidesTransport = UIImage.$A(5537, 5, 4);
 var UIImageTabRidesGentle = UIImage.$A(5542, 4, 8);
 var UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 2);
 var UIImageTabRidesWater = UIImage.$A(5551, 6, 4);
-var UIImageTabRidesThrill = UIImage.$F([5562, 5563, 5562, 5561, 5560, 5559, 5558, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5558, 5559, 5560, 5561,], 4);
+var UIImageTabRidesThrill = UIImage.$F([5562, 5563, 5562, 5561, 5560, 5559, 5558, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5558, 5559, 5560, 5561], 4);
 var UIImageTabGuests = UIImage.$A(5568, 8, 4);
 var UIImageAwardMostUntidy = UIImage.$(5469);
 var UIImageAwardMostTidy = UIImage.$(5470);
@@ -599,104 +721,6 @@ var UIImageG2SceneryScatterLow = UIImage.$(29489);
 var UIImageG2SceneryScatterMedium = UIImage.$(29490);
 var UIImageG2SceneryScatterHigh = UIImage.$(29491);
 var UIImageG2View = UIImage.$(29494);
-var TextFont;
-(function (TextFont) {
-    TextFont["Tiny"] = "TINYFONT";
-    TextFont["Small"] = "SMALLFONT";
-    TextFont["Medium"] = "MEDIUMFONT";
-    TextFont["Big"] = "BIGFONT";
-})(TextFont || (TextFont = {}));
-var TextColor;
-(function (TextColor) {
-    TextColor["WindowPrimary"] = "WINDOW_COLOUR_1";
-    TextColor["WindowSecondary"] = "WINDOW_COLOUR_2";
-    TextColor["WindowTertiary"] = "WINDOW_COLOUR_3";
-    TextColor["Black"] = "BLACK";
-    TextColor["Gray"] = "GREY";
-    TextColor["White"] = "WHITE";
-    TextColor["Red"] = "RED";
-    TextColor["Green"] = "GREEN";
-    TextColor["Yellow"] = "YELLOW";
-    TextColor["Topaz"] = "TOPAZ";
-    TextColor["Celadon"] = "CELADON";
-    TextColor["BabyBlue"] = "BABYBLUE";
-    TextColor["PaleLavender"] = "PALELAVENDER";
-    TextColor["PaleGold"] = "PALEGOLD";
-    TextColor["LightPink"] = "LIGHTPINK";
-    TextColor["PearlAqua"] = "PEARLAQUA";
-    TextColor["PaleSilver"] = "PALESILVER";
-})(TextColor || (TextColor = {}));
-var TextFormat;
-(function (TextFormat) {
-    TextFormat["Comma16"] = "COMMA16";
-    TextFormat["Comma32"] = "COMMA32";
-    TextFormat["Comma1dp16"] = "COMMA1DP16";
-    TextFormat["Comma2dp32"] = "COMMA2DP32";
-    TextFormat["Int32"] = "Int32";
-    TextFormat["UInt16"] = "UINT16";
-    TextFormat["Currency"] = "CURRENCY";
-    TextFormat["Currency2dp"] = "CURRENCY2DP";
-    TextFormat["MonthYear"] = "MONTHYEAR";
-    TextFormat["Month"] = "MONTH";
-    TextFormat["DurationShort"] = "DURATION";
-    TextFormat["DurationLong"] = "REALTIME";
-    TextFormat["Velocity"] = "VELOCITY";
-    TextFormat["Length"] = "LENGTH";
-    TextFormat["StringId"] = "STRINGID";
-})(TextFormat || (TextFormat = {}));
-var TextBuilder = (function () {
-    function TextBuilder(node) {
-        this._outline = false;
-        if (typeof node === 'string' || typeof node === 'undefined') {
-            this._root = StringNode.$S(node);
-        }
-        else {
-            this._root = node;
-        }
-    }
-    TextBuilder.$ = function (node) {
-        var builder = new TextBuilder(node);
-        return builder;
-    };
-    TextBuilder.prototype.build = function () {
-        this._root._unifyColor(this._color);
-        this._root._unifyOutline(this._outline);
-        var text = this._root._text();
-        if (typeof text !== 'undefined') {
-            if (typeof this._font !== 'undefined') {
-                var fontClear = text.remove(TextFont.Tiny, TextFont.Small, TextFont.Medium, TextFont.Big);
-                text = "{" + this._font + "}" + fontClear;
-            }
-        }
-        text = text.replace("||", "{NEWLINE}");
-        text = text.replace("|", "{NEWLINE_SMALLER}");
-        return text !== null && text !== void 0 ? text : '';
-    };
-    TextBuilder.prototype.font = function (val) {
-        this._font = val;
-        return this;
-    };
-    TextBuilder.prototype.outline = function () {
-        this._outline = true;
-        return this;
-    };
-    TextBuilder.prototype.color = function (val) {
-        this._color = val;
-        return this;
-    };
-    TextBuilder.prototype.description = function () {
-        return this._root._description();
-    };
-    return TextBuilder;
-}());
-var TB = (function (_super) {
-    __extends(TB, _super);
-    function TB() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return TB;
-}(TextBuilder));
-;
 var TextNode = (function () {
     function TextNode(childs) {
         this._childs = [];
@@ -731,13 +755,48 @@ var TextNode = (function () {
     TextNode.prototype._text = function () {
         return this._childs.map(function (val) { return val._text(); }).join('');
     };
+    TextNode.prototype._unifyNewline = function (font) {
+        if (font === void 0) { font = undefined; }
+        var existFont = typeof font !== 'undefined';
+        var isSmaller = existFont && font === TextFont.Tiny;
+        if (this._isStopover()) {
+            var numberOfChilds = this._childs.length;
+            for (var i = 0; i < numberOfChilds; i++) {
+                var child = this._childs[i];
+                if (child._isLeaf() && child instanceof StringNode) {
+                    var splitted = child._string.split("\\n");
+                    if (splitted.length > 1) {
+                        var newChilds = splitted
+                            .map(function (val, index, array) {
+                            var node = new StringNode(val, false);
+                            node._outline = child._outline;
+                            node._color = child._color;
+                            var nodes = [node];
+                            if (index < array.length - 1) {
+                                nodes.push(new _NewlineNode(isSmaller));
+                                if (existFont) {
+                                    nodes.push(new _FontNode(font));
+                                }
+                            }
+                            return nodes;
+                        }).reduce(function (acc, val) { return acc.concat(val); });
+                        var newNode = TextNode.$.apply(TextNode, newChilds);
+                        this._childs[i] = newNode;
+                    }
+                }
+                else {
+                    child._unifyNewline(font);
+                }
+            }
+        }
+    };
     TextNode.prototype._unifyOutline = function (parentExist) {
         if (parentExist === void 0) { parentExist = false; }
         if (this._isLeaf() && this instanceof StringNode) {
             if (parentExist) {
                 this._string = this._string.remove("{OUTLINE}").remove("{OUTLINE_OFF}");
             }
-            else if (this._outline) {
+            else if (this._outline && this._isPureString()) {
                 this._string = "{OUTLINE}" + this._string + "{OUTLINE_OFF}";
             }
         }
@@ -750,13 +809,26 @@ var TextNode = (function () {
                     child._unifyOutline(apply);
                 }
                 if (apply) {
-                    var first = childs[0];
-                    if (first instanceof StringNode) {
-                        first._string = "{OUTLINE}" + first._string;
-                    }
-                    var last = childs[childs.length - 1];
-                    if (last instanceof StringNode) {
-                        last._string = last._string + "{OUTLINE_OFF}";
+                    var isBegin = true;
+                    var prevChild;
+                    for (var i = 0; i < childs.length; i++) {
+                        var child = this._childs[i];
+                        if (isBegin && child instanceof StringNode) {
+                            child._string = "{OUTLINE}" + child._string;
+                            isBegin = false;
+                        }
+                        if (child instanceof _NewlineNode) {
+                            if (typeof prevChild !== 'undefined') {
+                                prevChild._string = prevChild._string + "{OUTLINE_OFF}";
+                            }
+                            isBegin = true;
+                        }
+                        if (child instanceof StringNode) {
+                            prevChild = child;
+                            if (i >= this._childs.length - 1) {
+                                child._string = child._string + "{OUTLINE_OFF}";
+                            }
+                        }
                     }
                 }
             }
@@ -766,7 +838,7 @@ var TextNode = (function () {
         var _a;
         if (parentColor === void 0) { parentColor = undefined; }
         var color = (_a = this._color) !== null && _a !== void 0 ? _a : parentColor;
-        if (this._isLeaf() && this instanceof StringNode) {
+        if (this._isLeaf() && this._isPureString() && this instanceof StringNode) {
             this._string = "{" + color + "}" + this._string;
         }
         else if (this._isStopover()) {
@@ -776,12 +848,32 @@ var TextNode = (function () {
             }
         }
     };
-    TextNode.prototype._description = function (depth) {
-        var _a;
+    TextNode.prototype.__leafs = function () {
+        if (this._isLeaf()) {
+            var string = this;
+            return [string];
+        }
+        else {
+            return this._childs.map(function (val) { return val.__leafs(); }).flatMap();
+        }
+    };
+    TextNode.prototype._description = function (depth, index) {
         if (depth === void 0) { depth = 0; }
-        var tabs = __spreadArray([], Array(depth)).map(function (val) { return "\t"; }).join('');
-        var childs = (_a = this._childs) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._description(depth + 1); }).join('\n' + tabs);
-        return tabs + "| outline: " + this._outline + " | color: " + this._color + "\n\t" + tabs + "childs:" + childs;
+        if (index === void 0) { index = undefined; }
+        var tab = "│ ";
+        var tabs = __spreadArray([], Array(depth)).map(function (_) { return tab; }).join('');
+        var childTabs = tabs + tab;
+        var childs = "[]";
+        if (typeof this._childs !== 'undefined' && this._childs.length > 0) {
+            childs = "[" + this._childs.map(function (val, index) { return val._description(depth + 1, index); }).join(",") + "]";
+        }
+        return (typeof index !== 'undefined' ? '[' + index + ']' : '') + "{\n" + childTabs + "type: " + this.constructor.name + "," + (this instanceof StringNode ? '\n' + childTabs + "string: " + this._string + ',' : '') + "\n" + childTabs + "outline: " + this._outline + ",\n" + childTabs + "color: " + this._color + ",\n" + childTabs + "childs: " + childs + "\n" + tabs + "}";
+    };
+    TextNode.prototype._isPureString = function () {
+        return this instanceof ImageNode === false && !this._isPrivate();
+    };
+    TextNode.prototype._isPrivate = function () {
+        return this instanceof _NewlineNode || this instanceof _FontNode;
     };
     TextNode.prototype.outline = function (val) {
         if (val === void 0) { val = true; }
@@ -802,11 +894,67 @@ var TN = (function (_super) {
     return TN;
 }(TextNode));
 ;
+var TextBuilder = (function () {
+    function TextBuilder(node) {
+        this._outline = false;
+        if (typeof node === 'string' || typeof node === 'undefined') {
+            this._root = StringNode.$S(node);
+        }
+        else {
+            this._root = node;
+        }
+    }
+    TextBuilder.$ = function (node) {
+        var builder = new TextBuilder(node);
+        return builder;
+    };
+    TextBuilder.prototype._text = function () {
+        var font = typeof this._font !== 'undefined' ? "{" + this._font + "}" : '';
+        var text = font + this._root._text();
+        return text;
+    };
+    TextBuilder.prototype.build = function () {
+        this._root._unifyNewline(this._font);
+        this._root._unifyColor(this._color);
+        this._root._unifyOutline(this._outline);
+        return this._text();
+    };
+    TextBuilder.prototype.font = function (val) {
+        this._font = val;
+        return this;
+    };
+    TextBuilder.prototype.outline = function () {
+        this._outline = true;
+        return this;
+    };
+    TextBuilder.prototype.color = function (val) {
+        this._color = val;
+        return this;
+    };
+    TextBuilder.prototype.description = function () {
+        return this._root._description();
+    };
+    return TextBuilder;
+}());
+var TB = (function (_super) {
+    __extends(TB, _super);
+    function TB() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return TB;
+}(TextBuilder));
+;
 var StringNode = (function (_super) {
     __extends(StringNode, _super);
-    function StringNode(string) {
+    function StringNode(string, useEscaping) {
+        if (useEscaping === void 0) { useEscaping = true; }
         var _this = _super.call(this, []) || this;
-        _this._string = string;
+        if (useEscaping) {
+            _this._string = string.split('\n').join("\\n");
+        }
+        else {
+            _this._string = string;
+        }
         return _this;
     }
     StringNode.prototype._isValid = function () {
@@ -825,81 +973,34 @@ var ImageNode = (function (_super) {
         var head = Math.floor(imageId / (256 * 256));
         var section = Math.floor(imageId / 256);
         var item = imageId % 256;
-        var width = image.size().width;
-        var string = "{INLINE_SPRITE}{" + item + "}{" + section + "}{" + head + "}{0}{MOVE_X}{" + width + "}";
-        _this = _super.call(this, string) || this;
+        var string = "{INLINE_SPRITE}{" + item + "}{" + section + "}{" + head + "}{0}";
+        _this = _super.call(this, string, false) || this;
+        _this._image = image;
         return _this;
     }
     return ImageNode;
 }(StringNode));
-String.prototype.remove = function () {
-    var strings = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        strings[_i] = arguments[_i];
+var _NewlineNode = (function (_super) {
+    __extends(_NewlineNode, _super);
+    function _NewlineNode(isSmaller) {
+        if (isSmaller === void 0) { isSmaller = false; }
+        var _this = this;
+        var string = isSmaller ? "{NEWLINE_SMALLER}{NEWLINE_SMALLER}" : "{NEWLINE}";
+        _this = _super.call(this, string, false) || this;
+        return _this;
     }
-    var newString = this.toString();
-    for (var _a = 0, strings_1 = strings; _a < strings_1.length; _a++) {
-        var string = strings_1[_a];
-        newString = newString.replace(string, '');
+    return _NewlineNode;
+}(StringNode));
+var _FontNode = (function (_super) {
+    __extends(_FontNode, _super);
+    function _FontNode(font) {
+        var _this = this;
+        var string = "{" + font + "}";
+        _this = _super.call(this, string, false) || this;
+        return _this;
     }
-    return newString;
-};
-String.prototype.format = function (format) {
-    var arg = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        arg[_i - 1] = arguments[_i];
-    }
-    return context.formatString.apply(context, __spreadArray(["{" + format + "}", this], arg));
-};
-Number.prototype.format = function (format) {
-    var arg = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        arg[_i - 1] = arguments[_i];
-    }
-    return context.formatString.apply(context, __spreadArray(["{" + format + "}", this], arg));
-};
-var UIInteractor = (function () {
-    function UIInteractor() {
-    }
-    UIInteractor.prototype.update = function (name, block) {
-        var widget = this._findWidget(name);
-        if (typeof widget !== 'undefined') {
-            block(widget);
-        }
-    };
-    UIInteractor.prototype.findWidget = function (block) {
-        this._findWidget = block;
-    };
-    return UIInteractor;
-}());
-var UIWidgetProxy = (function () {
-    function UIWidgetProxy() {
-    }
-    return UIWidgetProxy;
-}());
-Array.prototype.flatMapFunc = function (d) {
-    if (d === void 0) { d = 1; }
-    return d > 0 ? this.reduce(function (acc, val) { return acc.concat(Array.isArray(val) ? val.flatMapFunc(d - 1) : val); }, []) : this.slice();
-};
-Array.prototype.flatMap = function () {
-    return this.flatMapFunc(1);
-};
-Array.prototype.compactMap = function () {
-    return this.filter(function (val) { return val !== undefined; });
-};
-function uuid() {
-    var uuidValue = '', k, randomValue;
-    for (k = 0; k < 32; k++) {
-        randomValue = Math.random() * 16 | 0;
-        if (k == 8 || k == 12 || k == 16 || k == 20) {
-            uuidValue += '-';
-        }
-        uuidValue += (k == 12 ? 4 : (k == 16 ? (randomValue & 3 | 8) : randomValue)).toString(16);
-    }
-    return uuidValue;
-}
-var UIOptionalSizeDefulat = { width: undefined, height: undefined };
-var UISizeZero = { width: 0, height: 0 };
+    return _FontNode;
+}(StringNode));
 var UIEdgeInsetsZero = { top: 0, left: 0, bottom: 0, right: 0 };
 var UIEdgeInsetsContainer = { top: 16, left: 2, bottom: 2, right: 2 };
 var UIEdgeInsetsTabContainer = { top: 45, left: 2, bottom: 2, right: 2 };

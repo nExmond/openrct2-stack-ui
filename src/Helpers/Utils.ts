@@ -1,3 +1,5 @@
+/// <reference path='../UICore/UISize.ts' />
+/// <reference path='../UICore/TextFormat.ts' />
 
 interface Array<T> {
     flatMap<T>(): T[];
@@ -28,3 +30,46 @@ function uuid(): string {
 }
 
 type StaticThis<T> = { new(): T };
+
+interface String {
+    size(): UISize;
+}
+String.prototype.size = function (): UISize {
+    return imageHelper.graphicsContext()?.measureText(this.toString()) ?? UISizeZero;
+}
+
+interface String {
+    remove(...strings: string[]): string;
+}
+String.prototype.remove = function (...strings: string[]): string {
+    var newString = this.toString();
+    for (var string of strings) {
+        newString = newString.split(string).join('');
+    }
+    return newString;
+}
+
+interface String {
+    toClearString(): string;
+}
+String.prototype.toClearString = function (): string {
+    var strings: string[] = this.toString().split('{').map(val => val.split('}')).flatMap();
+    var cleared = strings.filter((_, index) => index % 2 === 0).join('');
+    return cleared;
+}
+
+
+interface String {
+    format(format: TextFormat, ...arg: any[]): string;
+}
+String.prototype.format = function (format: TextFormat, ...arg: any[]): string {
+    return context.formatString(`{${format}}`, this, ...arg);
+}
+
+
+interface Number {
+    format(format: TextFormat, ...arg: any[]): string;
+}
+Number.prototype.format = function (format: TextFormat, ...arg: any[]): string {
+    return context.formatString(`{${format}}`, this, ...arg);
+}
