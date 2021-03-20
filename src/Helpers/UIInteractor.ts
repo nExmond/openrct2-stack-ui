@@ -1,6 +1,7 @@
 class UIInteractor {
 
     _findWidget!: <T extends Widget>(name: string) => T | undefined;
+    _refreshWindow!: () => void;
 
     constructor() { }
 
@@ -13,5 +14,13 @@ class UIInteractor {
 
     findWidget(block: <T extends Widget>(name: string) => T | undefined) {
         this._findWidget = block;
+    }
+
+    _refresh(block: () => void) {
+        this._refreshWindow = block;
+    }
+    
+    refreshWindow() {
+        this._refreshWindow();
     }
 }

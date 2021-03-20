@@ -166,6 +166,46 @@ class UIWindow {
         }
     }
 
+    _reflectResizingFromChild() {
+
+        var minSize = this._minSize;
+        var maxSize = this._maxSize;
+        var contentView = this._singleContentView;
+
+        if (typeof this._tabs !== 'undefined') {
+            var currentTab = this._tabs![this._selectedTabIndex];
+            contentView = currentTab._contentView;
+
+            contentView._resetSize();
+            
+            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
+
+            minSize = currentTab._minSize;
+            maxSize = currentTab._maxSize;
+
+        } else if (typeof this._singleContentView !== 'undefined') {
+            contentView = this._singleContentView;
+
+            contentView._resetSize();
+
+            var construct = this._uiConstructor.construct(this._singleContentView, this._interactor);
+
+            minSize = construct.size;
+            maxSize = this._maxSize;
+        }
+        
+        var size: UISize = {
+            width: Math.max(Math.min(this._size.width, maxSize.width), minSize.width),
+            height: Math.max(Math.min(this._size.height, maxSize.height), minSize.height)
+        }
+        contentView?._loadWidget();
+        this._refresh(size);
+        this.updateUI((window) => {
+            window._minSize = minSize;
+            window._maxSize = maxSize;
+        })
+    }
+
     //Public
 
     show(): this {
@@ -228,6 +268,9 @@ class UIWindow {
 
         this._interactor.findWidget((name) => {
             return this.findWidget(name);
+        });
+        this._interactor._refresh(() => {
+            this._reflectResizingFromChild();
         });
 
         if (typeof singlecontentView !== 'undefined') {

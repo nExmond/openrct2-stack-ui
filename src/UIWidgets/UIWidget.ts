@@ -139,8 +139,14 @@ class UIWidget<T extends Widget> {
     //Public
 
     updateUI(block: ((widget: this) => void) | undefined = undefined) {
+        var prevSize = this._size;
         block?.(this);
-        this._refreshUI();
+        var changedSize = this._size;
+        if (prevSize.width === changedSize.width && prevSize.height === changedSize.height) {
+            this._refreshUI();
+        } else {
+            this._interactor.refreshWindow();
+        }
     }
 
     minSize(val: UISize): this {
@@ -166,9 +172,15 @@ class UIWidget<T extends Widget> {
         return this;
     }
 
-    size(val: UISize): this {
-        this._size = val;
-        this._initialSize = val;
+    size(val: UISize | number): this {
+        var size = UISizeZero;
+        if (typeof val === 'number') {
+            size = { width: val, height: val };
+        } else {
+            size = val;
+        }
+        this._size = size;
+        this._initialSize = size;
         return this;
     }
 
