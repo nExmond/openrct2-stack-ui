@@ -230,6 +230,7 @@ class UIWindow {
             var constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
             tabDescriptions = constructed.tabs;
             this._minSize = constructed.size;
+            this._maxSize = this._tabs[this._selectedTabIndex]._maxSize;
             this._isExpandable ||= this._tabs?.[this._selectedTabIndex]._isExpandable ?? false;
         }
 
