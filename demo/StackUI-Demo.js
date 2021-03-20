@@ -31,22 +31,59 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 var openWindow = function () {
-    var currency = (1000000).format(TextFormat.Currency);
-    var monthYear = (120).format(TextFormat.MonthYear);
-    var message = "\uCD5C\uC18C " + currency + " \uC774\uC0C1\uC758 \uACF5\uC6D0 \uAC00\uCE58\uB97C " + monthYear + "\uAE4C\uC9C0 \uB2EC\uC131\uD558\uC138\uC694";
-    var stringId = (1347).format(TextFormat.StringId, 30);
-    var text = TB.$(message)
-        .font(TextFont.Big)
-        .color(TextColor.PaleLavender)
-        .outline()
-        .build();
-    var builder = TB.$(TN.$(TN.$I(UIImageStaffOrdersEmptyBins), TN.$(TN.$(TN.$S("T\next\nno\nde")).color(TextColor.PearlAqua)
-        .outline(), TN.$S("ABC"), TN.$I(UIImageStaffCostumeTiger), TN.$S("abc"), TN.$I(UIImageStaffOrdersSweeping)).outline(), TN.$S("Tex\nt node2").color(TextColor.Yellow).outline(), TN.$(TN.$S("Text node3")).outline()).color(TextColor.Green));
-    var test = builder.build();
-    UIWindow.$('test', UILabel.$(text)
-        .align(UITextAlignment.Center)
-        .width(500), UILabel.$(stringId)
-        .align(UITextAlignment.Center), UILabel.$(test)).themeSecondaryColor(UIColor.BrightRed)
+    var images = [
+        UIImageTabGears, UIImageTabWrench, UIImageTabPaint, UIImageTabTimer,
+        UIImageTabGraphA, UIImageTabGraph, UIImageTabAdmission, UIImageTabFinancesSummary,
+        UIImageTabThoughts, UIImageTabStats, UIImageTabStaffOptions, UIImageTabFinancesResearch,
+        UIImageTabMusic, UIImageTabShopsAndStalls, UIImageTabKiosksAndFacilities, UIImageTabFinancesFinancialGraph,
+        UIImageTabFinancesProfitGraph, UIImageTabFinancesValueGraph, UIImageTabFinancesMarketing, UIImageTabRide,
+        UIImagePeepLargeFaceVerySick, UIImagePeepLargeFaceVeryVerySick, UIImagePeepLargeFaceAngry
+    ];
+    var window = UIWindow.$T('직원', UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(12), UIStack.$H(UILabel.$('유니폼 색상:')
+        .width(100), UIColorPicker.$(UIColor.BrightRed)
+        .onChange(function (picker, color) {
+        window.updateUI(function (window) {
+            window.themePrimaryColor(color);
+        });
+    }), UISpacer.$(10), UIColorPicker.$(UIColor.BrightRed)
+        .onChange(function (picker, color) {
+        window.updateUI(function (window) {
+            window.themeSecondaryColor(color);
+        });
+    }))), UISpacer.$(), UIButton.$I(UIImageClosed)
+        .onClick(function (val) {
+        val.updateUI(function (widget) {
+            if (widget.isImageEqual(UIImageClosed)) {
+                widget.image(UIImageOpen).size(48);
+            }
+            else {
+                widget.image(UIImageClosed).size(24);
+            }
+        });
+    }), UIToggleButton.$I(UIImageOpen)
+        .onPress(function (button, isPressed) {
+        console.log(button._name, isPressed);
+    }), UIPageImageButton.$IP.apply(UIPageImageButton, images).size({ width: 30, height: 27 })
+        .onPage(function (button, image) {
+        console.log(image.description());
+    })), UIListView.$([
+        UIListViewColumn.$('이름')
+    ]).showColumnHeaders(true)
+        .scrollbarType(UIScrollbarType.both)
+        .isStriped(true)
+        .canSelect(true)
+        .addItems([
+        UIListViewItem.$([TB.$(TN.$(TN.$I(UIImageStaffCostumeTiger), TN.$I(UIImageStaffCostumeSnowman), TN.$I(UIImageStaffCostumeKnight))).build()])
+    ]), UILabel.$('1 미화원')).image(UIImageTabGears)
+        .isExpandable(true)
+        .maxSize({ width: 500, height: 500 }), UITab.$(UILabel.$('두번째 탭'), UISpinner.$()).image(UIImageTabFinancesResearch), UITab.$(UILabel.$('세번째 탭')).image(UIImageTabKiosksAndFacilities)
+        .isExpandable(true), UITab.$(UILabel.$('네번째 탭')).image(UIImageTabFinancesSummary)
+        .isExpandable(true)
+        .maxSize({ width: 400, height: 100 })).theme({
+        primary: UIColor.Gray,
+        secondary: UIColor.DarkOliveGreen,
+        tertiary: UIColor.LightOrange
+    })
         .show();
 };
 var main = function () {
@@ -113,8 +150,10 @@ var IntervalHelper = (function () {
     };
     IntervalHelper.prototype.end = function (key) {
         var id = this._intervalInfos[key];
-        context.clearInterval(id);
-        delete this._intervalInfos[key];
+        if (typeof id !== 'undefined') {
+            context.clearInterval(id);
+            delete this._intervalInfos[key];
+        }
     };
     return IntervalHelper;
 }());
@@ -130,6 +169,12 @@ var UIInteractor = (function () {
     };
     UIInteractor.prototype.findWidget = function (block) {
         this._findWidget = block;
+    };
+    UIInteractor.prototype._refresh = function (block) {
+        this._refreshWindow = block;
+    };
+    UIInteractor.prototype.refreshWindow = function () {
+        this._refreshWindow();
     };
     return UIInteractor;
 }());
@@ -1113,7 +1158,7 @@ var UIWidget = (function () {
     };
     UIWidget.prototype._applyFont = function (text) {
         if (typeof this._font !== 'undefined' && typeof text !== 'undefined') {
-            return new TextBuilder(text).font(this._font).build();
+            return TB.$(text).font(this._font).build();
         }
         else {
             return text;
@@ -1121,8 +1166,15 @@ var UIWidget = (function () {
     };
     UIWidget.prototype.updateUI = function (block) {
         if (block === void 0) { block = undefined; }
+        var prevSize = this._size;
         block === null || block === void 0 ? void 0 : block(this);
-        this._refreshUI();
+        var changedSize = this._size;
+        if (prevSize.width === changedSize.width && prevSize.height === changedSize.height) {
+            this._refreshUI();
+        }
+        else {
+            this._interactor.refreshWindow();
+        }
     };
     UIWidget.prototype.minSize = function (val) {
         this._minSize = val;
@@ -1145,8 +1197,15 @@ var UIWidget = (function () {
         return this;
     };
     UIWidget.prototype.size = function (val) {
-        this._size = val;
-        this._initialSize = val;
+        var size = UISizeZero;
+        if (typeof val === 'number') {
+            size = { width: val, height: val };
+        }
+        else {
+            size = val;
+        }
+        this._size = size;
+        this._initialSize = size;
         return this;
     };
     UIWidget.prototype.tooltip = function (val) {
@@ -1849,6 +1908,9 @@ var UISpinner = (function (_super) {
         _this._value = 0.5;
         _this._step = 0.1;
         _this._fixed = 1;
+        _this._dialogueTitle = "Title";
+        _this._dialogueMessage = "Message{NEWLINE}(Set it using function 'dialogueInfo')";
+        _this._dialogueMaxLength = 0;
         return _this;
     }
     UISpinner.$ = function () {
@@ -1874,8 +1936,22 @@ var UISpinner = (function (_super) {
                 _this._value = Math.min(_this._value + _this._step, _this._max);
                 _this._signal(prev, _this._value);
             }, onClick: function () {
-                var _a;
-                (_a = _this._onClick) === null || _a === void 0 ? void 0 : _a.call(_this, _this);
+                var _a, _b, _c;
+                var currentLength = ((_b = (_a = _this._text) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0) + 1;
+                var maxLength = Math.max(_this._dialogueMaxLength, currentLength);
+                console.log(currentLength, maxLength, (_c = _this._text) === null || _c === void 0 ? void 0 : _c.length, _this._fixed);
+                var desc = {
+                    title: _this._dialogueTitle,
+                    description: _this._dialogueMessage,
+                    initialValue: _this._text,
+                    maxLength: maxLength,
+                    callback: function (value) {
+                        var prev = _this._value;
+                        _this._value = Math.max(Math.min(parseFloat(value), _this._max), _this._min);
+                        _this._signal(prev, _this._value);
+                    }
+                };
+                ui.showTextInput(desc);
             } });
     };
     UISpinner.prototype._signal = function (prev, current) {
@@ -1951,8 +2027,11 @@ var UISpinner = (function (_super) {
         this._onChange = block;
         return this;
     };
-    UISpinner.prototype.onClick = function (block) {
-        this._onClick = block;
+    UISpinner.prototype.dialogueInfo = function (title, message, maxLength) {
+        if (maxLength === void 0) { maxLength = 0; }
+        this._dialogueTitle = title;
+        this._dialogueMessage = message;
+        this._dialogueMaxLength = maxLength;
         return this;
     };
     return UISpinner;
@@ -2253,7 +2332,7 @@ var UIListView = (function (_super) {
     UIListView.prototype._build = function () {
         var _this = this;
         var _a;
-        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'listview', scrollbars: this._scrollbarType, isStriped: this._isStriped, showColumnHeaders: this._showColumnHeaders, columns: (_a = this._columns) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._data(_this._applyFont); }), items: this._items.map(function (val) { return val._data(_this._applyFont); }), selectedCell: this._selectedCell, canSelect: this._canSelect, onHighlight: function (item, column) {
+        this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'listview', scrollbars: this._scrollbarType, isStriped: this._isStriped, showColumnHeaders: this._showColumnHeaders, columns: (_a = this._columns) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._data(function (val) { return _this._applyFont(val); }); }), items: this._items.map(function (val) { return val._data(function (val) { return _this._applyFont(val); }); }), selectedCell: this._selectedCell, canSelect: this._canSelect, onHighlight: function (item, column) {
                 var _a;
                 (_a = _this._onHeighlight) === null || _a === void 0 ? void 0 : _a.call(_this, _this, column, item);
             }, onClick: function (item, column) {
@@ -2268,8 +2347,8 @@ var UIListView = (function (_super) {
         widget.scrollbars = this._scrollbarType;
         widget.isStriped = this._isStriped;
         widget.showColumnHeaders = this._showColumnHeaders;
-        widget.columns = (_a = this._columns) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._data(_this._applyFont); });
-        widget.items = this._items.map(function (val) { return val._data(_this._applyFont); });
+        widget.columns = (_a = this._columns) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._data(function (val) { return _this._applyFont(val); }); });
+        widget.items = this._items.map(function (val) { return val._data(function (val) { return _this._applyFont(val); }); });
         widget.selectedCell = this._selectedCell;
         widget.canSelect = this._canSelect;
     };
@@ -2577,6 +2656,36 @@ var UIWindow = (function () {
             this._uiConstructor.refresh(this._singleContentView, size);
         }
     };
+    UIWindow.prototype._reflectResizingFromChild = function () {
+        var minSize = this._minSize;
+        var maxSize = this._maxSize;
+        var contentView = this._singleContentView;
+        if (typeof this._tabs !== 'undefined') {
+            var currentTab = this._tabs[this._selectedTabIndex];
+            contentView = currentTab._contentView;
+            contentView._resetSize();
+            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
+            minSize = currentTab._minSize;
+            maxSize = currentTab._maxSize;
+        }
+        else if (typeof this._singleContentView !== 'undefined') {
+            contentView = this._singleContentView;
+            contentView._resetSize();
+            var construct = this._uiConstructor.construct(this._singleContentView, this._interactor);
+            minSize = construct.size;
+            maxSize = this._maxSize;
+        }
+        var size = {
+            width: Math.max(Math.min(this._size.width, maxSize.width), minSize.width),
+            height: Math.max(Math.min(this._size.height, maxSize.height), minSize.height)
+        };
+        contentView === null || contentView === void 0 ? void 0 : contentView._loadWidget();
+        this._refresh(size);
+        this.updateUI(function (window) {
+            window._minSize = minSize;
+            window._maxSize = maxSize;
+        });
+    };
     UIWindow.prototype.show = function () {
         var _this = this;
         var _a, _b, _c;
@@ -2635,6 +2744,9 @@ var UIWindow = (function () {
         this._sync();
         this._interactor.findWidget(function (name) {
             return _this.findWidget(name);
+        });
+        this._interactor._refresh(function () {
+            _this._reflectResizingFromChild();
         });
         if (typeof singlecontentView !== 'undefined') {
             this._uiConstructor.didLoad(singlecontentView);
