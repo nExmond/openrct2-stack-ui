@@ -4,7 +4,6 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     _text: string | undefined;
     _onChange: ((spinner: this, val: number) => void) | undefined;
-    _onClick: ((spinner: this) => void) | undefined;
 
     _min: number = 0;
     _max: number = 1;
@@ -13,6 +12,10 @@ class UISpinner extends UIWidget<SpinnerWidget> {
     _fixed: number = 1;
 
     _formatter: ((val: number) => string) | undefined;
+
+    _dialogueTitle = "Title";
+    _dialogueMessage = "Message{NEWLINE}(Set it using function 'dialogueInfo')";
+    _dialogueMaxLength = 0;
 
     constructor() {
         super();
@@ -50,7 +53,21 @@ class UISpinner extends UIWidget<SpinnerWidget> {
                 this._signal(prev, this._value);
             },
             onClick: () => {
-                this._onClick?.call(this, this);
+                var currentLength = (this._text?.length ?? 0) + 1;
+                var maxLength = Math.max(this._dialogueMaxLength, currentLength);
+                console.log(currentLength, maxLength, this._text?.length, this._fixed)
+                const desc: TextInputDesc = {
+                    title: this._dialogueTitle,
+                    description: this._dialogueMessage,
+                    initialValue: this._text,
+                    maxLength: maxLength,
+                    callback: (value: string) => {
+                        var prev = this._value;
+                        this._value = Math.max(Math.min(parseFloat(value), this._max), this._min);
+                        this._signal(prev, this._value);
+                    }
+                }
+                ui.showTextInput(desc);
             }
         }
     }
@@ -133,8 +150,10 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         return this;
     }
 
-    onClick(block: (spinner: this) => void): this {
-        this._onClick = block;
+    dialogueInfo(title: string, message: string, maxLength: number = 0): this {
+        this._dialogueTitle = title;
+        this._dialogueMessage = message;
+        this._dialogueMaxLength = maxLength;
         return this;
     }
 }
