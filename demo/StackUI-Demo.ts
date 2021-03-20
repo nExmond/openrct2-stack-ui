@@ -75,6 +75,14 @@ var openWindow = function () {
         UIImagePeepLargeFaceVerySick, UIImagePeepLargeFaceVeryVerySick, UIImagePeepLargeFaceAngry
     ];
 
+    //Proxy
+    const primaryColorPicker = UIWP.$<UIColorPicker>();
+    const secondaryColorPicker = UIWP.$<UIColorPicker>();
+    const imageButton = UIWP.$<UIButton>();
+    const toggleButton = UIWP.$<UIToggleButton>();
+    const pageButton = UIWP.$<UIPageImageButton>();
+
+    //Build
     var window = UIWindow.$T('직원',
         UITab.$(
             UIStack.$H(
@@ -84,40 +92,20 @@ var openWindow = function () {
                         UILabel.$('유니폼 색상:')
                             .width(100),
                         UIColorPicker.$(UIColor.BrightRed)
-                            .onChange((picker, color) => {
-                                window.updateUI((window) => {
-                                    window.themePrimaryColor(color);
-                                })
-                            }),
+                            .bind(primaryColorPicker),
                         UISpacer.$(10),
                         UIColorPicker.$(UIColor.BrightRed)
-                            .onChange((picker, color) => {
-                                window.updateUI((window) => {
-                                    window.themeSecondaryColor(color);
-                                })
-                            })
+                            .bind(secondaryColorPicker)
                     )
                 ),
                 UISpacer.$(),
                 UIButton.$I(UIImageClosed)
-                    .onClick((val) => {
-                        val.updateUI((widget) => {
-                            if (widget.isImageEqual(UIImageClosed)) {
-                                widget.image(UIImageOpen).size(48);
-                            } else {
-                                widget.image(UIImageClosed).size(24);
-                            }
-                        })
-                    }),
+                    .bind(imageButton),
                 UIToggleButton.$I(UIImageOpen)
-                    .onPress((button, isPressed) => {
-                        console.log(button._name, isPressed);
-                    }),
+                    .bind(toggleButton),
                 UIPageImageButton.$IP(...images)
                     .size({ width: 30, height: 27 })
-                    .onPage((button, image) => {
-                        console.log(image.description());
-                    })
+                    .bind(pageButton)
             ),
             UIListView.$([
                 UIListViewColumn.$('이름')
@@ -149,9 +137,35 @@ var openWindow = function () {
         primary: UIColor.Gray,
         secondary: UIColor.DarkOliveGreen,
         tertiary: UIColor.LightOrange
+    }).show();
+
+
+    //Bind
+    primaryColorPicker.widget?.onChange((picker, color) => {
+        window.updateUI((window) => {
+            window.themePrimaryColor(color);
+        })
     })
-    // .isExpandable(true)
-        .show();
+    secondaryColorPicker.widget?.onChange((picker, color) => {
+        window.updateUI((window) => {
+            window.themeSecondaryColor(color);
+        })
+    })
+    imageButton.widget?.onClick((val) => {
+        val.updateUI((widget) => {
+            if (widget.isImageEqual(UIImageClosed)) {
+                widget.image(UIImageOpen).size(48);
+            } else {
+                widget.image(UIImageClosed).size(24);
+            }
+        })
+    })
+    toggleButton.widget?.onPress((button, isPressed) => {
+        console.log(button._name, isPressed);
+    })
+    pageButton.widget?.onPage((button, image) => {
+        console.log(image.description());
+    })
 };
 
 var main = function () {

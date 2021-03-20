@@ -55,7 +55,6 @@ class UISpinner extends UIWidget<SpinnerWidget> {
             onClick: () => {
                 var currentLength = (this._text?.length ?? 0) + 1;
                 var maxLength = Math.max(this._dialogueMaxLength, currentLength);
-                console.log(currentLength, maxLength, this._text?.length, this._fixed)
                 const desc: TextInputDesc = {
                     title: this._dialogueTitle,
                     description: this._dialogueMessage,

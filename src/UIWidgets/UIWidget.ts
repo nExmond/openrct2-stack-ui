@@ -208,4 +208,9 @@ class UIWidget<T extends Widget> {
         this._font = val;
         return this;
     }
+
+    bind(proxy: UIWidgetProxy<this>): this {
+        proxy._bind(this);
+        return this;
+    }
 }

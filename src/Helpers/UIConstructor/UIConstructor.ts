@@ -24,10 +24,11 @@ class UIConstructor {
             }
 
             if (tab._maxSize.width < tab._minSize.width || tab._maxSize.height < tab._minSize.height) {
-                console.log('WARNING: UITab[' + i + '] maximum size is less than its minimum size!');
-                console.log('minSize: { width: ' + tab._minSize.width + ', height: ' + tab._minSize.height + ' }');
-                console.log('maxSize: { width: ' + tab._maxSize.width + ', height: ' + tab._maxSize.height + ' }');
-                console.log('Errors can occur when resizing windows.');
+                console.log(`WARNING: UITab[' + i + '] maximum size is less than its minimum size!
+minSize: { width: ' + tab._minSize.width + ', height: ' + tab._minSize.height + ' }
+maxSize: { width: ' + tab._maxSize.width + ', height: ' + tab._maxSize.height + ' }
+'Errors can occur when resizing windows.
+                `);
             }
         }
         var selectedTab = tabs[selectedIndex];

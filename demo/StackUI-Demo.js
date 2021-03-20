@@ -1,9 +1,4 @@
 "use strict";
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
-};
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -19,6 +14,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -31,6 +31,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 var openWindow = function () {
+    var _a, _b, _c, _d, _e;
     var images = [
         UIImageTabGears, UIImageTabWrench, UIImageTabPaint, UIImageTabTimer,
         UIImageTabGraphA, UIImageTabGraph, UIImageTabAdmission, UIImageTabFinancesSummary,
@@ -39,34 +40,18 @@ var openWindow = function () {
         UIImageTabFinancesProfitGraph, UIImageTabFinancesValueGraph, UIImageTabFinancesMarketing, UIImageTabRide,
         UIImagePeepLargeFaceVerySick, UIImagePeepLargeFaceVeryVerySick, UIImagePeepLargeFaceAngry
     ];
+    var primaryColorPicker = UIWP.$();
+    var secondaryColorPicker = UIWP.$();
+    var imageButton = UIWP.$();
+    var toggleButton = UIWP.$();
+    var pageButton = UIWP.$();
     var window = UIWindow.$T('직원', UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(12), UIStack.$H(UILabel.$('유니폼 색상:')
         .width(100), UIColorPicker.$(UIColor.BrightRed)
-        .onChange(function (picker, color) {
-        window.updateUI(function (window) {
-            window.themePrimaryColor(color);
-        });
-    }), UISpacer.$(10), UIColorPicker.$(UIColor.BrightRed)
-        .onChange(function (picker, color) {
-        window.updateUI(function (window) {
-            window.themeSecondaryColor(color);
-        });
-    }))), UISpacer.$(), UIButton.$I(UIImageClosed)
-        .onClick(function (val) {
-        val.updateUI(function (widget) {
-            if (widget.isImageEqual(UIImageClosed)) {
-                widget.image(UIImageOpen).size(48);
-            }
-            else {
-                widget.image(UIImageClosed).size(24);
-            }
-        });
-    }), UIToggleButton.$I(UIImageOpen)
-        .onPress(function (button, isPressed) {
-        console.log(button._name, isPressed);
-    }), UIPageImageButton.$IP.apply(UIPageImageButton, images).size({ width: 30, height: 27 })
-        .onPage(function (button, image) {
-        console.log(image.description());
-    })), UIListView.$([
+        .bind(primaryColorPicker), UISpacer.$(10), UIColorPicker.$(UIColor.BrightRed)
+        .bind(secondaryColorPicker))), UISpacer.$(), UIButton.$I(UIImageClosed)
+        .bind(imageButton), UIToggleButton.$I(UIImageOpen)
+        .bind(toggleButton), UIPageImageButton.$IP.apply(UIPageImageButton, images).size({ width: 30, height: 27 })
+        .bind(pageButton)), UIListView.$([
         UIListViewColumn.$('이름')
     ]).showColumnHeaders(true)
         .scrollbarType(UIScrollbarType.both)
@@ -83,8 +68,33 @@ var openWindow = function () {
         primary: UIColor.Gray,
         secondary: UIColor.DarkOliveGreen,
         tertiary: UIColor.LightOrange
-    })
-        .show();
+    }).show();
+    (_a = primaryColorPicker.widget) === null || _a === void 0 ? void 0 : _a.onChange(function (picker, color) {
+        window.updateUI(function (window) {
+            window.themePrimaryColor(color);
+        });
+    });
+    (_b = secondaryColorPicker.widget) === null || _b === void 0 ? void 0 : _b.onChange(function (picker, color) {
+        window.updateUI(function (window) {
+            window.themeSecondaryColor(color);
+        });
+    });
+    (_c = imageButton.widget) === null || _c === void 0 ? void 0 : _c.onClick(function (val) {
+        val.updateUI(function (widget) {
+            if (widget.isImageEqual(UIImageClosed)) {
+                widget.image(UIImageOpen).size(48);
+            }
+            else {
+                widget.image(UIImageClosed).size(24);
+            }
+        });
+    });
+    (_d = toggleButton.widget) === null || _d === void 0 ? void 0 : _d.onPress(function (button, isPressed) {
+        console.log(button._name, isPressed);
+    });
+    (_e = pageButton.widget) === null || _e === void 0 ? void 0 : _e.onPage(function (button, image) {
+        console.log(image.description());
+    });
 };
 var main = function () {
     if (typeof ui === 'undefined') {
@@ -181,8 +191,22 @@ var UIInteractor = (function () {
 var UIWidgetProxy = (function () {
     function UIWidgetProxy() {
     }
+    UIWidgetProxy.$ = function () {
+        var proxy = new UIWidgetProxy();
+        return proxy;
+    };
+    UIWidgetProxy.prototype._bind = function (widget) {
+        this.widget = widget;
+    };
     return UIWidgetProxy;
 }());
+var UIWP = (function (_super) {
+    __extends(UIWP, _super);
+    function UIWP() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return UIWP;
+}(UIWidgetProxy));
 var UIOptionalSizeDefulat = { width: undefined, height: undefined };
 var UISizeZero = { width: 0, height: 0 };
 var TextFormat;
@@ -1158,7 +1182,7 @@ var UIWidget = (function () {
     };
     UIWidget.prototype._applyFont = function (text) {
         if (typeof this._font !== 'undefined' && typeof text !== 'undefined') {
-            return TB.$(text).font(this._font).build();
+            return new TextBuilder(text).font(this._font).build();
         }
         else {
             return text;
@@ -1226,6 +1250,10 @@ var UIWidget = (function () {
     };
     UIWidget.prototype.font = function (val) {
         this._font = val;
+        return this;
+    };
+    UIWidget.prototype.bind = function (proxy) {
+        proxy._bind(this);
         return this;
     };
     return UIWidget;
@@ -1574,10 +1602,7 @@ var UIConstructor = (function () {
                 height: results.size.height
             };
             if (tab._maxSize.width < tab._minSize.width || tab._maxSize.height < tab._minSize.height) {
-                console.log('WARNING: UITab[' + i + '] maximum size is less than its minimum size!');
-                console.log('minSize: { width: ' + tab._minSize.width + ', height: ' + tab._minSize.height + ' }');
-                console.log('maxSize: { width: ' + tab._maxSize.width + ', height: ' + tab._maxSize.height + ' }');
-                console.log('Errors can occur when resizing windows.');
+                console.log("WARNING: UITab[' + i + '] maximum size is less than its minimum size!\nminSize: { width: ' + tab._minSize.width + ', height: ' + tab._minSize.height + ' }\nmaxSize: { width: ' + tab._maxSize.width + ', height: ' + tab._maxSize.height + ' }\n'Errors can occur when resizing windows.\n                ");
             }
         }
         var selectedTab = tabs[selectedIndex];
@@ -1936,10 +1961,9 @@ var UISpinner = (function (_super) {
                 _this._value = Math.min(_this._value + _this._step, _this._max);
                 _this._signal(prev, _this._value);
             }, onClick: function () {
-                var _a, _b, _c;
+                var _a, _b;
                 var currentLength = ((_b = (_a = _this._text) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0) + 1;
                 var maxLength = Math.max(_this._dialogueMaxLength, currentLength);
-                console.log(currentLength, maxLength, (_c = _this._text) === null || _c === void 0 ? void 0 : _c.length, _this._fixed);
                 var desc = {
                     title: _this._dialogueTitle,
                     description: _this._dialogueMessage,
