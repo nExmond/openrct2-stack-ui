@@ -8,7 +8,6 @@ class UIButton extends UIWidget<ButtonWidget> {
     _isPressed: boolean = false;
     _title: string | undefined;
     _onClick: ((button: this) => void) | undefined;
-    _onChange: ((button: this) => void) | undefined;
 
     _intervalHelper: IntervalHelper | undefined;
     _uiImage: UIImage | undefined;
@@ -21,16 +20,27 @@ class UIButton extends UIWidget<ButtonWidget> {
 
     static $<T extends UIButton>(this: StaticThis<T>, title: string): T {
         const button = new this();
+        const titleSize = title.size();
+        const minSize: UISize = {
+            width: titleSize.width + 5,
+            height: titleSize.height + 5
+        }
         return button.title(title)
-            .minSize({ width: 50, height: 15 });
+            .size(minSize)
+            .minSize(minSize);
     }
 
     static $I<T extends UIButton>(this: StaticThis<T>, image: UIImage): T {
         const button = new this();
+        const imageSize = image.size();
+        const minSize: UISize = {
+            width: imageSize.width + 4,
+            height: imageSize.height + 4
+        }
         return button
             .image(image)
-            .size({ width: 24, height: 24 })
-            .minSize({ width: 50, height: 15 });
+            .size(minSize)
+            .minSize(minSize);
     }
 
     //Private
@@ -45,7 +55,7 @@ class UIButton extends UIWidget<ButtonWidget> {
             text: this._applyFont(this._title),
             onClick: () => {
                 this._onClick?.call(this, this);
-                this._onChange?.call(this, this);
+                this._internalOnChange();
             }
         }
     }
@@ -64,10 +74,7 @@ class UIButton extends UIWidget<ButtonWidget> {
         return typeof this._image !== 'undefined';
     }
 
-    _internalOnChange(block: (button: this) => void): this {
-        this._onChange = block;
-        return this;
-    }
+    protected _internalOnChange() {}
 
     //Public
 
