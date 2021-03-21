@@ -48,17 +48,16 @@ var openWindow = function () {
     var window = UIWindow.$T('직원', UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(12), UIStack.$H(UILabel.$('유니폼 색상:')
         .width(100), UIColorPicker.$(UIColor.BrightRed)
         .bind(primaryColorPicker), UISpacer.$(10), UIColorPicker.$(UIColor.BrightRed)
-        .bind(secondaryColorPicker))), UISpacer.$(), UIButton.$I(UIImageClosed)
+        .bind(secondaryColorPicker))), UISpacer.$(), UIStack.$V(UIStack.$H(UIButton.$("dddddd"), UIButton.$("dddddd"), UIButton.$("dddddddddd")), UIStack.$H(UIButton.$("dddddd"), UIToggleButton.$("dddddd"), UIButton.$("dddddd"), UIToggleButton.$(TB.$(TN.$(TN.$I(UIImageStaffCostumeKnight))).build()), UIToggleButton.$I(UIImageG2Logo), UIToggleButton.$("dddddd")), UIStack.$H(UIButton.$("dddddd"), UIButton.$("dddd2323dd"), UIButton.$("dddddd"))), UIButton.$I(UIImageClosed)
         .bind(imageButton), UIToggleButton.$I(UIImageOpen)
-        .bind(toggleButton), UIPageImageButton.$IP.apply(UIPageImageButton, images).size({ width: 30, height: 27 })
-        .bind(pageButton)), UIListView.$([
+        .bind(toggleButton), UIPageImageButton.$IP.apply(UIPageImageButton, images).bind(pageButton)), UIListView.$([
         UIListViewColumn.$('이름')
     ]).showColumnHeaders(true)
         .scrollbarType(UIScrollbarType.both)
         .isStriped(true)
         .canSelect(true)
         .addItems([
-        UIListViewItem.$([TB.$(TN.$(TN.$I(UIImageStaffCostumeTiger), TN.$I(UIImageStaffCostumeSnowman), TN.$I(UIImageStaffCostumeKnight))).build()])
+        UIListViewItem.$([TB.$(TN.$.apply(TN, images.map(function (val) { return TN.$I(val); }))).build()])
     ]), UILabel.$('1 미화원')).image(UIImageTabGears)
         .isExpandable(true)
         .maxSize({ width: 500, height: 500 }), UITab.$(UILabel.$('두번째 탭'), UISpinner.$()).image(UIImageTabFinancesResearch), UITab.$(UILabel.$('세번째 탭')).image(UIImageTabKiosksAndFacilities)
@@ -80,20 +79,26 @@ var openWindow = function () {
         });
     });
     (_c = imageButton.widget) === null || _c === void 0 ? void 0 : _c.onClick(function (val) {
-        val.updateUI(function (widget) {
-            if (widget.isImageEqual(UIImageClosed)) {
-                widget.image(UIImageOpen).size(48);
-            }
-            else {
-                widget.image(UIImageClosed).size(24);
-            }
+        var _a;
+        (_a = toggleButton.widget) === null || _a === void 0 ? void 0 : _a.updateUI(function (widget) {
+            widget.isPressed(!widget._isPressed);
         });
     });
     (_d = toggleButton.widget) === null || _d === void 0 ? void 0 : _d.onPress(function (button, isPressed) {
+        var _a;
         console.log(button._name, isPressed);
+        (_a = imageButton.widget) === null || _a === void 0 ? void 0 : _a.updateUI(function (widget) {
+            if (isPressed) {
+                widget.image(UIImageOpen).size(48);
+            }
+            else {
+                widget.image(UIImageClosed).resetSize();
+            }
+        });
     });
     (_e = pageButton.widget) === null || _e === void 0 ? void 0 : _e.onPage(function (button, image) {
         console.log(image.description());
+        console.log(button.description());
     });
 };
 var main = function () {
@@ -250,7 +255,38 @@ function uuid() {
 }
 String.prototype.size = function () {
     var _a, _b;
-    return (_b = (_a = imageHelper.graphicsContext()) === null || _a === void 0 ? void 0 : _a.measureText(this.toString())) !== null && _b !== void 0 ? _b : UISizeZero;
+    var g = imageHelper.graphicsContext();
+    var imageBounds = UISizeZero;
+    var regex = new RegExp(/{INLINE_SPRITE}{(\d{1,3})}{\d{1,3}}{\d{1,3}}/g);
+    var match = this.match(regex);
+    if (match !== null) {
+        console.log('WARNING: Images inserted in text may be displayed incorrectly.');
+        var images = (_a = match.map(function (val) {
+            var strings = val.split('{').map(function (val) { return val.split('}'); }).flatMap();
+            var values = strings.filter(function (_, index) { return index % 2 === 1; });
+            var id = parseInt(values[3]) * (256 * 256) + parseInt(values[2]) * 256 + parseInt(values[1]);
+            return id;
+        })) !== null && _a !== void 0 ? _a : [];
+        imageBounds = images.map(function (val) {
+            var _a, _b;
+            var size = g === null || g === void 0 ? void 0 : g.getImage(val);
+            return {
+                width: (_a = size === null || size === void 0 ? void 0 : size.width) !== null && _a !== void 0 ? _a : 0,
+                height: (_b = size === null || size === void 0 ? void 0 : size.height) !== null && _b !== void 0 ? _b : 0
+            };
+        }).reduce(function (acc, val) {
+            return {
+                width: acc.width + val.width,
+                height: Math.max(acc.height, val.height)
+            };
+        });
+    }
+    var splitted = this.split(regex);
+    var textSize = (_b = g === null || g === void 0 ? void 0 : g.measureText(splitted.join(''))) !== null && _b !== void 0 ? _b : UISizeZero;
+    return {
+        width: textSize.width + imageBounds.width,
+        height: Math.max(textSize.height, imageBounds.height)
+    };
 };
 String.prototype.remove = function () {
     var strings = [];
@@ -1121,20 +1157,24 @@ var UIWidget = (function () {
             x: origin.x + this._offset.x,
             y: origin.y + this._offset.y
         };
-        this._size = {
+        var size = {
             width: (_a = this._size.width) !== null && _a !== void 0 ? _a : estimatedSize.width,
             height: (_b = this._size.height) !== null && _b !== void 0 ? _b : estimatedSize.height
+        };
+        this._size = {
+            width: size.width - 1,
+            height: size.height
         };
         switch (axis) {
             case UIAxis.Vertical: {
                 return {
                     x: origin.x,
-                    y: origin.y + this._size.height
+                    y: origin.y + size.height
                 };
             }
             case UIAxis.Horizontal: {
                 return {
-                    x: origin.x + this._size.width,
+                    x: origin.x + size.width,
                     y: origin.y
                 };
             }
@@ -1255,6 +1295,12 @@ var UIWidget = (function () {
     UIWidget.prototype.bind = function (proxy) {
         proxy._bind(this);
         return this;
+    };
+    UIWidget.prototype.resetSize = function () {
+        return this.size(this._minSize);
+    };
+    UIWidget.prototype.description = function () {
+        return "\nname: " + this._name + "\norigin: { x: " + this._origin.x + ", y: " + this._origin.y + " }\nsize: { width: " + this._size.width + ", height: " + this._size.height + " }\n";
     };
     return UIWidget;
 }());
@@ -1602,7 +1648,7 @@ var UIConstructor = (function () {
                 height: results.size.height
             };
             if (tab._maxSize.width < tab._minSize.width || tab._maxSize.height < tab._minSize.height) {
-                console.log("WARNING: UITab[' + i + '] maximum size is less than its minimum size!\nminSize: { width: ' + tab._minSize.width + ', height: ' + tab._minSize.height + ' }\nmaxSize: { width: ' + tab._maxSize.width + ', height: ' + tab._maxSize.height + ' }\n'Errors can occur when resizing windows.\n                ");
+                console.log("\nWARNING: UITab[" + i + "] maximum size is less than its minimum size!\nminSize: { width: " + tab._minSize.width + ", height: " + tab._minSize.height + " }\nmaxSize: { width: " + tab._maxSize.width + ", height: " + tab._maxSize.height + " }\nErrors can occur when resizing windows.\n");
             }
         }
         var selectedTab = tabs[selectedIndex];
@@ -1852,7 +1898,6 @@ var UILabel = (function (_super) {
         var _this = _super.call(this) || this;
         _this._align = UITextAlignment.Left;
         _this._text = text;
-        console.log(text);
         return _this;
     }
     UILabel.$ = function (text) {
@@ -2112,29 +2157,41 @@ var UIButton = (function (_super) {
     }
     UIButton.$ = function (title) {
         var button = new this();
+        var titleSize = title.size();
+        var minSize = {
+            width: titleSize.width + 5,
+            height: titleSize.height + 5
+        };
         return button.title(title)
-            .minSize({ width: 50, height: 15 });
+            .size(minSize)
+            .minSize(minSize);
     };
     UIButton.$I = function (image) {
         var button = new this();
+        var imageSize = image.size();
+        var minSize = {
+            width: imageSize.width + 4,
+            height: imageSize.height + 4
+        };
         return button
             .image(image)
-            .size({ width: 24, height: 24 })
-            .minSize({ width: 50, height: 15 });
+            .size(minSize)
+            .minSize(minSize);
     };
     UIButton.prototype._build = function () {
         var _this = this;
         this._widget = __assign(__assign({}, this._buildBaseValues()), { type: 'button', border: this._border, image: this._image, isPressed: this._isPressed, text: this._applyFont(this._title), onClick: function () {
-                var _a, _b;
+                var _a;
                 (_a = _this._onClick) === null || _a === void 0 ? void 0 : _a.call(_this, _this);
-                (_b = _this._onChange) === null || _b === void 0 ? void 0 : _b.call(_this, _this);
+                _this._internalOnChange();
             } });
     };
     UIButton.prototype._update = function (widget) {
-        var _a;
         _super.prototype._update.call(this, widget);
         widget.border = this._border;
-        widget.image = (_a = this._image) !== null && _a !== void 0 ? _a : 0;
+        if (typeof this._image !== 'undefined') {
+            widget.image = this._image;
+        }
         widget.isPressed = this._isPressed;
         if (typeof this._title !== 'undefined') {
             widget.text = this._applyFont(this._title);
@@ -2143,10 +2200,7 @@ var UIButton = (function (_super) {
     UIButton.prototype._isImageType = function () {
         return typeof this._image !== 'undefined';
     };
-    UIButton.prototype._internalOnChange = function (block) {
-        this._onChange = block;
-        return this;
-    };
+    UIButton.prototype._internalOnChange = function () { };
     UIButton.prototype.border = function (val) {
         if (!this._isImageType()) {
             this._border = val;
@@ -2196,6 +2250,7 @@ var UIPageImageButton = (function (_super) {
     __extends(UIPageImageButton, _super);
     function UIPageImageButton(images) {
         var _this = _super.call(this) || this;
+        _this._index = 0;
         _this._images = images;
         return _this;
     }
@@ -2206,20 +2261,33 @@ var UIPageImageButton = (function (_super) {
         }
         var button = new UIPageImageButton(images);
         var first = images.length > 0 ? images[0] : UIImageNone;
+        var maxSize = images
+            .map(function (val) { return val.size(); })
+            .reduce(function (acc, val) {
+            return {
+                width: Math.max(acc.width, val.width),
+                height: Math.max(acc.height, val.height)
+            };
+        });
+        var imageSize = {
+            width: maxSize.width + 1,
+            height: maxSize.height + 2
+        };
         return button
             .image(first)
-            .size({ width: 24, height: 24 })
-            .minSize({ width: 50, height: 15 });
+            .size(imageSize)
+            .minSize(imageSize);
+    };
+    UIPageImageButton.prototype._internalOnChange = function () {
+        var _a;
+        this._index = (this._index + 1) % this._images.length;
+        var image = this._images[this._index];
+        this.updateUI(function (widget) { return widget.image(image); });
+        (_a = this._onPage) === null || _a === void 0 ? void 0 : _a.call(this, this, image);
     };
     UIPageImageButton.prototype.onPage = function (block) {
-        var _this = this;
-        var index = 0;
-        return _super.prototype._internalOnChange.call(this, function (button) {
-            index = (index + 1) % _this._images.length;
-            var image = _this._images[index];
-            button.updateUI(function (widget) { return widget.image(image); });
-            block(button, image);
-        });
+        this._onPage = block;
+        return this;
     };
     return UIPageImageButton;
 }(UIButton));
@@ -2228,12 +2296,17 @@ var UIToggleButton = (function (_super) {
     function UIToggleButton() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    UIToggleButton.prototype._internalOnChange = function () {
+        var _a, _b;
+        var widget = this._widget;
+        var isPressed = (_a = widget.isPressed) !== null && _a !== void 0 ? _a : false;
+        var toggled = !isPressed;
+        this.updateUI(function (widget) { return widget.isPressed(toggled); });
+        (_b = this._onPress) === null || _b === void 0 ? void 0 : _b.call(this, this, toggled);
+    };
     UIToggleButton.prototype.onPress = function (block) {
-        return _super.prototype._internalOnChange.call(this, function (button) {
-            var toggled = !button._isPressed;
-            button.updateUI(function (widget) { return widget.isPressed(toggled); });
-            block(button, toggled);
-        });
+        this._onPress = block;
+        return this;
     };
     return UIToggleButton;
 }(UIButton));
@@ -2778,6 +2851,7 @@ var UIWindow = (function () {
         }
         if (typeof this._tabs !== 'undefined') {
             this._uiConstructor.didLoadTabs(this._tabs);
+            this._internalOnTabChange();
         }
         return this;
     };

@@ -99,12 +99,31 @@ var openWindow = function () {
                     )
                 ),
                 UISpacer.$(),
+                UIStack.$V(
+                    UIStack.$H(
+                        UIButton.$("dddddd"),
+                        UIButton.$("dddddd"),
+                        UIButton.$("dddddddddd"),
+                    ),
+                    UIStack.$H(
+                        UIButton.$("dddddd"),
+                        UIToggleButton.$("dddddd"),
+                        UIButton.$("dddddd"),
+                        UIToggleButton.$(TB.$(TN.$(TN.$I(UIImageStaffCostumeKnight))).build()),
+                        UIToggleButton.$I(UIImageG2Logo),
+                        UIToggleButton.$("dddddd"),
+                    ),
+                    UIStack.$H(
+                        UIButton.$("dddddd"),
+                        UIButton.$("dddd2323dd"),
+                        UIButton.$("dddddd"),
+                    )
+                ),
                 UIButton.$I(UIImageClosed)
                     .bind(imageButton),
                 UIToggleButton.$I(UIImageOpen)
                     .bind(toggleButton),
                 UIPageImageButton.$IP(...images)
-                    .size({ width: 30, height: 27 })
                     .bind(pageButton)
             ),
             UIListView.$([
@@ -114,7 +133,7 @@ var openWindow = function () {
                 .isStriped(true)
                 .canSelect(true)
                 .addItems([
-                    UIListViewItem.$([TB.$(TN.$(TN.$I(UIImageStaffCostumeTiger), TN.$I(UIImageStaffCostumeSnowman), TN.$I(UIImageStaffCostumeKnight))).build()])
+                    UIListViewItem.$([TB.$(TN.$(...images.map(val => TN.$I(val)))).build()])
                 ]),
             UILabel.$('1 미화원')
         ).image(UIImageTabGears)
@@ -152,19 +171,23 @@ var openWindow = function () {
         })
     })
     imageButton.widget?.onClick((val) => {
-        val.updateUI((widget) => {
-            if (widget.isImageEqual(UIImageClosed)) {
-                widget.image(UIImageOpen).size(48);
-            } else {
-                widget.image(UIImageClosed).size(24);
-            }
-        })
+        toggleButton.widget?.updateUI(widget => {
+            widget.isPressed(!widget._isPressed);
+        });
     })
     toggleButton.widget?.onPress((button, isPressed) => {
         console.log(button._name, isPressed);
+        imageButton.widget?.updateUI(widget => {
+            if (isPressed) {
+                widget.image(UIImageOpen).size(48);
+            } else {
+                widget.image(UIImageClosed).resetSize();
+            }
+        })
     })
     pageButton.widget?.onPage((button, image) => {
         console.log(image.description());
+        console.log(button.description());
     })
 };
 
