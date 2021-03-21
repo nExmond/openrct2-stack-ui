@@ -65,20 +65,24 @@ class UIWidget<T extends Widget> {
             x: origin.x + this._offset.x,
             y: origin.y + this._offset.y
         };
-        this._size = {
+        var size = {
             width: this._size.width ?? estimatedSize.width,
             height: this._size.height ?? estimatedSize.height
+        }
+        this._size = {
+            width: size.width - 1,
+            height: size.height
         }
         switch (axis) {
             case UIAxis.Vertical: {
                 return {
                     x: origin.x,
-                    y: origin.y + this._size.height!
+                    y: origin.y + size.height!
                 }
             }
             case UIAxis.Horizontal: {
                 return {
-                    x: origin.x + this._size.width!,
+                    x: origin.x + size.width!,
                     y: origin.y
                 }
             }
@@ -212,5 +216,17 @@ class UIWidget<T extends Widget> {
     bind(proxy: UIWidgetProxy<this>): this {
         proxy._bind(this);
         return this;
+    }
+
+    resetSize(): this {
+        return this.size(this._minSize);
+    }
+
+    description(): string {
+        return `
+name: ${this._name}
+origin: { x: ${this._origin.x}, y: ${this._origin.y} }
+size: { width: ${this._size.width}, height: ${this._size.height} }
+`;
     }
 }
