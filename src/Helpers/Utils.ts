@@ -35,7 +35,42 @@ interface String {
     size(): UISize;
 }
 String.prototype.size = function (): UISize {
-    return imageHelper.graphicsContext()?.measureText(this.toString()) ?? UISizeZero;
+    const g = imageHelper.graphicsContext();
+    
+    var imageBounds = UISizeZero;
+
+    const regex = new RegExp(/{INLINE_SPRITE}{(\d{1,3})}{\d{1,3}}{\d{1,3}}/g);
+    const match = this.match(regex);
+    if (match !== null) {
+        console.log('WARNING: Images inserted in text may be displayed incorrectly.');
+
+        const images = match.map(val => {
+            const strings: string[] = val.split('{').map(val => val.split('}')).flatMap();
+            const values = strings.filter((_, index) => index % 2 === 1);
+            const id = parseInt(values[3]) * (256 * 256) + parseInt(values[2]) * 256 + parseInt(values[1]);
+            return id;
+        }) ?? [];
+
+        imageBounds = images.map(val => {
+            const size = g?.getImage(val);
+            return <UISize>{
+                width: size?.width ?? 0,
+                height: size?.height ?? 0
+            }
+        }).reduce((acc, val) => {
+            return {
+                width: acc.width + val.width,
+                height: Math.max(acc.height, val.height)
+            }
+        })
+    }
+
+    const splitted = this.split(regex);
+    const textSize = g?.measureText(splitted.join('')) ?? UISizeZero;
+    return {
+        width: textSize.width + imageBounds.width,
+        height: Math.max(textSize.height, imageBounds.height)
+    }
 }
 
 interface String {
