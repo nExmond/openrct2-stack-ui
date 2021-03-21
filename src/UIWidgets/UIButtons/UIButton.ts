@@ -63,7 +63,9 @@ class UIButton extends UIWidget<ButtonWidget> {
     _update(widget: ButtonWidget) {
         super._update(widget);
         widget.border = this._border;
-        widget.image = this._image ?? 0;
+        if (typeof this._image !== 'undefined') {
+            widget.image = this._image;
+        }
         widget.isPressed = this._isPressed;
         if (typeof this._title !== 'undefined') {
             widget.text = this._applyFont(this._title);
