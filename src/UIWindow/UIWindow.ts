@@ -279,6 +279,7 @@ class UIWindow {
         }
         if (typeof this._tabs !== 'undefined') {
             this._uiConstructor.didLoadTabs(this._tabs);
+            this._internalOnTabChange();
         }
 
         return this;
