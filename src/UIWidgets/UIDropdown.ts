@@ -3,9 +3,9 @@
 
 class UIDropdown extends UIWidget<DropdownWidget> {
 
-    _items: string[];
-    _selectedIndex: number = 0;
-    _onChange: ((dropdown: this, index: number, item: string) => void) | undefined;
+    protected _items: string[];
+    protected _selectedIndex: number = 0;
+    protected _onChange: ((dropdown: this, index: number, item: string) => void) | undefined;
 
     constructor(items: string[]) {
         super();
@@ -15,7 +15,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
     //Convenience
 
     static $(items: string[]): UIDropdown {
-        var dropdown = new UIDropdown(items);
+        const dropdown = new UIDropdown(items);
         return dropdown.height(15)
             .minSize({ width: 50, height: 15 });
     }
@@ -31,7 +31,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
             selectedIndex: this._selectedIndex,
             onChange: (index: number) => {
                 this._selectedIndex = index;
-                var item = this._items[index];
+                const item = this._items[index];
                 this._onChange?.call(this, this, this._selectedIndex, item);
             }
         }

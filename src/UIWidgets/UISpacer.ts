@@ -2,8 +2,8 @@
 
 class UISpacer extends UIWidget<LabelWidget> {
 
-    _axis!: UIAxis;
-    _spacing: number | undefined;
+    protected _axis!: UIAxis;
+    protected _spacing: number | undefined;
 
     constructor(spacing: number | undefined = undefined) {
         super();

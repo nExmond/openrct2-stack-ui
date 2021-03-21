@@ -3,8 +3,8 @@
 
 class UIColorPicker extends UIWidget<ColourPickerWidget> {
 
-    _color: UIColor;
-    _onChange: ((picker: this, color: UIColor) => void) | undefined;
+    protected _color: UIColor;
+    protected _onChange: ((picker: this, color: UIColor) => void) | undefined;
 
     constructor(color: UIColor | undefined) {
         super();
@@ -14,7 +14,7 @@ class UIColorPicker extends UIWidget<ColourPickerWidget> {
     //Convenience
 
     static $(color: UIColor | undefined = undefined): UIColorPicker {
-        var colorPicker = new UIColorPicker(color);
+        const colorPicker = new UIColorPicker(color);
         return colorPicker
             .size({ width: 12, height: 12 });
     }

@@ -1,9 +1,17 @@
 class UIInteractor {
 
-    _findWidget!: <T extends Widget>(name: string) => T | undefined;
-    _refreshWindow!: () => void;
+    protected _findWidget!: <T extends Widget>(name: string) => T | undefined;
+    protected _refreshWindow!: () => void;
 
     constructor() { }
+
+    //Private
+
+    _refresh(block: () => void) {
+        this._refreshWindow = block;
+    }
+
+    //Public
 
     update<T extends Widget>(name: string, block: (widget: T) => void) {
         var widget: T | undefined = this._findWidget(name);
@@ -14,10 +22,6 @@ class UIInteractor {
 
     findWidget(block: <T extends Widget>(name: string) => T | undefined) {
         this._findWidget = block;
-    }
-
-    _refresh(block: () => void) {
-        this._refreshWindow = block;
     }
     
     refreshWindow() {

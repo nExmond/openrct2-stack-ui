@@ -2,9 +2,9 @@
 
 class UIPageImageButton extends UIButton {
 
-    private _images: UIImage[];
-    private _index = 0;
-    private _onPage: ((button: this, image: UIImage) => void) | undefined;
+    protected _images: UIImage[];
+    protected _index = 0;
+    protected _onPage: ((button: this, image: UIImage) => void) | undefined;
 
     constructor(images: UIImage[]) {
         super();
@@ -14,8 +14,8 @@ class UIPageImageButton extends UIButton {
     //Convenience
 
     static $IP(...images: UIImage[]): UIPageImageButton {
-        var button = new UIPageImageButton(images);
-        var first = images.length > 0 ? images[0] : UIImageNone;
+        const button = new UIPageImageButton(images);
+        const first = images.length > 0 ? images[0] : UIImageNone;
         const maxSize = images
             .map(val => val.size())
             .reduce((acc, val) => {
@@ -38,7 +38,7 @@ class UIPageImageButton extends UIButton {
 
     protected _internalOnChange() {
         this._index = (this._index + 1) % this._images.length;
-        var image = this._images[this._index];
+        const image = this._images[this._index];
         this.updateUI((widget) => widget.image(image));
         this._onPage?.call(this, this, image);
     }

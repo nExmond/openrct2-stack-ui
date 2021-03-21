@@ -6,10 +6,14 @@ class UIWindowProxy {
 
     constructor() {}
 
+    //Convenience
+
     static $(): UIWindowProxy {
-        var proxy = new UIWindowProxy();
+        const proxy = new UIWindowProxy();
         return proxy;
     }
+
+    //Private
 
     _bind(window: UIWindow) {
         this.window = window;

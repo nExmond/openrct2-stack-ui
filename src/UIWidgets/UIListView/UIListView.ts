@@ -5,18 +5,18 @@
 
 class UIListView extends UIWidget<ListView> {
 
-    _scrollbarType: UIScrollbarType = UIScrollbarType.None;
-    _isStriped: boolean = false;
+    protected _scrollbarType: UIScrollbarType = UIScrollbarType.None;
+    protected _isStriped: boolean = false;
 
-    _showColumnHeaders: boolean = false;
-    _columns: UIListViewColumn[] | undefined;
-    _items: UIListViewItem[] = [];
+    protected _showColumnHeaders: boolean = false;
+    protected _columns: UIListViewColumn[] | undefined;
+    protected _items: UIListViewItem[] = [];
 
-    _selectedCell: RowColumn | undefined;
-    _canSelect: boolean = false;
+    protected _selectedCell: RowColumn | undefined;
+    protected _canSelect: boolean = false;
 
-    _onHeighlight: ((listView: this, column: number, item: number) => void) | undefined;
-    _onClick: ((listView: this, column: number, item: number) => void) | undefined;
+    protected _onHeighlight: ((listView: this, column: number, item: number) => void) | undefined;
+    protected _onClick: ((listView: this, column: number, item: number) => void) | undefined;
 
     constructor(columns: UIListViewColumn[] | undefined = undefined) {
         super();
@@ -26,7 +26,7 @@ class UIListView extends UIWidget<ListView> {
     //Convenience
 
     static $(columns: UIListViewColumn[] | undefined = undefined): UIListView {
-        var listView = new UIListView(columns);
+        const listView = new UIListView(columns);
         return listView
             .minSize({ width: 165, height: 120 });
     }
@@ -120,7 +120,7 @@ class UIListView extends UIWidget<ListView> {
     }
 
     getHighlightedCell(): RowColumn | undefined {
-        var widget: ListView = this._widget;
+        const widget: ListView = this._widget;
         return widget.highlightedCell;
     }
 

@@ -6,42 +6,42 @@
 
 class UIWindow {
 
-    _uiConstructor = new UIConstructor();
-    _interactor = new UIInteractor();
+    protected _uiConstructor = new UIConstructor();
+    protected _interactor = new UIInteractor();
 
-    _window: Window | undefined;
+    protected _window: Window | undefined;
 
-    _singleContentView: UIStack | undefined;
-    _tabs: UITab[] | undefined;
-    _selectedTabIndex: number = 0;
+    protected _singleContentView: UIStack | undefined;
+    protected _tabs: UITab[] | undefined;
+    protected _selectedTabIndex: number = 0;
 
-    _origin!: UIPoint;
-    _size!: UISize;
-    _initialSize!: UISize;
+    protected _origin!: UIPoint;
+    protected _size!: UISize;
+    protected _initialSize!: UISize;
 
-    _title: string;
-    _theme: UIWindowTheme = UIWindowThemeDefault;
+    protected _title: string;
+    protected _theme: UIWindowTheme = UIWindowThemeDefault;
 
-    _spacing = 0;
-    _padding: UIEdgeInsets = UIEdgeInsetsZero;
+    protected _spacing = 0;
+    protected _padding: UIEdgeInsets = UIEdgeInsetsZero;
 
-    _initialExpandableState: boolean = false;
-    _isExpandable: boolean = false;
-    _minSize: UISize = UISizeZero;
-    _maxSize: UISize = { width: ui.width, height: ui.height };
+    protected _initialExpandableState: boolean = false;
+    protected _isExpandable: boolean = false;
+    protected _minSize: UISize = UISizeZero;
+    protected _maxSize: UISize = { width: ui.width, height: ui.height };
 
-    _onClose: ((window: this) => void) | undefined;
-    _onTabChange: ((window: this, selectedIndex: number) => void) | undefined;
+    protected _onClose: ((window: this) => void) | undefined;
+    protected _onTabChange: ((window: this, selectedIndex: number) => void) | undefined;
 
     constructor(title: string, contents: UIWidget<any>[] | UITab[]) {
         this._title = title;
 
         if (contents.length > 0) {
             if (contents[0] instanceof UIWidget) {
-                var widgets: any = contents;
+                const widgets: any = contents;
                 this._singleContentView = new UIStack(UIAxis.Vertical, widgets);
             } else {
-                var tabs: any = contents;
+                const tabs: any = contents;
                 this._tabs = tabs;
             }
         } else {
@@ -79,7 +79,7 @@ class UIWindow {
 
     _sync() {
         if (this._isOpened()) {
-            var window = this._window!;
+            const window = this._window!;
             this._origin = {
                 x: window.x,
                 y: window.y
@@ -98,7 +98,7 @@ class UIWindow {
 
     _update() {
 
-        var window = this._window;
+        const window = this._window;
         if (typeof window === 'undefined') {
             return;
         }
@@ -125,12 +125,12 @@ class UIWindow {
 
     _onUpdate() {
 
-        var window = this._window;
+        const window = this._window;
         if (typeof window === 'undefined') {
             return;
         }
 
-        var isSizeChange = window.width != this._size.width || window.height != this._size.height;
+        const isSizeChange = window.width != this._size.width || window.height != this._size.height;
         if (isSizeChange) {
             this._size = {
                 width: window.width,
@@ -141,10 +141,10 @@ class UIWindow {
     }
 
     _internalOnTabChange() {
-        var currentTab = this._tabs![this._selectedTabIndex];
-        var tabMinSize = currentTab._minSize;
-        var tabMaxSize = currentTab._maxSize;
-        var size: UISize = {
+        const currentTab = this._tabs![this._selectedTabIndex];
+        const tabMinSize = currentTab._minSize;
+        const tabMaxSize = currentTab._maxSize;
+        const size: UISize = {
             width: Math.max(Math.min(this._size.width, tabMaxSize.width), tabMinSize.width),
             height: Math.max(Math.min(this._size.height, tabMaxSize.height), tabMinSize.height)
         }
@@ -159,7 +159,7 @@ class UIWindow {
 
     _refresh(size: UISize) {
         if (this._usingTab()) {
-            var tab = this._tabs![this._selectedTabIndex];
+            const tab = this._tabs![this._selectedTabIndex];
             this._uiConstructor.refreshTab(tab, size);
         } else {
             this._uiConstructor.refresh(this._singleContentView!, size);
@@ -173,7 +173,7 @@ class UIWindow {
         var contentView = this._singleContentView;
 
         if (typeof this._tabs !== 'undefined') {
-            var currentTab = this._tabs![this._selectedTabIndex];
+            const currentTab = this._tabs![this._selectedTabIndex];
             contentView = currentTab._contentView;
 
             contentView._resetSize();
@@ -188,13 +188,13 @@ class UIWindow {
 
             contentView._resetSize();
 
-            var construct = this._uiConstructor.construct(this._singleContentView, this._interactor);
+            const construct = this._uiConstructor.construct(this._singleContentView, this._interactor);
 
             minSize = construct.size;
             maxSize = this._maxSize;
         }
         
-        var size: UISize = {
+        const size: UISize = {
             width: Math.max(Math.min(this._size.width, maxSize.width), minSize.width),
             height: Math.max(Math.min(this._size.height, maxSize.height), minSize.height)
         }
@@ -217,24 +217,24 @@ class UIWindow {
 
         this._initialExpandableState = this._isExpandable;
 
-        var singlecontentView = this._singleContentView?.spacing(this._spacing).padding(this._padding);
+        const singlecontentView = this._singleContentView?.spacing(this._spacing).padding(this._padding);
         var singleContentViewWidget: Widget[] | undefined;
         if (typeof singlecontentView !== 'undefined') {
-            var constructed = this._uiConstructor.construct(singlecontentView, this._interactor);
+            const constructed = this._uiConstructor.construct(singlecontentView, this._interactor);
             singleContentViewWidget = constructed.widgets;
             this._minSize = constructed.size;
         };
 
         var tabDescriptions: WindowTabDesc[] | undefined;
         if (typeof this._tabs !== 'undefined') {
-            var constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
+            const constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
             tabDescriptions = constructed.tabs;
             this._minSize = constructed.size;
             this._maxSize = this._tabs[this._selectedTabIndex]._maxSize;
             this._isExpandable ||= this._tabs?.[this._selectedTabIndex]._isExpandable ?? false;
         }
 
-        var windowDesc: WindowDesc = {
+        const windowDesc: WindowDesc = {
             classification: this._title,
             width: this._minSize.width,
             height: this._minSize.height,

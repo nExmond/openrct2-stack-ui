@@ -1,23 +1,15 @@
-
-interface GraphicsContextWrapper {
-    colour: number | undefined;
-    secondaryColour: number | undefined;
-    ternaryColour: number | undefined;
-    paletteId: number | undefined;
-
-    getImage(id: number): ImageInfo | undefined;
-    measureText(text: string): ScreenSize;
-}
+/// <reference path='GraphicsContextWrapper.ts' />
 
 class ImageHelper {
 
-    private _graphicsContext: GraphicsContext | undefined;
+    protected _graphicsContext: GraphicsContext | undefined;
+    protected _timeoutId: number | undefined;
 
     constructor() {
         this._open();
     }
 
-    private _open() {
+    protected _open() {       
         var window = ui.openWindow({
             classification: "_GC_",
             x: 0,
@@ -37,13 +29,19 @@ class ImageHelper {
                 }
             }],
             onClose: () => {
-                context.setTimeout(() => {
+                const timeoutId = context.setTimeout(() => {
                     this._open();
+                    context.clearTimeout(timeoutId);
                 }, 1);
             }
         });
+        console.log("A custom widget that supports GraphicsContext has been opened."); 
     }
 
+    /**
+     * Graphics context
+     * @returns context 
+     */
     graphicsContext(): GraphicsContextWrapper | undefined {
         return this._graphicsContext;
     }

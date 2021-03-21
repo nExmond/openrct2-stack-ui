@@ -1,7 +1,7 @@
 class UIListViewItem {
 
-    _isSeparator: boolean = false;
-    _textList: string[];
+    protected _isSeparator: boolean = false;
+    protected _textList: string[];
 
     constructor(textList: string[] = [], isSeparator: boolean) {
         this._textList = textList
@@ -13,7 +13,7 @@ class UIListViewItem {
         return new UIListViewItem(textList, false);
     }
     static $S(text: string | undefined = undefined): UIListViewItem {
-        var val = typeof text === undefined ? [] : [text!];
+        const val = typeof text === undefined ? [] : [text!];
         return new UIListViewItem(val, true);
     }
 
@@ -21,7 +21,7 @@ class UIListViewItem {
 
     _data(applyFont: (val: string | undefined) => string | undefined): ListViewItem {
         if (this._isSeparator) {
-            var text = this._textList.length > 0 ? this._textList[0] : undefined;
+            const text = this._textList.length > 0 ? this._textList[0] : undefined;
             return {
                 type: 'seperator',
                 text: applyFont(text)

@@ -33,6 +33,7 @@ type StaticThis<T> = { new(): T };
 
 interface String {
     size(): UISize;
+    containerSize(): UISize;
 }
 String.prototype.size = function (): UISize {
     const g = imageHelper.graphicsContext();
@@ -72,6 +73,13 @@ String.prototype.size = function (): UISize {
         height: Math.max(textSize.height, imageBounds.height)
     }
 }
+String.prototype.containerSize = function (): UISize {
+    const size = this.toString().size();
+    return {
+        width: size.width + 5,
+        height: size.height + 5
+    }
+}
 
 interface String {
     remove(...strings: string[]): string;
@@ -88,8 +96,8 @@ interface String {
     toClearString(): string;
 }
 String.prototype.toClearString = function (): string {
-    var strings: string[] = this.toString().split('{').map(val => val.split('}')).flatMap();
-    var cleared = strings.filter((_, index) => index % 2 === 0).join('');
+    const strings: string[] = this.toString().split('{').map(val => val.split('}')).flatMap();
+    const cleared = strings.filter((_, index) => index % 2 === 0).join('');
     return cleared;
 }
 

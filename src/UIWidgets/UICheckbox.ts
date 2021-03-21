@@ -2,9 +2,9 @@
 
 class UICheckbox extends UIWidget<CheckboxWidget> {
 
-    _text: string;
-    _isChecked: boolean = false;
-    _onChange: ((checkbox: this, isChecked: boolean) => void) | undefined;
+    protected _text: string;
+    protected _isChecked: boolean = false;
+    protected _onChange: ((checkbox: this, isChecked: boolean) => void) | undefined;
 
     constructor(text: string | undefined) {
         super();
@@ -14,13 +14,14 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
     //Convenience
 
     static $(text: string): UICheckbox {
-        var checkbox = new UICheckbox(text);
+        const checkbox = new UICheckbox(text);
+        const minSize = text.containerSize();
         return checkbox
-            .minSize({ width: 50, height: 15 });
+            .minSize(minSize);
     }
 
     static $UN(): UICheckbox {
-        var checkbox = new UICheckbox(undefined);
+        const checkbox = new UICheckbox(undefined);
         return checkbox
             .size({ width: 11, height: 11 })
     }
@@ -60,6 +61,10 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
     text(val: string): this {
         this._text = val;
         return this;
+    }
+
+    toggle(): this {
+        return this.isChecked(!this._isChecked);
     }
 
     onChange(block: (checkbox: this, isChecked: boolean) => void): this {

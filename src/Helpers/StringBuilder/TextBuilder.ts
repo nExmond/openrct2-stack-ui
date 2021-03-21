@@ -4,11 +4,11 @@
 
 class TextBuilder {
 
-    private _root: TextNode;
-    private _font: TextFont | undefined;
+    protected _root: TextNode;
+    protected _font: TextFont | undefined;
 
-    private _outline: boolean = false;
-    private _color: TextColor | undefined;
+    protected _outline: boolean = false;
+    protected _color: TextColor | undefined;
 
     constructor(node: TextNode | string) {
         if (typeof node === 'string' || typeof node === 'undefined') {

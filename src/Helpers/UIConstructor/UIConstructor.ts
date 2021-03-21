@@ -10,14 +10,14 @@ class UIConstructor {
         if (selectedIndex >= tabs.length || selectedIndex < 0) {
             throw new Error('SelectedIndex is less than the count of tabs and must be at least 0.');
         }
-        var minWidth = 31 * tabs.length + 6
+        const minWidth = 31 * tabs.length + 6
         for (var i = 0; i < tabs.length; i++) {
-            var tab = tabs[i];
-            var stack = tab._contentView
+            const tab = tabs[i];
+            const stack = tab._contentView
                 .spacing(tab._spacing ?? spacing)
                 .padding(tab._padding ?? padding);
 
-            var results = this.construct(stack, interactor, UIEdgeInsetsTabContainer);
+                const results = this.construct(stack, interactor, UIEdgeInsetsTabContainer);
             tab._minSize = {
                 width: Math.max(minWidth, results.size.width),
                 height: results.size.height
@@ -32,7 +32,7 @@ Errors can occur when resizing windows.
 `);
             }
         }
-        var selectedTab = tabs[selectedIndex];
+        const selectedTab = tabs[selectedIndex];
         this.refreshTab(selectedTab, selectedTab._minSize);
         return {
             size: selectedTab._minSize,
@@ -51,19 +51,19 @@ Errors can occur when resizing windows.
 
     _injectInteractor(stack: UIStack, interactor: UIInteractor) {
 
-        var flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
         stack._interactor = interactor;
         flattedChilds.forEach((val) => val._interactor = interactor);
     }
 
-    private calculateBounds(stack: UIStack, insets: UIEdgeInsets): UISize {
+    protected calculateBounds(stack: UIStack, insets: UIEdgeInsets): UISize {
 
-        var origin: UIPoint = {
+        const origin: UIPoint = {
             x: insets.left,
             y: insets.top
         };
 
-        var estimatedSize = stack._estimatedSize();
+        const estimatedSize = stack._estimatedSize();
 
         stack._layout(UIAxis.Vertical, origin, estimatedSize);
         stack._build();
@@ -75,12 +75,12 @@ Errors can occur when resizing windows.
     }
 
     didLoadTabs(tabs: UITab[]) {
-        var flattedChilds: UIWidget<any>[] = tabs.map((val) => val._contentView._getUIWidgets()).flatMap();
+        const flattedChilds: UIWidget<any>[] = tabs.map((val) => val._contentView._getUIWidgets()).flatMap();
         flattedChilds.forEach((val) => val._loadWidget());
     }
 
     didLoad(stack: UIStack) {
-        var flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
         flattedChilds.forEach((val) => val._loadWidget());
     }
 
@@ -90,12 +90,12 @@ Errors can occur when resizing windows.
 
     refresh(stack: UIStack, windowSize: UISize, insets: UIEdgeInsets = UIEdgeInsetsContainer) {
 
-        var origin: UIPoint = {
+        const origin: UIPoint = {
             x: insets.left,
             y: insets.top
         };
 
-        var estimatedSize: UISize = {
+        const estimatedSize: UISize = {
             width: windowSize.width - (insets.left + insets.right),
             height: windowSize.height - (insets.top + insets.bottom)
         }

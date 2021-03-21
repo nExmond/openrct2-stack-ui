@@ -6,10 +6,14 @@ class UIWidgetProxy<T extends UIWidget<any>> {
 
     constructor() {}
 
+    //Convenience
+
     static $<T extends UIWidget<any>>(): UIWidgetProxy<T> {
-        var proxy = new UIWidgetProxy<T>();
+        const proxy = new UIWidgetProxy<T>();
         return proxy;
     }
+
+    //Private
 
     _bind(widget: T) {
         this.widget = widget;

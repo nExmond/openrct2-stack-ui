@@ -9,7 +9,7 @@ class UITab {
     _padding: UIEdgeInsets | undefined;
     _isExpandable: boolean = false;
 
-    _image: UIImage;
+    protected _image: UIImage;
     _contentView: UIStack;
 
     constructor(contentView: UIStack, image: UIImage | undefined = undefined) {
@@ -20,8 +20,8 @@ class UITab {
     //Convenience
 
     static $(...widgets: UIWidget<any>[]): UITab {
-        var stack = new UIStack(UIAxis.Vertical, widgets);
-        var tab = new UITab(stack);
+        const stack = new UIStack(UIAxis.Vertical, widgets);
+        const tab = new UITab(stack);
         return tab;
     }
 

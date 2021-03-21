@@ -3,10 +3,10 @@
 
 class TextNode {
 
-    private _childs: TextNode[] = [];
+    protected _childs: TextNode[] = [];
 
-    private _outline: boolean = false;
-    private _color: TextColor | undefined;
+    protected _outline: boolean = false;
+    protected _color: TextColor | undefined;
 
     constructor(childs: TextNode[]) {
         this._childs = childs;
@@ -15,17 +15,17 @@ class TextNode {
     //Convenience
 
     static $(...childs: TextNode[]): TextNode {
-        var node = new TextNode(childs);
+        const node = new TextNode(childs);
         return node;
     }
 
     static $S(string: string): StringNode {
-        var node = new StringNode(string);
+        const node = new StringNode(string);
         return node;
     }
 
     static $I(image: UIImage): ImageNode {
-        var node = new ImageNode(image);
+        const node = new ImageNode(image);
         return node;
     }
 
@@ -51,18 +51,18 @@ class TextNode {
         const existFont = typeof font !== 'undefined';
         const isSmaller = existFont && font! === TextFont.Tiny;
         if (this._isStopover()) {
-            var numberOfChilds = this._childs.length;
+            const numberOfChilds = this._childs.length;
             for (var i = 0; i < numberOfChilds; i++) {
-                var child = this._childs[i];
+                const child = this._childs[i];
                 if (child._isLeaf() && child instanceof StringNode) {
-                    var splitted = child._string.split("\\n");
+                    const splitted = child._string.split("\\n");
                     if (splitted.length > 1) {
-                        var newChilds = splitted
+                        const newChilds = splitted
                             .map((val, index, array) => {
-                                var node = new StringNode(val, false);
+                                const node = new StringNode(val, false);
                                 node._outline = child._outline;
                                 node._color = child._color;
-                                var nodes = [node];
+                                const nodes = [node];
                                 if (index < array.length - 1) {
                                     nodes.push(new _NewlineNode(isSmaller));
                                     if (existFont) {
@@ -71,7 +71,7 @@ class TextNode {
                                 }
                                 return nodes;
                             }).reduce((acc, val) => acc.concat(val));
-                        var newNode = TextNode.$(...newChilds);
+                        const newNode = TextNode.$(...newChilds);
                         this._childs[i] = newNode;
                     }
                 } else {
@@ -89,9 +89,9 @@ class TextNode {
                 this._string = `{OUTLINE}${this._string}{OUTLINE_OFF}`;
             }
         } else if (this._isStopover()) {
-            var childs = this._childs!;
+            const childs = this._childs!;
             if (childs.length > 0) {
-                var apply = parentExist || this._outline;
+                const apply = parentExist || this._outline;
                 for (var child of childs) {
                     child._unifyOutline(apply);
                 }
@@ -99,7 +99,7 @@ class TextNode {
                     var isBegin = true
                     var prevChild: StringNode | undefined;
                     for (var i = 0; i < childs.length; i++) {
-                        var child = this._childs[i];
+                        const child = this._childs[i];
                         if (isBegin && child instanceof StringNode) {
                             child._string = `{OUTLINE}${child._string}`;
                             isBegin = false;
@@ -123,7 +123,7 @@ class TextNode {
     }
 
     _unifyColor(parentColor: TextColor | undefined = undefined) {
-        var color = this._color ?? parentColor;
+        const color = this._color ?? parentColor;
         if (this._isLeaf() && this._isPureString() && this instanceof StringNode) {
             this._string = `{${color}}${this._string}`;
         } else if (this._isStopover()) {
@@ -135,7 +135,7 @@ class TextNode {
 
     __leafs(): StringNode[] {
         if (this._isLeaf()) {
-            var string = this as unknown as StringNode;
+            const string = this as unknown as StringNode;
             return [string];
         } else {
             return this._childs.map(val => val.__leafs()).flatMap();
@@ -144,8 +144,8 @@ class TextNode {
 
     _description(depth: number = 0, index: number | undefined = undefined): string {
         const tab = "│ "
-        var tabs = [...Array(depth)].map(_ => tab).join('');
-        var childTabs = tabs + tab;
+        const tabs = [...Array(depth)].map(_ => tab).join('');
+        const childTabs = tabs + tab;
         var childs = "[]";
         if (typeof this._childs !== 'undefined' && this._childs.length > 0) {
             childs = `[${this._childs.map((val, index) => val._description(depth + 1, index)).join(",")}]`

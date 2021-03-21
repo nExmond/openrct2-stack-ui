@@ -3,11 +3,11 @@
 
 class UIButton extends UIWidget<ButtonWidget> {
 
-    _border: boolean = true;
-    _image: number | undefined;
-    _isPressed: boolean = false;
-    _title: string | undefined;
-    _onClick: ((button: this) => void) | undefined;
+    protected _border: boolean = true;
+    protected _image: number | undefined;
+    protected _isPressed: boolean = false;
+    protected _title: string | undefined;
+    protected _onClick: ((button: this) => void) | undefined;
 
     _intervalHelper: IntervalHelper | undefined;
     _uiImage: UIImage | undefined;
@@ -20,11 +20,7 @@ class UIButton extends UIWidget<ButtonWidget> {
 
     static $<T extends UIButton>(this: StaticThis<T>, title: string): T {
         const button = new this();
-        const titleSize = title.size();
-        const minSize: UISize = {
-            width: titleSize.width + 5,
-            height: titleSize.height + 5
-        }
+        const minSize = title.containerSize();
         return button.title(title)
             .size(minSize)
             .minSize(minSize);

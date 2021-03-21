@@ -2,14 +2,14 @@
 
 class UIToggleButton extends UIButton {
 
-    private _onPress: ((button: this, isPressed: boolean) => void) | undefined;
+    protected _onPress: ((button: this, isPressed: boolean) => void) | undefined;
 
     //Private
     
     protected _internalOnChange() {
-        var widget: ButtonWidget = this._widget;
-        var isPressed = widget.isPressed ?? false
-        var toggled = !isPressed;
+        const widget: ButtonWidget = this._widget;
+        const isPressed = widget.isPressed ?? false
+        const toggled = !isPressed;
         this.updateUI((widget) => widget.isPressed(toggled));
         this._onPress?.call(this, this, toggled);
     }
@@ -18,6 +18,11 @@ class UIToggleButton extends UIButton {
 
     onPress(block: (button: this, isPressed: boolean) => void): this {
         this._onPress = block;
+        return this;
+    }
+
+    toggle(): this {
+        this._isPressed = !this._isPressed;
         return this;
     }
 }

@@ -6,10 +6,14 @@ class UITabProxy {
 
     constructor() {}
 
+    //Convenience
+
     static $(): UITabProxy {
-        var proxy = new UITabProxy();
+        const proxy = new UITabProxy();
         return proxy;
     }
+
+    //Private
 
     _bind(tab: UITab) {
         this.tab = tab;

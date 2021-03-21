@@ -4,11 +4,11 @@
 
 class UIViewport extends UIWidget<ViewportWidget> {
 
-    _viewport!: Viewport;
-    _zoom: UIViewportScale = UIViewportScale.One;
-    _visibilityFlags: UIViewportFlag = UIViewportFlag.None;
+    protected _viewport!: Viewport;
+    protected _zoom: UIViewportScale = UIViewportScale.One;
+    protected _visibilityFlags: UIViewportFlag = UIViewportFlag.None;
 
-    _position: CoordsXY | CoordsXYZ = ui.mainViewport.getCentrePosition();
+    protected _position: CoordsXY | CoordsXYZ = ui.mainViewport.getCentrePosition();
 
     constructor() {
         super();
@@ -17,7 +17,7 @@ class UIViewport extends UIWidget<ViewportWidget> {
     //Convenience
 
     static $(): UIViewport {
-        var viewport = new UIViewport();
+        const viewport = new UIViewport();
         return viewport
             .minSize({ width: 165, height: 120 });
     }

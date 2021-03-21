@@ -4,23 +4,23 @@
 
 class UIWidget<T extends Widget> {
 
-    _origin: UIPoint = UIPointZero;
-    _size: UIOptionalSize = UIOptionalSizeDefulat;
+    protected _origin: UIPoint = UIPointZero;
+    protected _size: UIOptionalSize = UIOptionalSizeDefulat;
     _name: string;
-    _tooltip: string | undefined;
-    _isDisabled: boolean = false;
-    _isVisible: boolean = true;
+    protected _tooltip: string | undefined;
+    protected _isDisabled: boolean = false;
+    protected _isVisible: boolean = true;
 
     _interactor!: UIInteractor;
 
-    _widget!: T | any;
+    protected _widget!: T | any;
 
-    _minSize: UISize = UISizeZero;
-    _initialSize: UIOptionalSize | undefined;
+    protected _minSize: UISize = UISizeZero;
+    protected _initialSize: UIOptionalSize | undefined;
 
-    _offset: UIPoint = UIPointZero;
+    protected _offset: UIPoint = UIPointZero;
 
-    _font: TextFont | undefined;
+    protected _font: TextFont | undefined;
 
     constructor() {
         //https://stackoverflow.com/questions/13613524/get-an-objects-class-name-at-runtime
@@ -38,7 +38,7 @@ class UIWidget<T extends Widget> {
     }
 
     _estimatedSize(): UISize {
-        var minSize = this._minSize;
+        const minSize = this._minSize;
         return {
             width: this._size.width ?? minSize.width,
             height: this._size.height ?? minSize.height
@@ -103,7 +103,7 @@ class UIWidget<T extends Widget> {
         widget.isVisible = this._isVisible;
     }
 
-    _buildBaseValues(): {} {
+    protected _buildBaseValues(): {} {
         return {
             x: this._origin.x,
             y: this._origin.y,
@@ -132,7 +132,7 @@ class UIWidget<T extends Widget> {
         this._update(this._widget);
     }
 
-    _applyFont(text: string | undefined): string | undefined {
+    protected _applyFont(text: string | undefined): string | undefined {
         if (typeof this._font !== 'undefined' && typeof text !== 'undefined') {
             return new TextBuilder(text).font(this._font).build();
         } else {

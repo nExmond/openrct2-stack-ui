@@ -173,7 +173,7 @@ var openWindow = function () {
     })
     imageButton.widget?.onClick((val) => {
         toggleButton.widget?.updateUI(widget => {
-            widget.isPressed(!widget._isPressed);
+            widget.toggle();
         });
     })
     toggleButton.widget?.onPress((button, isPressed) => {

@@ -3,9 +3,9 @@
 
 class UILabel extends UIWidget<LabelWidget> {
 
-    _text: string;
-    _align: UITextAlignment = UITextAlignment.Left;
-    _onChange: ((label: this, index: number) => void) | undefined;
+    protected _text: string;
+    protected _align: UITextAlignment = UITextAlignment.Left;
+    protected _onChange: ((label: this, index: number) => void) | undefined;
 
     constructor(text: string) {
         super();
@@ -15,9 +15,10 @@ class UILabel extends UIWidget<LabelWidget> {
     //Convenience
 
     static $(text: string): UILabel {
-        var label = new UILabel(text);
+        const label = new UILabel(text);
+        const minSize = text.containerSize();
         return label.height(15)
-            .minSize({ width: 50, height: 15 });
+            .minSize(minSize);
     }
 
     //Private

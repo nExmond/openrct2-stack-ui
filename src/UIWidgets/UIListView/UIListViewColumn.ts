@@ -3,16 +3,16 @@
 
 class UIListViewColumn {
 
-    _canSort: boolean = false;
-    _sortOrder: UISortOrder = UISortOrder.None;
+    protected _canSort: boolean = false;
+    protected _sortOrder: UISortOrder = UISortOrder.None;
 
-    _header: string;
-    _headerTooltip: string | undefined;
+    protected _header: string;
+    protected _headerTooltip: string | undefined;
 
-    _width: number | undefined;
-    _weight: number | undefined;
-    _minWidth: number | undefined;
-    _maxWidth: number | undefined;
+    protected _width: number | undefined;
+    protected _weight: number | undefined;
+    protected _minWidth: number | undefined;
+    protected _maxWidth: number | undefined;
 
     constructor(header: string) {
         this._header = header;
@@ -25,7 +25,7 @@ class UIListViewColumn {
     }
 
     static $F(header: string, width: number): UIListViewColumn {
-        var listView = new UIListViewColumn(header);
+        const listView = new UIListViewColumn(header);
         return listView.width(width);
     }
 
@@ -41,7 +41,7 @@ class UIListViewColumn {
     }
 
     static $W(header: string, weight: number): UIListViewColumn {
-        var listView = new UIListViewColumn(header);
+        const listView = new UIListViewColumn(header);
         return listView.weight(weight);
     }
 

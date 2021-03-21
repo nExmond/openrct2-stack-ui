@@ -4,7 +4,7 @@ class UIImage {
 
     _frames: number[] = [];
     _duration: number = 2;
-    _offset: UIPoint = UIPointZero;
+    protected _offset: UIPoint = UIPointZero;
 
     constructor(frames: number[]) {
         this._frames = frames;
@@ -13,27 +13,27 @@ class UIImage {
     //Convenience
 
     static $(single: number): UIImage {
-        var image = new UIImage([single]);
+        const image = new UIImage([single]);
         return image;
     }
 
     static $A(base: number, count: number, duration: number): UIImage {
-        var frames = [...Array(count)].map((_, i) => base + i);
-        var image = new UIImage(frames);
+        const frames = [...Array(count)].map((_, i) => base + i);
+        const image = new UIImage(frames);
         return image.duration(duration);
     }
 
     static $F(frames: number[], duration: number): UIImage {
-        var image = new UIImage(frames);
+        const image = new UIImage(frames);
         return image.duration(duration);
     }
 
     //Private
 
     _data(): number | ImageAnimation {
-        var frameCount = this._frames.length;
+        const frameCount = this._frames.length;
         if (frameCount > 1) {
-            var isContiguous = this._frames.reduce((acc, val) => val === acc + 1 ? val : acc) == this._frames[this._frames.length - 1];
+            const isContiguous = this._frames.reduce((acc, val) => val === acc + 1 ? val : acc) == this._frames[this._frames.length - 1];
             if (isContiguous) {
                 return {
                     frameBase: this._frames[0],
@@ -78,15 +78,15 @@ class UIImage {
     }
 
     isEqual(val: UIImage): boolean {
-        var left = this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
-        var right = val._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
+        const left = this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
+        const right = val._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
         return left === right;
     }
 
     size(): UISize {
-        var graphicsContext = imageHelper.graphicsContext();
+        const graphicsContext = imageHelper.graphicsContext();
         return this._frames.map(val => {
-            var info = graphicsContext?.getImage(val);
+            const info = graphicsContext?.getImage(val);
             return <UISize>{
                 width: info?.width ?? 0,
                 height: info?.height ?? 0
