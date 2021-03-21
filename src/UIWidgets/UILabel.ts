@@ -10,7 +10,6 @@ class UILabel extends UIWidget<LabelWidget> {
     constructor(text: string) {
         super();
         this._text = text;
-        console.log(text);
     }
 
     //Convenience
