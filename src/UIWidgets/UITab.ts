@@ -66,4 +66,9 @@ class UITab {
         this._image = val;
         return this;
     }
+    
+    bind(proxy: UITabProxy): this {
+        proxy._bind(this);
+        return this;
+    }
 }

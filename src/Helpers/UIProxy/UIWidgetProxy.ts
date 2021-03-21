@@ -1,3 +1,5 @@
+/// <reference path='../../UIWidgets/UIWidget.ts' />
+
 class UIWidgetProxy<T extends UIWidget<any>> {
 
     widget?: T;

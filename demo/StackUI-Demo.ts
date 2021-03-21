@@ -81,9 +81,10 @@ var openWindow = function () {
     const imageButton = UIWP.$<UIButton>();
     const toggleButton = UIWP.$<UIToggleButton>();
     const pageButton = UIWP.$<UIPageImageButton>();
+    const main = UIWDP.$();
 
     //Build
-    var window = UIWindow.$T('직원',
+    UIWindow.$T('직원',
         UITab.$(
             UIStack.$H(
                 UIStack.$V(
@@ -156,17 +157,17 @@ var openWindow = function () {
         primary: UIColor.Gray,
         secondary: UIColor.DarkOliveGreen,
         tertiary: UIColor.LightOrange
-    }).show();
+    }).bind(main).show();
 
 
     //Bind
     primaryColorPicker.widget?.onChange((picker, color) => {
-        window.updateUI((window) => {
+        main.window?.updateUI((window) => {
             window.themePrimaryColor(color);
         })
     })
     secondaryColorPicker.widget?.onChange((picker, color) => {
-        window.updateUI((window) => {
+        main.window?.updateUI((window) => {
             window.themeSecondaryColor(color);
         })
     })
@@ -188,6 +189,9 @@ var openWindow = function () {
     pageButton.widget?.onPage((button, image) => {
         console.log(image.description());
         console.log(button.description());
+        main.window?.updateUI((window) => {
+            window.selectedTabIndex(2);
+        })
     })
 };
 

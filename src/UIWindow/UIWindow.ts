@@ -381,4 +381,9 @@ class UIWindow {
         this._onTabChange = block;
         return this;
     }
+    
+    bind(proxy: UIWindowProxy): this {
+        proxy._bind(this);
+        return this;
+    }
 }
