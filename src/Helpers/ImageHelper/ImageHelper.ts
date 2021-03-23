@@ -1,5 +1,8 @@
 /// <reference path='GraphicsContextWrapper.ts' />
 
+/**
+ * Helper for image processing
+ */
 class ImageHelper {
 
     protected _graphicsContext: GraphicsContext | undefined;
@@ -39,8 +42,8 @@ class ImageHelper {
     }
 
     /**
-     * Graphics context
-     * @returns context 
+     * 
+     * @returns graphics context
      */
     graphicsContext(): GraphicsContextWrapper | undefined {
         return this._graphicsContext;
