@@ -1,4 +1,7 @@
 
+/**
+ * String Formatting tag.
+ */
 enum TextFormat {
     Comma16 = "COMMA16",
     Comma32 = "COMMA32",

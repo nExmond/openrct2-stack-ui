@@ -1,6 +1,8 @@
 /// <reference path='../UICore/UISize.ts' />
 /// <reference path='../UICore/TextFormat.ts' />
 
+////////////////////////////////////////////////////////////////////////////////////
+
 interface Array<T> {
     flatMap<T>(): T[];
     flatMapFunc<T>(d: number): T[];
@@ -31,7 +33,14 @@ function uuid(): string {
 
 type StaticThis<T> = { new(): T };
 
+////////////////////////////////////////////////////////////////////////////////////
+
 interface String {
+
+    /**
+     * Calculate the actual size of the string.
+     * @returns size 
+     */
     size(): UISize;
     containerSize(): UISize;
 }
@@ -93,6 +102,11 @@ String.prototype.remove = function (...strings: string[]): string {
 }
 
 interface String {
+
+    /**
+     * Remove all formatting tags.
+     * @returns string with formatting removed
+     */
     toClearString(): string;
 }
 String.prototype.toClearString = function (): string {
@@ -103,6 +117,13 @@ String.prototype.toClearString = function (): string {
 
 
 interface String {
+
+    /**
+     * Format this string.
+     * @param format 
+     * @param arg 
+     * @returns formatted string 
+     */
     format(format: TextFormat, ...arg: any[]): string;
 }
 String.prototype.format = function (format: TextFormat, ...arg: any[]): string {
@@ -111,6 +132,13 @@ String.prototype.format = function (format: TextFormat, ...arg: any[]): string {
 
 
 interface Number {
+    
+    /**
+     * Format this number.
+     * @param format 
+     * @param arg 
+     * @returns formatted string 
+     */
     format(format: TextFormat, ...arg: any[]): string;
 }
 Number.prototype.format = function (format: TextFormat, ...arg: any[]): string {

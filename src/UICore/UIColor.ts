@@ -1,4 +1,9 @@
 
+/**
+ * Generally used as widget background color.
+ * Can be used with *UIColorFlag* as in the example.
+ * ex) Translucent Yellow: **UIColor.Yellow | UIColorFlag.Translucent**
+ */
 enum UIColor {
     Black, Gray, White,
     DarkPurple, LightPurple, BrightPurple,

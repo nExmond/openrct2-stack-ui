@@ -1,4 +1,8 @@
 
+/**
+ * String color tag.
+ * Text color is different from widget background color.
+ */
 enum TextColor {
     WindowPrimary = "WINDOW_COLOUR_1",
     WindowSecondary = "WINDOW_COLOUR_2",
