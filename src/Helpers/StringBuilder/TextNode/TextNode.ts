@@ -1,6 +1,10 @@
 /// <reference path='../../../UICore/TextColor.ts' />
 /// <reference path='../../../UICore/UIImage.ts' />
 
+/**
+ * Top level node used to apply formatting.
+ * Use it as a parent node.
+ */
 class TextNode {
 
     protected _childs: TextNode[] = [];
@@ -8,22 +12,35 @@ class TextNode {
     protected _outline: boolean = false;
     protected _color: TextColor | undefined;
 
+    /**
+     * Creates an instance of text node.
+     * @param childs list of *TextNode*
+     */
     constructor(childs: TextNode[]) {
         this._childs = childs;
     }
 
     //Convenience
 
+    /**
+     * Create *TextNode* instance without using new.
+     */
     static $(...childs: TextNode[]): TextNode {
         const node = new TextNode(childs);
         return node;
     }
 
+    /**
+     * Create *StringNode* instance without using new.
+     */
     static $S(string: string): StringNode {
         const node = new StringNode(string);
         return node;
     }
 
+    /**
+     * Create *ImageNode* instance without using new.
+     */
     static $I(image: UIImage): ImageNode {
         const node = new ImageNode(image);
         return node;
@@ -168,15 +185,24 @@ ${tabs}}`;
 
     //Public
 
+    /**
+     * Set outline for this node and its subnodes.
+     */
     outline(val: boolean = true): this {
         this._outline = val;
         return this;
     }
 
+    /**
+     * Set color for this node and its subnodes.
+     */
     color(val: TextColor | undefined): this {
         this._color = val;
         return this;
     }
 }
 
+/**
+ * Short name class of *TextNode* for simplicity access.
+ */
 class TN extends TextNode { };
