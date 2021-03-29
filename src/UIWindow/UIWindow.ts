@@ -267,7 +267,7 @@ class UIWindow {
         };
         this._sync();
 
-        this._interactor.findWidget((name) => {
+        this._interactor._findWidget((name) => {
             return this.findWidget(name);
         });
         this._interactor._refresh(() => {

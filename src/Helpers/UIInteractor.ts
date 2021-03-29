@@ -1,29 +1,36 @@
+
+/**
+ * Assisting child widgets to communicate with the window.
+ */
 class UIInteractor {
 
-    protected _findWidget!: <T extends Widget>(name: string) => T | undefined;
+    protected __findWidget!: <T extends Widget>(name: string) => T | undefined;
     protected _refreshWindow!: () => void;
 
     constructor() { }
 
     //Private
 
-    _refresh(block: () => void) {
-        this._refreshWindow = block;
+    _findWidget(block: <T extends Widget>(name: string) => T | undefined) {
+        this.__findWidget = block;
     }
 
-    //Public
-
-    update<T extends Widget>(name: string, block: (widget: T) => void) {
-        var widget: T | undefined = this._findWidget(name);
+    _update<T extends Widget>(name: string, block: (widget: T) => void) {
+        var widget: T | undefined = this.__findWidget(name);
         if (typeof widget !== 'undefined') {
             block(widget);
         }
     }
 
-    findWidget(block: <T extends Widget>(name: string) => T | undefined) {
-        this._findWidget = block;
+    _refresh(block: () => void) {
+        this._refreshWindow = block;
     }
+
+    //Public
     
+    /**
+     * Updates the window and its child widgets.
+     */
     refreshWindow() {
         this._refreshWindow();
     }

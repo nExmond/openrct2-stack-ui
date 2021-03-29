@@ -117,7 +117,7 @@ class UIWidget<T extends Widget> {
     }
 
     _loadWidget() {
-        this._interactor.update(this._name, (widget: T) => {
+        this._interactor._update(this._name, (widget: T) => {
             this._widget = widget;
         });
     }

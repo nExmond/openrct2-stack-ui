@@ -1,13 +1,19 @@
 /// <reference path='../../UIWidgets/UITab.ts' />
 
-class UITabProxy {
+/**
+ * Proxy for interaction between UITab.
+ */
+class UITabProxy implements UIProxy<UITab> {
 
-    tab?: UITab;
+    ui?: UITab;
 
     constructor() {}
 
     //Convenience
 
+    /**
+     * Create *UITabProxy* instance without using new.
+     */
     static $(): UITabProxy {
         const proxy = new UITabProxy();
         return proxy;
@@ -15,9 +21,12 @@ class UITabProxy {
 
     //Private
 
-    _bind(tab: UITab) {
-        this.tab = tab;
+    _bind(ui: UITab) {
+        this.ui = ui;
     }
 }
 
+/**
+ * Short name class of *UITabProxy* for simplicity access.
+ */
 class UITP extends UITabProxy {}

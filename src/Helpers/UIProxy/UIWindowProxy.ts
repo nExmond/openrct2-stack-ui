@@ -1,13 +1,19 @@
 /// <reference path='../../UIWindow/UIWindow.ts' />
 
-class UIWindowProxy {
+/**
+ * Proxy for interaction between UIWindow.
+ */
+class UIWindowProxy implements UIProxy<UIWindow> {
 
-    window?: UIWindow;
+    ui?: UIWindow;
 
     constructor() {}
 
     //Convenience
 
+    /**
+     * Create *UIWindowProxy* instance without using new.
+     */
     static $(): UIWindowProxy {
         const proxy = new UIWindowProxy();
         return proxy;
@@ -15,9 +21,12 @@ class UIWindowProxy {
 
     //Private
 
-    _bind(window: UIWindow) {
-        this.window = window;
+    _bind(ui: UIWindow) {
+        this.ui = ui;
     }
 }
 
+/**
+ * Short name class of *UIWindowProxy* for simplicity access.
+ */
 class UIWDP extends UIWindowProxy {}

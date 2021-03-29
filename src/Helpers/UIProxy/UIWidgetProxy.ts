@@ -1,14 +1,11 @@
 /// <reference path='../../UIWidgets/UIWidget.ts' />
 
 /**
- * Proxy for interaction between UIWidgets.
+ * Proxy for interaction between widgets.
  */
-class UIWidgetProxy<T extends UIWidget<any>> {
+class UIWidgetProxy<T extends UIWidget<any>> implements UIProxy<T> {
 
-    /**
-     * Binded widget.
-     */
-    widget?: T;
+    ui?: T;
 
     constructor() {}
 
@@ -24,8 +21,8 @@ class UIWidgetProxy<T extends UIWidget<any>> {
 
     //Private
 
-    _bind(widget: T) {
-        this.widget = widget;
+    _bind(ui: T) {
+        this.ui = ui;
     }
 }
 
