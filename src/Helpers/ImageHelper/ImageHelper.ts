@@ -42,7 +42,7 @@ class ImageHelper {
     }
 
     /**
-     * 
+     * ! Since you get *GraphicsContext* in an unusual way, it can be undefined for a very short time.
      * @returns graphics context
      */
     graphicsContext(): GraphicsContextWrapper | undefined {

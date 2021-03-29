@@ -13,7 +13,7 @@ class TextNode {
     protected _color: TextColor | undefined;
 
     /**
-     * Creates an instance of text node.
+     * Creates an instance of *TextNode*.
      * @param childs list of *TextNode*
      */
     constructor(childs: TextNode[]) {
