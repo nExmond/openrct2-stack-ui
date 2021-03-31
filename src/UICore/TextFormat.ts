@@ -1,6 +1,8 @@
 
 /**
  * String Formatting tag.
+ * For an example of applying the format, please refer to the following link.
+ * https://github.com/OpenRCT2/OpenRCT2/blob/a5a63f839aca539ad75abf09a765e590e5ba973b/test/tests/FormattingTests.cpp
  */
 enum TextFormat {
 
