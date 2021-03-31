@@ -4,6 +4,9 @@
 /// <reference path='../UIWidgets/UIStack.ts' />
 /// <reference path='UIWindowTheme.ts' />
 
+/**
+ * Top-level object managing tabs and widgets.
+ */
 class UIWindow {
 
     protected _uiConstructor = new UIConstructor();
@@ -33,6 +36,11 @@ class UIWindow {
     protected _onClose: ((window: this) => void) | undefined;
     protected _onTabChange: ((window: this, selectedIndex: number) => void) | undefined;
 
+    /**
+     * Creates an instance of *UIWindow*.
+     * @param title 
+     * @param contents List of *UITab* or *UIWindget*
+     */
     constructor(title: string, contents: UIWidget<any>[] | UITab[]) {
         this._title = title;
 
@@ -51,10 +59,16 @@ class UIWindow {
 
     //Convenience
 
+    /**
+     * Create an instance window from a list of widget without using new.
+     */
     static $(title: string, ...widgets: UIWidget<any>[]): UIWindow {
         return new UIWindow(title, widgets);
     }
 
+    /**
+     * Create an instance window from a list of tab without using new.
+     */
     static $T(title: string, ...tabs: UITab[]): UIWindow {
         return new UIWindow(title, tabs);
     }
@@ -208,6 +222,10 @@ class UIWindow {
 
     //Public
 
+    /**
+     * Shows a window on the screen.
+     * Initial data is set at this point.
+     */
     show(): this {
 
         if (this._isOpened()) {
@@ -285,52 +303,86 @@ class UIWindow {
         return this;
     }
 
+    /**
+     * Modify and update the properties of the window.
+     * @param block update block
+     */
     updateUI(block: (val: this) => void) {
         this._sync();
         block(this);
         this._update();
     }
 
+    /**
+     * Closes window
+     */
     close() {
         this._window?.close();
         this._window = undefined;
     }
 
+    /**
+     * Bring to front
+     */
     bringToFront() {
         this._window?.bringToFront();
     }
 
+    /**
+     * Finds widget
+     * @param name 
+     * @returns widget 
+     */
     findWidget<T extends Widget>(name: string): T | undefined {
         return this._window?.findWidget(name);
     }
 
     //---
 
+    /**
+     * Widget spacing on top stack.
+     */
     spacing(val: number): this {
         this._spacing = val;
         return this;
     }
 
+    /**
+     * Top stack padding.
+     */
     padding(val: UIEdgeInsets): this {
         this._padding = val;
         return this;
     }
 
+    /**
+     * Window coordinates on the screen.
+     */
     origin(val: UIPoint): this {
         this._origin = val;
         return this;
     }
 
+    /**
+     * Whether the window can be enlarged.
+     * ! May not apply under certain conditions.
+     */
     isExpandable(val: boolean): this {
         this._isExpandable = val;
         return this;
     }
 
+    /**
+     * Set the title of the window.
+     */
     title(val: string): this {
         this._title = val;
         return this;
     }
 
+    /**
+     * !If the window is configured with the tab list, select the initial tab before showing the window.
+     */
     selectedTabIndex(val: number): this {
         if (this._isOpened()) {
             console.log('WARNING: The tab index can set only before opening the window.');
@@ -340,11 +392,17 @@ class UIWindow {
         return this;
     }
 
+    /**
+     * Sets the color theme for window and child widgets.
+     */
     theme(val: UIWindowTheme): this {
         this._theme = val;
         return this;
     }
 
+    /**
+     * Set the primary theme color.
+     */
     themePrimaryColor(val: UIColor): this {
         this._theme = {
             primary: val,
@@ -354,6 +412,9 @@ class UIWindow {
         return this;
     }
 
+    /**
+     * Set the secondary theme color.
+     */
     themeSecondaryColor(val: UIColor): this {
         this._theme = {
             primary: this._theme.primary,
@@ -363,6 +424,9 @@ class UIWindow {
         return this;
     }
 
+    /**
+     * Set the terriary theme color.
+     */
     themeTertiaryColor(val: UIColor): this {
         this._theme = {
             primary: this._theme.primary,
@@ -372,16 +436,25 @@ class UIWindow {
         return this;
     }
 
+    /**
+     * Execute the function when the window is closed.
+     */
     onClose(block: (window: this) => void): this {
         this._onClose = block;
         return this;
     }
 
+    /**
+     * Execute the function when selecting a tab.
+     */
     onTabChange(block: (window: this, tabIndex: number) => void): this {
         this._onTabChange = block;
         return this;
     }
     
+    /**
+     * Bind with window proxy.
+     */
     bind(proxy: UIWindowProxy): this {
         proxy._bind(this);
         return this;

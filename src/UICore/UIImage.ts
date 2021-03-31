@@ -1,7 +1,7 @@
 /// <reference path='../UICore/UIPoint.ts' />
 
 /**
- * 여기부터 시작
+ * A wrapper that contains and processes sprite information.
  */
 class UIImage {
 
@@ -9,23 +9,41 @@ class UIImage {
     _duration: number = 2;
     protected _offset: UIPoint = UIPointZero;
 
+    /**
+     * ! **Warning**: Instead of accessing the constructor directly, define it through *UIImage.$, UIImage.$A, UIImage.$F*.
+     */
     constructor(frames: number[]) {
         this._frames = frames;
     }
 
     //Convenience
 
+    /**
+     * Define the image as a single sprite.
+     * @param single sprite id
+     */
     static $(single: number): UIImage {
         const image = new UIImage([single]);
         return image;
     }
 
+    /**
+     * Define an animatable image with multiple sprites.
+     * @param base sprite id as starting frame
+     * @param count number of frames
+     * @param duration Set the duration of the animation. Use seconds unit.
+     */
     static $A(base: number, count: number, duration: number): UIImage {
         const frames = [...Array(count)].map((_, i) => base + i);
         const image = new UIImage(frames);
         return image.duration(duration);
     }
 
+    /**
+     * Defines custom frame animatable images.
+     * @param frames list of sprite id
+     * @param duration Set the duration of the animation. Use seconds unit.
+     */
     static $F(frames: number[], duration: number): UIImage {
         const image = new UIImage(frames);
         return image.duration(duration);
@@ -60,32 +78,43 @@ class UIImage {
 
     //Public
 
+    /**
+     * Set the duration of the animation. Use seconds unit.
+     */
     duration(val: number): this {
         this._duration = val;
         return this;
     }
 
     /**
-     * Offsets uiimage
+     * Set the offset of the image.
      * * Currently, it is only valid for images applied to tabs.
-     * @param val 
-     * @returns offset 
      */
     offset(val: UIPoint): this {
         this._offset = val;
         return this;
     }
 
+    /**
+     * Get the first sprite id of the image.
+     */
     singleFrame(): number {
         return this._frames[0];
     }
 
+    /**
+     * Compare the sprite IDs that make up the image and the order of the same.
+     */
     isEqual(val: UIImage): boolean {
         const left = this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
         const right = val._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
         return left === right;
     }
 
+    /**
+     * Minimum size of the image
+     * @returns size 
+     */
     size(): UISize {
         const graphicsContext = imageHelper.graphicsContext();
         return this._frames.map(val => {
@@ -102,10 +131,19 @@ class UIImage {
         });
     }
 
+    /**
+     * Descriptions uiimage
+     * @returns description 
+     */
     description(): string {
         return 'Duration: ' + this._duration + '\nFrames: ' + this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
     }
 }
+
+/**
+ * Please refer to the link for the sprite ID.
+ * https://github.com/OpenRCT2/OpenRCT2/blob/develop/src/openrct2/sprites.h
+ */
 
 //UIImage constants
 const UIImageNone = UIImage.$(-1);
