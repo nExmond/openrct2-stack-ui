@@ -1,12 +1,19 @@
 /// <reference path='UIWidget.ts' />
 /// <reference path='../UICore/UITextAlignment.ts' />
 
+/**
+ * Widget that displays static text.
+ */
 class UILabel extends UIWidget<LabelWidget> {
 
     protected _text: string;
     protected _align: UITextAlignment = UITextAlignment.Left;
     protected _onChange: ((label: this, index: number) => void) | undefined;
 
+    /**
+     * Creates an instance of label.
+     * @param text 
+     */
     constructor(text: string) {
         super();
         this._text = text;
@@ -14,10 +21,14 @@ class UILabel extends UIWidget<LabelWidget> {
 
     //Convenience
 
+    /**
+     * Create *UILabel* instance without using new.
+     */
     static $(text: string): UILabel {
         const label = new UILabel(text);
         const minSize = text.containerSize();
-        return label.height(15)
+        return label
+            // .height(15)
             .minSize(minSize);
     }
 
@@ -43,16 +54,29 @@ class UILabel extends UIWidget<LabelWidget> {
 
     //Public
 
+    /**
+     * Set the alignment of string.
+     * align left or center. The default is left.
+     */
     align(val: UITextAlignment): this {
         this._align = val;
         return this;
     }
 
+    /**
+     * Set the text.
+     */
     text(val: string): this {
         this._text = val;
+        const minSize = val.containerSize();
+        this.minSize(minSize);
         return this;
     }
 
+    /**
+     * Observe the change in value.
+     * @param block
+     */
     onChange(block: (label: this, index: number) => void): this {
         this._onChange = block;
         return this;

@@ -18,7 +18,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     protected _dialogueTitle = "Title";
     protected _dialogueMessage = "Message{NEWLINE}(Set it using function 'dialogueInfo')";
-    protected _dialogueMaxLength = 0;
+    protected _dialogueMaxLength = 256;
 
     constructor() {
         super();
@@ -168,7 +168,6 @@ class UISpinner extends UIWidget<SpinnerWidget> {
     /**
      * Observe the change in value.
      * @param block
-     * @returns change 
      */
     onChange(block: (spinner: this, val: number) => void): this {
         this._onChange = block;

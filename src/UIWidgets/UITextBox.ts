@@ -1,9 +1,13 @@
 /// <reference path='UIWidget.ts' />
 
+/**
+ * Text input widget
+ * It can only be entered on one line.
+ */
 class UITextBox extends UIWidget<TextBoxWidget> {
 
     protected _text: string;
-    protected _maxLength: number = Number.MAX_VALUE;
+    protected _maxLength: number = 256;
     protected _onChange: ((textBox: this, text: string) => void) | undefined;
 
     constructor(text: string | undefined = undefined) {
@@ -13,6 +17,10 @@ class UITextBox extends UIWidget<TextBoxWidget> {
 
     //Convenience
 
+    /**
+     * Create *UITextBox* instance without using new.
+     * @param text initial string
+     */
     static $(text: string | undefined = undefined): UITextBox {
         const textBox = new UITextBox(text);
         return textBox.height(15)
@@ -42,16 +50,26 @@ class UITextBox extends UIWidget<TextBoxWidget> {
 
     //Public
 
+    /**
+     * Set the string.
+     */
     text(val: string): this {
         this._text = val;
         return this;
     }
 
+    /**
+     * Maximum number of digits. The default is 256 characters.
+     */
     maxLength(val: number): this {
         this._maxLength = val;
         return this;
     }
 
+    /**
+     * Observe the change in value.
+     * @param block
+     */
     onChange(block: (textBox: this, text: string) => void): this {
         this._onChange = block;
         return this;

@@ -1,4 +1,8 @@
 
+/**
+ * Element flags displayed in the viewport.
+ * * ex) All Heights: **UIViewportFlag.LandHeights | UIViewportFlag.TrackHeights | UIViewportFlag.PathHeights**
+ */
 enum UIViewportFlag {
     None = 0,
     UndergroundInside = 1 << 0,

@@ -1,11 +1,18 @@
 /// <reference path='UIWidget.ts' />
 /// <reference path='../UICore/UIColor.ts' />
 
+/**
+ * Widget to pick a color.
+ */
 class UIColorPicker extends UIWidget<ColourPickerWidget> {
 
     protected _color: UIColor;
     protected _onChange: ((picker: this, color: UIColor) => void) | undefined;
 
+    /**
+     * Creates an instance of color picker.
+     * @param color initial color
+     */
     constructor(color: UIColor | undefined) {
         super();
         this._color = color ?? UIColor.Black;
@@ -13,6 +20,9 @@ class UIColorPicker extends UIWidget<ColourPickerWidget> {
 
     //Convenience
 
+    /**
+     * Create *UIColorPicker* instance without using new.
+     */
     static $(color: UIColor | undefined = undefined): UIColorPicker {
         const colorPicker = new UIColorPicker(color);
         return colorPicker
@@ -40,11 +50,18 @@ class UIColorPicker extends UIWidget<ColourPickerWidget> {
 
     //Public
 
+    /**
+     * Modify the selected color.
+     */
     color(val: UIColor): this {
         this._color = val;
         return this;
     }
 
+    /**
+     * Observe the change in value.
+     * @param block
+     */
     onChange(block: (picker: this, color: UIColor) => void): this {
         this._onChange = block;
         return this;

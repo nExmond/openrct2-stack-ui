@@ -2,6 +2,9 @@
 /// <reference path='UIViewportFlag.ts' />
 /// <reference path='UIViewportScale.ts' />
 
+/**
+ * Widget to display park elements.
+ */
 class UIViewport extends UIWidget<ViewportWidget> {
 
     protected _viewport!: Viewport;
@@ -16,6 +19,9 @@ class UIViewport extends UIWidget<ViewportWidget> {
 
     //Convenience
 
+    /**
+     * Create *UIViewport* instance without using new.
+     */
     static $(): UIViewport {
         const viewport = new UIViewport();
         return viewport
@@ -68,39 +74,65 @@ class UIViewport extends UIWidget<ViewportWidget> {
 
     //Public
 
+    /**
+     * Set the center coordinate of the map displayed by the viewport.
+     */
     position(val: CoordsXY | CoordsXYZ): this {
         this._position = val;
         return this;
     }
 
+    /**
+     * Sets the zoom level of the map displayed by the viewport.
+     * @param val 
+     * @returns zoom 
+     */
     zoom(val: UIViewportScale): this {
         this._zoom = val;
         return this;
     }
 
+    /**
+     * Sets the category of elements to be displayed in the viewport.
+     */
     flags(val: UIViewportFlag): this {
         this._visibilityFlags = val;
         return this;
     }
 
+    /**
+     * Gets center position
+     */
     getCenterPosition(): CoordsXY | undefined {
         return this._viewport.getCentrePosition();
     }
 
+    /**
+     * Updates the location of the map displayed by the viewport.
+     */
     moveTo(val: CoordsXY | CoordsXYZ) {
         this._position = val;
         this._viewport.moveTo(val);
     }
 
+    /**
+     * Moves the location of the map displayed by the viewport smoothly.
+     */
     scrollTo(val: CoordsXY | CoordsXYZ) {
         this._position = val;
         this._viewport.scrollTo(val);
     }
 
+    /**
+     * Smoothly moves the location of the map displayed by the current viewport to the location of the main viewport.
+     */
     scrollToMainViewportCenter() {
         this.scrollTo(ui.mainViewport.getCentrePosition());
     }
 
+    /**
+     * Smoothly moves the location of the map displayed by the main viewport to the location of the current viewport.
+     */
     mainViewportScrollToThis() {
         if (typeof this._viewport !== 'undefined') {
             ui.mainViewport.scrollTo(this.getCenterPosition()!);

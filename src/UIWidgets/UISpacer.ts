@@ -1,10 +1,19 @@
 /// <reference path='UIWidget.ts' />
 
+/**
+ * Widget to flexibly set the distance between widgets.
+ * It adjusts flexibly along the axis of the parent stack.
+ */
 class UISpacer extends UIWidget<LabelWidget> {
 
     protected _axis!: UIAxis;
     protected _spacing: number | undefined;
 
+    /**
+     * Creates an instance of spacer.
+     * If you set the spacing, the size will be fixed, otherwise it will be adjusted flexibly.
+     * @param spacing 
+     */
     constructor(spacing: number | undefined = undefined) {
         super();
         this._spacing = spacing;
@@ -12,6 +21,9 @@ class UISpacer extends UIWidget<LabelWidget> {
 
     //Convenience
 
+    /**
+     * Create *UISpacer* instance without using new.
+     */
     static $(spacing: number | undefined = undefined): UISpacer {
         return new UISpacer(spacing);
     }

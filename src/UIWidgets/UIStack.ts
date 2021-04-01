@@ -66,13 +66,13 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         return new UIStack(UIAxis.Horizontal, widgets, false);
     }
     /**
-     * Create vertical *UIStack* instance containning *GroupBox* without using new.
+     * Create vertical *UIStack* instance containing *GroupBox* without using new.
      */
     static $VG(...widgets: UIWidget<any>[]): UIStack {
         return new UIStack(UIAxis.Vertical, widgets, true);
     }
     /**
-     * Create horizontal *UIStack* instance containning *GroupBox* without using new.
+     * Create horizontal *UIStack* instance containing *GroupBox* without using new.
      */
     static $HG(...widgets: UIWidget<any>[]): UIStack {
         return new UIStack(UIAxis.Horizontal, widgets, true);

@@ -1,12 +1,19 @@
 /// <reference path='UIWidget.ts' />
 /// <reference path='../UICore/UITextAlignment.ts' />
 
+/**
+ * Widget that selects and displays one of several items.
+ */
 class UIDropdown extends UIWidget<DropdownWidget> {
 
     protected _items: string[];
     protected _selectedIndex: number = 0;
     protected _onChange: ((dropdown: this, index: number, item: string) => void) | undefined;
 
+    /**
+     * Creates an instance of dropdown.
+     * @param items list of string
+     */
     constructor(items: string[]) {
         super();
         this._items = items;
@@ -14,6 +21,9 @@ class UIDropdown extends UIWidget<DropdownWidget> {
 
     //Convenience
 
+    /**
+     * Create *UIDropdown* instance without using new.
+     */
     static $(items: string[]): UIDropdown {
         const dropdown = new UIDropdown(items);
         return dropdown.height(15)
@@ -45,11 +55,23 @@ class UIDropdown extends UIWidget<DropdownWidget> {
 
     //Public
 
+    /**
+     * Select an item within a range.
+     */
     selected(val: number): this {
-        this._selectedIndex = val;
+        if (val < this._items.length && val >= 0) {
+            this._selectedIndex = val;
+        } else {
+            const max = Math.max(0, this._items.length-1);
+            throw new Error(`Enter a value between 0 and ${max}.`);
+        }
         return this;
     }
 
+    /**
+     * Observe the change in value.
+     * @param block
+     */
     onChange(block: (dropdown: this, index: number, item: string) => void): this {
         this._onChange = block;
         return this;

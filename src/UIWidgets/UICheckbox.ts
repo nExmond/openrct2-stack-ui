@@ -1,11 +1,18 @@
 /// <reference path='UIWidget.ts' />
 
+/**
+ * Widget to display selection status.
+ */
 class UICheckbox extends UIWidget<CheckboxWidget> {
 
     protected _text: string;
     protected _isChecked: boolean = false;
     protected _onChange: ((checkbox: this, isChecked: boolean) => void) | undefined;
 
+    /**
+     * Creates an instance of checkbox.
+     * @param text If no text is entered, only the checkbox is used alone.
+     */
     constructor(text: string | undefined) {
         super();
         this._text = text ?? '';
@@ -13,6 +20,9 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
 
     //Convenience
 
+    /**
+     * Create a *UICheckbox* instance containing title without using new.
+     */
     static $(text: string): UICheckbox {
         const checkbox = new UICheckbox(text);
         const minSize = text.containerSize();
@@ -20,6 +30,9 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
             .minSize(minSize);
     }
 
+    /**
+     * Create a *UICheckbox* instance no title without using new.
+     */
     static $UN(): UICheckbox {
         const checkbox = new UICheckbox(undefined);
         return checkbox
@@ -53,20 +66,33 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
 
     //Public
 
+    /**
+     * Set the selection state.
+     */
     isChecked(val: boolean): this {
         this._isChecked = val;
         return this;
     }
 
+    /**
+     * Set the text.
+     */
     text(val: string): this {
         this._text = val;
         return this;
     }
 
+    /**
+     * Toggles the selection state.
+     */
     toggle(): this {
         return this.isChecked(!this._isChecked);
     }
 
+    /**
+     * Observe the change in value.
+     * @param block
+     */
     onChange(block: (checkbox: this, isChecked: boolean) => void): this {
         this._onChange = block;
         return this;

@@ -1,6 +1,9 @@
 /// <reference path='../UIWidget.ts' />
 /// <reference path='../../UICore/UIImage.ts' />
 
+/**
+ * Widgets that execute actions with a click.
+ */
 class UIButton extends UIWidget<ButtonWidget> {
 
     protected _border: boolean = true;
@@ -9,15 +12,19 @@ class UIButton extends UIWidget<ButtonWidget> {
     protected _title: string | undefined;
     protected _onClick: ((button: this) => void) | undefined;
 
-    _intervalHelper: IntervalHelper | undefined;
-    _uiImage: UIImage | undefined;
+    protected _intervalHelper: IntervalHelper | undefined;
+    protected _uiImage: UIImage | undefined;
 
     constructor() {
         super();
     }
 
     //Convenience
-
+    
+    /**
+     * Create *UIButton* instance without using new.
+     * Button to display text.
+     */
     static $<T extends UIButton>(this: StaticThis<T>, title: string): T {
         const button = new this();
         const minSize = title.containerSize();
@@ -26,6 +33,10 @@ class UIButton extends UIWidget<ButtonWidget> {
             .minSize(minSize);
     }
 
+    /**
+     * Create *UIButton* instance without using new.
+     * Button to display image.
+     */
     static $I<T extends UIButton>(this: StaticThis<T>, image: UIImage): T {
         const button = new this();
         const imageSize = image.size();
@@ -76,6 +87,10 @@ class UIButton extends UIWidget<ButtonWidget> {
 
     //Public
 
+    /**
+     * Sets the border.
+     * ! Ignored if it is an image type button.
+     */
     border(val: boolean): this {
         if (!this._isImageType()) {
             this._border = val;
@@ -83,6 +98,10 @@ class UIButton extends UIWidget<ButtonWidget> {
         return this;
     }
 
+    /**
+     * Sets the image.
+     * ! If you set the image after initialization, it is fixed to the image type.
+     */
     image(val: UIImage): this {
 
         this._uiImage = val;
@@ -105,15 +124,25 @@ class UIButton extends UIWidget<ButtonWidget> {
         return this;
     }
 
+    /**
+     * Determines whether image equal is
+     */
     isImageEqual(val: UIImage): boolean {
         return this._uiImage?.isEqual(val) ?? false;
     }
 
+    /**
+     * Set button pressed state.
+     */
     isPressed(val: boolean): this {
         this._isPressed = val;
         return this;
     }
 
+    /**
+     * Set button title.
+     * ! If an image is set, it is ignored.
+     */
     title(val: string): this {
         if (!this._isImageType()) {
             this._title = val;
@@ -121,6 +150,10 @@ class UIButton extends UIWidget<ButtonWidget> {
         return this;
     }
 
+    /**
+     * Observe the click.
+     * @param block
+     */
     onClick(block: (button: this) => void): this {
         this._onClick = block;
         return this;
