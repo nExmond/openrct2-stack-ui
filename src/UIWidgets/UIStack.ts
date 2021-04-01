@@ -1,5 +1,10 @@
 /// <reference path='UIWidget.ts' />
 
+/**
+ * The core part responsible for the placement of widgets.
+ * All widgets can be laid out regularly with a combination of stacks.
+ * *GroupBox* widget included.
+ */
 class UIStack extends UIWidget<GroupBoxWidget> {
 
     protected _axis: UIAxis;
@@ -14,6 +19,12 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     protected _insets: UIEdgeInsets = UIEdgeInsetsZero;
     protected _padding: UIEdgeInsets = UIEdgeInsetsZero;
 
+    /**
+     * Creates an instance of uistack.
+     * @param axis vertical or horizontal
+     * @param widgets 
+     * @param isGrouped If set to true, it is used as a group box. The default is false.
+     */
     constructor(axis: UIAxis, widgets: UIWidget<any>[], isGrouped: boolean = false) {
         super();
         this._axis = axis;
@@ -36,18 +47,33 @@ class UIStack extends UIWidget<GroupBoxWidget> {
 
     //Convenience
 
+    /**
+     * Create *UIStack* instance without using new.
+     */
     static $(axis: UIAxis, isGrouped: boolean = false, ...widgets: UIWidget<any>[]): UIStack {
         return new UIStack(axis, widgets, isGrouped);
     }
+    /**
+     * Create vertical *UIStack* instance without using new.
+     */
     static $V(...widgets: UIWidget<any>[]): UIStack {
         return new UIStack(UIAxis.Vertical, widgets, false);
     }
+    /**
+     * Create horizontal *UIStack* instance without using new.
+     */
     static $H(...widgets: UIWidget<any>[]): UIStack {
         return new UIStack(UIAxis.Horizontal, widgets, false);
     }
+    /**
+     * Create vertical *UIStack* instance containning *GroupBox* without using new.
+     */
     static $VG(...widgets: UIWidget<any>[]): UIStack {
         return new UIStack(UIAxis.Vertical, widgets, true);
     }
+    /**
+     * Create horizontal *UIStack* instance containning *GroupBox* without using new.
+     */
     static $HG(...widgets: UIWidget<any>[]): UIStack {
         return new UIStack(UIAxis.Horizontal, widgets, true);
     }
@@ -277,16 +303,25 @@ class UIStack extends UIWidget<GroupBoxWidget> {
 
     //Public
 
+    /**
+     * Widget spacing on stack.
+     */
     spacing(val: number): this {
         this._spacing = val;
         return this;
     }
 
+    /**
+     * stack padding.
+     */
     padding(val: UIEdgeInsets): this {
         this._padding = val;
         return this;
     }
 
+    /**
+     * Title when used as *GroupBox*
+     */
     title(val: string): this {
         if (this._isGrouped) {
             this._insets = {

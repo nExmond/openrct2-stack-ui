@@ -2,6 +2,10 @@
 /// <reference path='../UICore/UIPoint.ts' />
 /// <reference path='../UICore/UISize.ts' />
 
+/**
+ * Raw widget wrapper.
+ * UI component used by including it in a window or tab.
+ */
 class UIWidget<T extends Widget> {
 
     protected _origin: UIPoint = UIPointZero;
@@ -142,6 +146,12 @@ class UIWidget<T extends Widget> {
 
     //Public
 
+    /**
+     * Modify and update the properties of the widget.
+     * When it detects a change in size value, it recalurate the window layout.
+     * * If you change the property without using the update block, it will be reflected in the next update.
+     * @param block update block
+     */
     updateUI(block: ((widget: this) => void) | undefined = undefined) {
         var prevSize = this._size;
         block?.(this);
@@ -153,11 +163,17 @@ class UIWidget<T extends Widget> {
         }
     }
 
+    /**
+     * Set the minimum size.
+     */
     minSize(val: UISize): this {
         this._minSize = val;
         return this;
     }
 
+    /**
+     * Set the width.
+     */
     width(val: number): this {
         this._size = {
             width: val,
@@ -167,6 +183,9 @@ class UIWidget<T extends Widget> {
         return this;
     }
 
+    /**
+     * Set the height.
+     */
     height(val: number): this {
         this._size = {
             width: this._size.width,
@@ -176,6 +195,9 @@ class UIWidget<T extends Widget> {
         return this;
     }
 
+    /**
+     * Set the size.
+     */
     size(val: UISize | number): this {
         var size = UISizeZero;
         if (typeof val === 'number') {
@@ -188,40 +210,65 @@ class UIWidget<T extends Widget> {
         return this;
     }
 
+    /**
+     * Set the tooltip.
+     */
     tooltip(val: string): this {
         this._tooltip = val;
         return this;
     }
 
+    /**
+     * Disable the widget.
+     */
     isDisabled(val: boolean): this {
         this._isDisabled = val;
         return this;
     }
 
+    /**
+     * Set the widget to the visible state
+     */
     isVisible(val: boolean): this {
         this._isVisible = val;
         return this;
     }
 
+    /**
+     * Set the offset.
+     */
     offset(val: UIPoint): this {
         this._offset = val;
         return this;
     }
 
+    /**
+     * Set the font.
+     */
     font(val: TextFont): this {
         this._font = val;
         return this;
     }
 
+    /**
+     * Bind with widget proxy.
+     */
     bind(proxy: UIWidgetProxy<this>): this {
         proxy._bind(this);
         return this;
     }
 
+    /**
+     * Reverts to the initially set size.
+     */
     resetSize(): this {
         return this.size(this._minSize);
     }
 
+    /**
+     * Descriptions uiwidget
+     * @returns description 
+     */
     description(): string {
         return `
 name: ${this._name}

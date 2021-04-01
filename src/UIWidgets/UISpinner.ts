@@ -1,5 +1,8 @@
 /// <reference path='UIWidget.ts' />
 
+/**
+ * Widget to select a number within a range.
+ */
 class UISpinner extends UIWidget<SpinnerWidget> {
 
     protected _text: string | undefined;
@@ -23,6 +26,9 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     //Convenience
 
+    /**
+     * Create *UISpinner* instance without using new.
+     */
     static $(): UISpinner {
         const spinner = new UISpinner();
         return spinner.height(15)
@@ -106,6 +112,9 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     //Public
 
+    /**
+     * Set the range of numbers.
+     */
     range(min: number, max: number): this {
         if (min > max) {
             console.log("min' cannot be greater than 'max'.");
@@ -116,6 +125,11 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         return this;
     }
 
+    /**
+     * Setting the step of increasing or decreasing the number.
+     * @param step 
+     * @param fixed Set the number of decimal places
+     */
     step(step: number, fixed: number | undefined = undefined): this {
         this._step = step;
 
@@ -134,22 +148,40 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         return this;
     }
 
+    /**
+     * Set a new value within the set value range. 
+     */
     value(val: number): this {
         this._value = Math.max(this._min, Math.min(this._max, val))
         return this;
     }
 
+    /**
+     * Set formattor
+     * @param black formatting block
+     */
     formatter(black: (val: number) => string): this {
         this._formatter = black;
         return this;
     }
 
+    /**
+     * Observe the change in value.
+     * @param block
+     * @returns change 
+     */
     onChange(block: (spinner: this, val: number) => void): this {
         this._onChange = block;
         return this;
     }
 
-    dialogueInfo(title: string, message: string, maxLength: number = 0): this {
+    /**
+     * Set the dialog information displayed when selecting a number area.
+     * @param title dialogue title
+     * @param message dialogue message
+     * @param maxLength Maximum number of digits. The default is 256 characters.
+     */
+    dialogueInfo(title: string, message: string, maxLength: number = 256): this {
         this._dialogueTitle = title;
         this._dialogueMessage = message;
         this._dialogueMaxLength = maxLength;
