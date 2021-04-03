@@ -1,4 +1,4 @@
-/// <reference path='../../UICore/UISize.ts' />
+/// <reference path="../../UICore/UISize.ts" />
 
 /**
  * The result of building single container in Windows.

@@ -1,4 +1,4 @@
-/// <reference path='../../UIWidgets/UITab.ts' />
+/// <reference path="../../UIWidgets/UITab.ts" />
 
 /**
  * Proxy for interaction between UITab.

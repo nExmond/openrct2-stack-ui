@@ -1,5 +1,5 @@
-/// <reference path='../../UICore/UIOptionalRange.ts' />
-/// <reference path='../../UICore/UISortOrder.ts' />
+/// <reference path="../../UICore/UIOptionalRange.ts" />
+/// <reference path="../../UICore/UISortOrder.ts" />
 
 /**
  * Attribute of list.
@@ -55,10 +55,10 @@ class UIListViewColumn {
      */
     static $R(header: string, widthRange: UIOptionalRange): UIListViewColumn {
         var listView = new UIListViewColumn(header);
-        if (typeof widthRange.min !== 'undefined') {
+        if (typeof widthRange.min !== "undefined") {
             listView = listView.minWidth(widthRange.min);
         }
-        if (typeof widthRange.max !== 'undefined') {
+        if (typeof widthRange.max !== "undefined") {
             listView = listView.maxWidth(widthRange.max);
         }
         return listView;

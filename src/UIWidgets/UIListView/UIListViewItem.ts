@@ -40,7 +40,7 @@ class UIListViewItem {
         if (this._isSeparator) {
             const text = this._textList.length > 0 ? this._textList[0] : undefined;
             return {
-                type: 'seperator',
+                type: "seperator",
                 text: applyFont(text)
             }
         } else {

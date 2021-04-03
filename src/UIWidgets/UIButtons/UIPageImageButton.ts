@@ -1,4 +1,4 @@
-/// <reference path='UIButton.ts' />
+/// <reference path="UIButton.ts" />
 
 /**
  * Button to switch to the next image when clicked.

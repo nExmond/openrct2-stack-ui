@@ -1,5 +1,5 @@
-/// <reference path='../UICore/UISize.ts' />
-/// <reference path='../UICore/TextFormat.ts' />
+/// <reference path="../UICore/UISize.ts" />
+/// <reference path="../UICore/TextFormat.ts" />
 
 ////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,7 +52,7 @@ String.prototype.size = function (): UISize {
     const regex = new RegExp(/{INLINE_SPRITE}{(\d{1,3})}{\d{1,3}}{\d{1,3}}/g);
     const match = this.match(regex);
     if (match !== null) {
-        console.log('WARNING: Images inserted in text may be displayed incorrectly.');
+        console.log("WARNING: Images inserted in text may be displayed incorrectly.");
 
         const images = match.map(val => {
             const strings: string[] = val.split('{').map(val => val.split('}')).flatMap();

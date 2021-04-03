@@ -1,5 +1,5 @@
-/// <reference path='../UIWidget.ts' />
-/// <reference path='../../UICore/UIImage.ts' />
+/// <reference path="../UIWidget.ts" />
+/// <reference path="../../UICore/UIImage.ts" />
 
 /**
  * Widgets that execute actions with a click.
@@ -55,7 +55,7 @@ class UIButton extends UIWidget<ButtonWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: 'button',
+            type: "button",
             border: this._border,
             image: this._image,
             isPressed: this._isPressed,
@@ -70,17 +70,17 @@ class UIButton extends UIWidget<ButtonWidget> {
     _update(widget: ButtonWidget) {
         super._update(widget);
         widget.border = this._border;
-        if (typeof this._image !== 'undefined') {
+        if (typeof this._image !== "undefined") {
             widget.image = this._image;
         }
         widget.isPressed = this._isPressed;
-        if (typeof this._title !== 'undefined') {
+        if (typeof this._title !== "undefined") {
             widget.text = this._applyFont(this._title);
         }
     }
 
     _isImageType(): boolean {
-        return typeof this._image !== 'undefined';
+        return typeof this._image !== "undefined";
     }
 
     protected _internalOnChange() {}

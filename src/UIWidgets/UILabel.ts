@@ -1,5 +1,5 @@
-/// <reference path='UIWidget.ts' />
-/// <reference path='../UICore/UITextAlignment.ts' />
+/// <reference path="UIWidget.ts" />
+/// <reference path="../UICore/UITextAlignment.ts" />
 
 /**
  * Widget that displays static text.
@@ -38,7 +38,7 @@ class UILabel extends UIWidget<LabelWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: 'label',
+            type: "label",
             text: this._applyFont(this._text),
             textAlign: this._align,
             onChange: (index: number) => {

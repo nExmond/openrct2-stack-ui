@@ -1,8 +1,8 @@
-/// <reference path='../Helpers/UIConstructor/UIConstructor.ts' />
-/// <reference path='../UICore/UIEdgeInsets.ts' />
-/// <reference path='../UIWidgets/UITab.ts' />
-/// <reference path='../UIWidgets/UIStack.ts' />
-/// <reference path='UIWindowTheme.ts' />
+/// <reference path="../Helpers/UIConstructor/UIConstructor.ts" />
+/// <reference path="../UICore/UIEdgeInsets.ts" />
+/// <reference path="../UIWidgets/UITab.ts" />
+/// <reference path="../UIWidgets/UIStack.ts" />
+/// <reference path="UIWindowTheme.ts" />
 
 /**
  * Top-level object managing tabs and widgets.
@@ -53,7 +53,7 @@ class UIWindow {
                 this._tabs = tabs;
             }
         } else {
-            throw new Error('Need to add at least one UITab or UIWidget.');
+            throw new Error("Need to add at least one UITab or UIWidget.");
         }
     }
 
@@ -76,7 +76,7 @@ class UIWindow {
     //Private
 
     _usingTab(): boolean {
-        return typeof this._tabs !== 'undefined';
+        return typeof this._tabs !== "undefined";
     }
 
     _convertColors(): UIColor[] {
@@ -88,7 +88,7 @@ class UIWindow {
     }
 
     _isOpened(): boolean {
-        return typeof this._window !== 'undefined';
+        return typeof this._window !== "undefined";
     }
 
     _sync() {
@@ -113,7 +113,7 @@ class UIWindow {
     _update() {
 
         const window = this._window;
-        if (typeof window === 'undefined') {
+        if (typeof window === "undefined") {
             return;
         }
 
@@ -140,7 +140,7 @@ class UIWindow {
     _onUpdate() {
 
         const window = this._window;
-        if (typeof window === 'undefined') {
+        if (typeof window === "undefined") {
             return;
         }
 
@@ -186,7 +186,7 @@ class UIWindow {
         var maxSize = this._maxSize;
         var contentView = this._singleContentView;
 
-        if (typeof this._tabs !== 'undefined') {
+        if (typeof this._tabs !== "undefined") {
             const currentTab = this._tabs![this._selectedTabIndex];
             contentView = currentTab._contentView;
 
@@ -197,7 +197,7 @@ class UIWindow {
             minSize = currentTab._minSize;
             maxSize = currentTab._maxSize;
 
-        } else if (typeof this._singleContentView !== 'undefined') {
+        } else if (typeof this._singleContentView !== "undefined") {
             contentView = this._singleContentView;
 
             contentView._resetSize();
@@ -237,14 +237,14 @@ class UIWindow {
 
         const singlecontentView = this._singleContentView?.spacing(this._spacing).padding(this._padding);
         var singleContentViewWidget: Widget[] | undefined;
-        if (typeof singlecontentView !== 'undefined') {
+        if (typeof singlecontentView !== "undefined") {
             const constructed = this._uiConstructor.construct(singlecontentView, this._interactor);
             singleContentViewWidget = constructed.widgets;
             this._minSize = constructed.size;
         };
 
         var tabDescriptions: WindowTabDesc[] | undefined;
-        if (typeof this._tabs !== 'undefined') {
+        if (typeof this._tabs !== "undefined") {
             const constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
             tabDescriptions = constructed.tabs;
             this._minSize = constructed.size;
@@ -292,10 +292,10 @@ class UIWindow {
             this._reflectResizingFromChild();
         });
 
-        if (typeof singlecontentView !== 'undefined') {
+        if (typeof singlecontentView !== "undefined") {
             this._uiConstructor.didLoad(singlecontentView);
         }
-        if (typeof this._tabs !== 'undefined') {
+        if (typeof this._tabs !== "undefined") {
             this._uiConstructor.didLoadTabs(this._tabs);
             this._internalOnTabChange();
         }
@@ -417,7 +417,7 @@ class UIWindow {
      */
     selectedTabIndex(val: number): this {
         if (this._isOpened()) {
-            console.log('WARNING: The tab index can set only before opening the window.');
+            console.log("WARNING: The tab index can set only before opening the window.");
         } else {
             this._selectedTabIndex = val;
         }

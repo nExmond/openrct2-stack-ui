@@ -1,4 +1,4 @@
-/// <reference path='UIWidget.ts' />
+/// <reference path="UIWidget.ts" />
 
 /**
  * Widget to flexibly set the distance between widgets.
@@ -55,7 +55,7 @@ class UISpacer extends UIWidget<LabelWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: 'label'
+            type: "label"
         }
     }
 

@@ -1,4 +1,4 @@
-/// <reference path='UIWidget.ts' />
+/// <reference path="UIWidget.ts" />
 
 /**
  * Widget to display selection status.
@@ -15,7 +15,7 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
      */
     constructor(text: string | undefined) {
         super();
-        this._text = text ?? '';
+        this._text = text ?? "";
     }
 
     //Convenience
@@ -44,7 +44,7 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: 'checkbox',
+            type: "checkbox",
             text: this._applyFont(this._text),
             isChecked: this._isChecked,
             onChange: (isChecked: boolean) => {
@@ -61,7 +61,7 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
     }
 
     _isUnnamed(): boolean {
-        return typeof this._text === 'undefined';
+        return typeof this._text === "undefined";
     }
 
     //Public

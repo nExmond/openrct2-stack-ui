@@ -1,4 +1,4 @@
-/// <reference path='UIWidget.ts' />
+/// <reference path="UIWidget.ts" />
 
 /**
  * Widget to select a number within a range.
@@ -38,7 +38,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
     //Private
 
     _build() {
-        const usingFormatter = typeof this._formatter !== 'undefined';
+        const usingFormatter = typeof this._formatter !== "undefined";
         if (usingFormatter) {
             this._text = this._formatter!(this._value);
         } else {
@@ -46,7 +46,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         }
         this._widget = {
             ...this._buildBaseValues(),
-            type: 'spinner',
+            type: "spinner",
             text: this._applyFont(this._text),
             onDecrement: () => {
                 const prev = this._value;
@@ -84,7 +84,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         const fixedZero = zero.toFixed(this._fixed);
         const negativeFixedZero = '-' + fixedZero;
         const isNegativeZero = fixedCurrent === negativeFixedZero;
-        const usingFormatter = typeof this._formatter !== 'undefined';
+        const usingFormatter = typeof this._formatter !== "undefined";
         const valueChanged = prev.toFixed(this._fixed) != fixedCurrent;
         if (valueChanged) {
             if (usingFormatter) {
@@ -117,7 +117,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
      */
     range(min: number, max: number): this {
         if (min > max) {
-            console.log("min' cannot be greater than 'max'.");
+            console.log("'min' cannot be greater than 'max'.");
         } else {
             this._min = min;
             this._max = max;
@@ -133,7 +133,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
     step(step: number, fixed: number | undefined = undefined): this {
         this._step = step;
 
-        if (typeof fixed === 'undefined') {
+        if (typeof fixed === "undefined") {
             for (var i = 0; i < Infinity; i++) {
                 let mul = Math.pow(10, i);
                 if ((step * mul) % 1 == 0) {

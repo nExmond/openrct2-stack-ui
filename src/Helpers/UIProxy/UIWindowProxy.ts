@@ -1,4 +1,4 @@
-/// <reference path='../../UIWindow/UIWindow.ts' />
+/// <reference path="../../UIWindow/UIWindow.ts" />
 
 /**
  * Proxy for interaction between UIWindow.

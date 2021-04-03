@@ -1,5 +1,5 @@
-/// <reference path='UIWidget.ts' />
-/// <reference path='../UICore/UITextAlignment.ts' />
+/// <reference path="UIWidget.ts" />
+/// <reference path="../UICore/UITextAlignment.ts" />
 
 /**
  * Widget that selects and displays one of several items.
@@ -35,7 +35,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: 'dropdown',
+            type: "dropdown",
             textAlign: UITextAlignment.Center,
             items: this._items.map(val => this._applyFont(val)!),
             selectedIndex: this._selectedIndex,

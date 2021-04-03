@@ -1,4 +1,4 @@
-/// <reference path='UIWidget.ts' />
+/// <reference path="UIWidget.ts" />
 
 /**
  * The core part responsible for the placement of widgets.
@@ -117,7 +117,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     protected _isUnNamedGroup(): boolean {
-        return this._isGrouped && typeof this._groupTitle === 'undefined';
+        return this._isGrouped && typeof this._groupTitle === "undefined";
     }
 
     _estimatedSize(): UISize {
@@ -134,7 +134,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     _layout(axis: UIAxis, origin: UIPoint, estimatedSize: UISize): UIPoint {
-        if (typeof this._initialSize === 'undefined') {
+        if (typeof this._initialSize === "undefined") {
             this._initialSize = this._size;
         }
 
@@ -275,8 +275,8 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         if (this._isGrouped) {
             this._widget = {
                 ...this._buildBaseValues(),
-                text: this._groupTitle ?? '',
-                type: 'groupbox'
+                text: this._groupTitle ?? "",
+                type: "groupbox"
             }
         }
         this._childs.forEach((val) => val._build())
@@ -285,7 +285,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     _update(widget: any) {
         super._update(widget);
         if (this._isGrouped) {
-            widget.name = this._groupTitle ?? '';
+            widget.name = this._groupTitle ?? "";
         }
     }
 

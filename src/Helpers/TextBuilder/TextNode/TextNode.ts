@@ -1,5 +1,5 @@
-/// <reference path='../../../UICore/TextColor.ts' />
-/// <reference path='../../../UICore/UIImage.ts' />
+/// <reference path="../../../UICore/TextColor.ts" />
+/// <reference path="../../../UICore/UIImage.ts" />
 
 /**
  * Top level node used to apply formatting.
@@ -65,7 +65,7 @@ class TextNode {
     }
 
     _unifyNewline(font: TextFont | undefined = undefined) {
-        const existFont = typeof font !== 'undefined';
+        const existFont = typeof font !== "undefined";
         const isSmaller = existFont && font! === TextFont.Tiny;
         if (this._isStopover()) {
             const numberOfChilds = this._childs.length;
@@ -122,7 +122,7 @@ class TextNode {
                             isBegin = false;
                         }
                         if (child instanceof _NewlineNode) {
-                            if (typeof prevChild !== 'undefined') {
+                            if (typeof prevChild !== "undefined") {
                                 prevChild._string = `${prevChild._string}{OUTLINE_OFF}`;
                             }
                             isBegin = true;
@@ -164,11 +164,11 @@ class TextNode {
         const tabs = [...Array(depth)].map(_ => tab).join('');
         const childTabs = tabs + tab;
         var childs = "[]";
-        if (typeof this._childs !== 'undefined' && this._childs.length > 0) {
+        if (typeof this._childs !== "undefined" && this._childs.length > 0) {
             childs = `[${this._childs.map((val, index) => val._description(depth + 1, index)).join(",")}]`
         }
-        return `${typeof index !== 'undefined' ? '[' + index + ']' : ''}{
-${childTabs}type: ${this.constructor.name},${this instanceof StringNode ? '\n' + childTabs + "string: " + this._string + ',' : ''}
+        return `${typeof index !== "undefined" ? '[' + index + ']' : ""}{
+${childTabs}type: ${this.constructor.name},${this instanceof StringNode ? "\n" + childTabs + "string: " + this._string + "," : ""}
 ${childTabs}outline: ${this._outline},
 ${childTabs}color: ${this._color},
 ${childTabs}childs: ${childs}

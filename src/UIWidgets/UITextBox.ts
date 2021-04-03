@@ -1,4 +1,4 @@
-/// <reference path='UIWidget.ts' />
+/// <reference path="UIWidget.ts" />
 
 /**
  * Text input widget
@@ -12,7 +12,7 @@ class UITextBox extends UIWidget<TextBoxWidget> {
 
     constructor(text: string | undefined = undefined) {
         super();
-        this._text = text ?? '';
+        this._text = text ?? "";
     }
 
     //Convenience
@@ -32,7 +32,7 @@ class UITextBox extends UIWidget<TextBoxWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: 'textbox',
+            type: "textbox",
             text: this._text,
             maxLength: this._maxLength,
             onChange: (text: string) => {

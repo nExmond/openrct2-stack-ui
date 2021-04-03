@@ -17,7 +17,7 @@ class UIInteractor {
 
     _update<T extends Widget>(name: string, block: (widget: T) => void) {
         var widget: T | undefined = this.__findWidget(name);
-        if (typeof widget !== 'undefined') {
+        if (typeof widget !== "undefined") {
             block(widget);
         }
     }

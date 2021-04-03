@@ -1,5 +1,5 @@
 
 enum UITextAlignment {
-    Left = 'left',
-    Center = 'centred'
+    Left = "left",
+    Center = "centred"
 }

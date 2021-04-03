@@ -1,6 +1,6 @@
-/// <reference path='../UIWidget.ts' />
-/// <reference path='UIViewportFlag.ts' />
-/// <reference path='UIViewportScale.ts' />
+/// <reference path="../UIWidget.ts" />
+/// <reference path="UIViewportFlag.ts" />
+/// <reference path="UIViewportScale.ts" />
 
 /**
  * Widget to display park elements.
@@ -42,7 +42,7 @@ class UIViewport extends UIWidget<ViewportWidget> {
         }
         this._widget = {
             ...this._buildBaseValues(),
-            type: 'viewport',
+            type: "viewport",
             viewport: this._viewport
         }
     }
@@ -146,7 +146,7 @@ class UIViewport extends UIWidget<ViewportWidget> {
      * Smoothly moves the location of the map displayed by the main viewport to the location of the current viewport.
      */
     mainViewportScrollToThis() {
-        if (typeof this._viewport !== 'undefined') {
+        if (typeof this._viewport !== "undefined") {
             ui.mainViewport.scrollTo(this.getCenterPosition()!);
         }
     }

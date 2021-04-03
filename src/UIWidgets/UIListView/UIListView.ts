@@ -1,7 +1,7 @@
-/// <reference path='../UIWidget.ts' />
-/// <reference path='../../UICore/UIScrollbarType.ts' />
-/// <reference path='UIListViewColumn.ts' />
-/// <reference path='UIListViewItem.ts' />
+/// <reference path="../UIWidget.ts" />
+/// <reference path="../../UICore/UIScrollbarType.ts" />
+/// <reference path="UIListViewColumn.ts" />
+/// <reference path="UIListViewItem.ts" />
 
 /**
  * Widget that displays a multicolumn list.
@@ -46,7 +46,7 @@ class UIListView extends UIWidget<ListView> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: 'listview',
+            type: "listview",
             scrollbars: this._scrollbarType,
             isStriped: this._isStriped,
             showColumnHeaders: this._showColumnHeaders,

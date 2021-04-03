@@ -1,8 +1,8 @@
-/// <reference path='../../UICore/UIEdgeInsets.ts' />
-/// <reference path='../../UIWidgets/UITab.ts' />
-/// <reference path='../../UIWidgets/UIStack.ts' />
-/// <reference path='../UIInteractor.ts' />
-/// <reference path='UIConstructResult.ts' />
+/// <reference path="../../UICore/UIEdgeInsets.ts" />
+/// <reference path="../../UIWidgets/UITab.ts" />
+/// <reference path="../../UIWidgets/UIStack.ts" />
+/// <reference path="../UIInteractor.ts" />
+/// <reference path="UIConstructResult.ts" />
 
 /**
  * Place the window child widget.
@@ -20,7 +20,7 @@ class UIConstructor {
      */
     constructTabs(tabs: UITab[], selectedIndex: number, interactor: UIInteractor, spacing: number, padding: UIEdgeInsets): UIConstructResult {
         if (selectedIndex >= tabs.length || selectedIndex < 0) {
-            throw new Error('SelectedIndex is less than the count of tabs and must be at least 0.');
+            throw new Error("SelectedIndex is less than the count of tabs and must be at least 0.");
         }
         const minWidth = 31 * tabs.length + 6
         for (var i = 0; i < tabs.length; i++) {

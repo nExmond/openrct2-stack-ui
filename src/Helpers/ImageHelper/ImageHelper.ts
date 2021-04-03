@@ -1,4 +1,4 @@
-/// <reference path='GraphicsContextWrapper.ts' />
+/// <reference path="GraphicsContextWrapper.ts" />
 
 /**
  * Helper for image processing
@@ -19,7 +19,7 @@ class ImageHelper {
             y: 0,
             width: 15,
             height: 15,
-            title: '',
+            title: "",
             widgets: [{
                 x: 0,
                 y: 0,

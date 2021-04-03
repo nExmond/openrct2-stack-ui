@@ -1,4 +1,4 @@
-/// <reference path='ImageInfoWrapper.ts' />
+/// <reference path="ImageInfoWrapper.ts" />
 
 /**
  * Interface restricted to use only the size calculation function of *GraphicsContext*.

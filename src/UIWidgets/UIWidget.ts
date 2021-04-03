@@ -1,6 +1,6 @@
-/// <reference path='../UICore/UIAxis.ts' />
-/// <reference path='../UICore/UIPoint.ts' />
-/// <reference path='../UICore/UISize.ts' />
+/// <reference path="../UICore/UIAxis.ts" />
+/// <reference path="../UICore/UIPoint.ts" />
+/// <reference path="../UICore/UISize.ts" />
 
 /**
  * Raw widget wrapper.
@@ -52,16 +52,16 @@ class UIWidget<T extends Widget> {
     _isUndefinedSize(axis: UIAxis): boolean {
         switch (axis) {
             case UIAxis.Vertical: {
-                return typeof this._size.height === 'undefined';
+                return typeof this._size.height === "undefined";
             }
             case UIAxis.Horizontal: {
-                return typeof this._size.width === 'undefined';
+                return typeof this._size.width === "undefined";
             }
         }
     }
 
     _layout(axis: UIAxis, origin: UIPoint, estimatedSize: UISize): UIPoint {
-        if (typeof this._initialSize === 'undefined') {
+        if (typeof this._initialSize === "undefined") {
             this._initialSize = this._size;
         }
 
@@ -94,7 +94,7 @@ class UIWidget<T extends Widget> {
     }
 
     _build() {
-        throw new Error('Method not implemented.');
+        throw new Error("Method not implemented.");
     }
 
     _update(widget: T) {
@@ -127,7 +127,7 @@ class UIWidget<T extends Widget> {
     }
 
     _resetSize() {
-        if (typeof this._initialSize !== 'undefined') {
+        if (typeof this._initialSize !== "undefined") {
             this._size = this._initialSize;
         }
     }
@@ -137,7 +137,7 @@ class UIWidget<T extends Widget> {
     }
 
     protected _applyFont(text: string | undefined): string | undefined {
-        if (typeof this._font !== 'undefined' && typeof text !== 'undefined') {
+        if (typeof this._font !== "undefined" && typeof text !== "undefined") {
             return new TextBuilder(text).font(this._font).build();
         } else {
             return text;
@@ -208,7 +208,7 @@ class UIWidget<T extends Widget> {
      */
     size(val: UISize | number): this {
         var size = UISizeZero;
-        if (typeof val === 'number') {
+        if (typeof val === "number") {
             size = { width: val, height: val };
         } else {
             size = val;

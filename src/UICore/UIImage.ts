@@ -1,4 +1,4 @@
-/// <reference path='../UICore/UIPoint.ts' />
+/// <reference path="../UICore/UIPoint.ts" />
 
 /**
  * A wrapper that contains and processes sprite information.
@@ -144,7 +144,7 @@ class UIImage {
      * @returns description 
      */
     description(): string {
-        return 'Duration: ' + this._duration + '\nFrames: ' + this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
+        return "Duration: " + this._duration + "\nFrames: " + this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
     }
 }
 

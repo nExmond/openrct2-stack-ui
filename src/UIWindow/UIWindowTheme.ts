@@ -1,4 +1,4 @@
-/// <reference path='../UICore/UIColor.ts' />
+/// <reference path="../UICore/UIColor.ts" />
 
 const UIWindowThemeDefault: UIWindowTheme = { 
     primary: UIColor.Gray, 

@@ -1,4 +1,4 @@
-/// <reference path='../../UIWidgets/UIWidget.ts' />
+/// <reference path="../../UIWidgets/UIWidget.ts" />
 
 /**
  * Proxy for interaction between widgets.

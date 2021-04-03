@@ -1,6 +1,6 @@
-/// <reference path='../../UICore/TextColor.ts' />
-/// <reference path='../../UICore/TextFont.ts' />
-/// <reference path='TextNode/TextNode.ts' />
+/// <reference path="../../UICore/TextColor.ts" />
+/// <reference path="../../UICore/TextFont.ts" />
+/// <reference path="TextNode/TextNode.ts" />
 
 /**
  * Defines the format of the string as a parent-child relationship.
@@ -19,7 +19,7 @@ class TextBuilder {
      * @param node *TextNode* or string
      */
     constructor(node: TextNode | string) {
-        if (typeof node === 'string' || typeof node === 'undefined') {
+        if (typeof node === "string" || typeof node === "undefined") {
             this._root = StringNode.$S(node);
         } else {
             this._root = node;
@@ -40,7 +40,7 @@ class TextBuilder {
 
     _text(): string {
 
-        var font = typeof this._font !== 'undefined' ? `{${this._font}}` : '';
+        var font = typeof this._font !== "undefined" ? `{${this._font}}` : "";
         var text = font + this._root._text();
 
         return text;

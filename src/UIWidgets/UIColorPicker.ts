@@ -1,5 +1,5 @@
-/// <reference path='UIWidget.ts' />
-/// <reference path='../UICore/UIColor.ts' />
+/// <reference path="UIWidget.ts" />
+/// <reference path="../UICore/UIColor.ts" />
 
 /**
  * Widget to pick a color.
@@ -34,7 +34,7 @@ class UIColorPicker extends UIWidget<ColourPickerWidget> {
     _build() {
         this._widget = {
             ...this._buildBaseValues(),
-            type: 'colourpicker',
+            type: "colourpicker",
             colour: this._color,
             onChange: (color: number) => {
                 this._color = color;

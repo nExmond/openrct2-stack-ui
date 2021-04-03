@@ -1,4 +1,4 @@
-/// <reference path='TextNode.ts' />
+/// <reference path="TextNode.ts" />
 
 /**
  * Pure string node.
