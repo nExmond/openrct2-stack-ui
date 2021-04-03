@@ -55,6 +55,14 @@ class UIPageImageButton extends UIButton {
 
     //Public
 
+    getImages(): UIImage[] {
+        return this._images;
+    }
+
+    getCurrentIndex(): number {
+        return this._index;
+    }
+
     /**
      * Observe for changes to the image displayed on the button.
      * @param block

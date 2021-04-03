@@ -163,12 +163,20 @@ class UIWidget<T extends Widget> {
         }
     }
 
+    getOrigin(): UIPoint {
+        return this._origin;
+    }
+
     /**
      * Set the minimum size.
      */
     minSize(val: UISize): this {
         this._minSize = val;
         return this;
+    }
+
+    getMinSize(): UISize {
+        return this._minSize;
     }
 
     /**
@@ -210,12 +218,24 @@ class UIWidget<T extends Widget> {
         return this;
     }
 
+    getSize(): UISize {
+        const size = this._size;
+        return {
+            width: size.width ?? 0,
+            height: size.height ?? 0
+        };
+    }
+
     /**
      * Set the tooltip.
      */
     tooltip(val: string): this {
         this._tooltip = val;
         return this;
+    }
+
+    getTooltip(): string | undefined {
+        return this._tooltip;
     }
 
     /**
@@ -226,12 +246,20 @@ class UIWidget<T extends Widget> {
         return this;
     }
 
+    getIsDisabled(): boolean {
+        return this._isDisabled;
+    }
+
     /**
      * Set the widget to the visible state
      */
     isVisible(val: boolean): this {
         this._isVisible = val;
         return this;
+    }
+
+    getIsVisible(): boolean {
+        return this._isVisible;
     }
 
     /**
@@ -242,12 +270,20 @@ class UIWidget<T extends Widget> {
         return this;
     }
 
+    getOffset(): UIPoint {
+        return this._offset;
+    }
+
     /**
      * Set the font.
      */
     font(val: TextFont): this {
         this._font = val;
         return this;
+    }
+
+    getFont(): TextFont | undefined {
+        return this._font;
     }
 
     /**

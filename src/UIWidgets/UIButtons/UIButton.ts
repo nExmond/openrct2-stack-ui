@@ -98,6 +98,10 @@ class UIButton extends UIWidget<ButtonWidget> {
         return this;
     }
 
+    getBorder(): boolean {
+        return this._border;
+    }
+
     /**
      * Sets the image.
      * ! If you set the image after initialization, it is fixed to the image type.
@@ -124,6 +128,10 @@ class UIButton extends UIWidget<ButtonWidget> {
         return this;
     }
 
+    getImage(): UIImage {
+        return this._uiImage ?? UIImageNone;
+    }
+
     /**
      * Determines whether image equal is
      */
@@ -139,6 +147,10 @@ class UIButton extends UIWidget<ButtonWidget> {
         return this;
     }
 
+    getIsPressed(): boolean {
+        return this._isPressed;
+    }
+
     /**
      * Set button title.
      * ! If an image is set, it is ignored.
@@ -148,6 +160,10 @@ class UIButton extends UIWidget<ButtonWidget> {
             this._title = val;
         }
         return this;
+    }
+
+    getTitle(): string | undefined {
+        return this._title;
     }
 
     /**

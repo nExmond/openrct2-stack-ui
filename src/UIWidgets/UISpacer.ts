@@ -58,4 +58,17 @@ class UISpacer extends UIWidget<LabelWidget> {
             type: 'label'
         }
     }
+
+    //Public
+
+    /**
+     * Axis on which to set the spacing.
+     */
+    getAxis(): UIAxis {
+        return this._axis;
+    }
+
+    getSpacing(): number | undefined {
+        return this._spacing;
+    }
 }

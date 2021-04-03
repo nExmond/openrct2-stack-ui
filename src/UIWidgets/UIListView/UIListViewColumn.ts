@@ -100,6 +100,10 @@ class UIListViewColumn {
         return this;
     }
 
+    getSortOrder(): UISortOrder {
+        return this._sortOrder;
+    }
+
     /**
      * Set whether or not you can change the sorting status arbitrarily.
      */
@@ -108,12 +112,20 @@ class UIListViewColumn {
         return this;
     }
 
+    getCanSort(): boolean {
+        return this._canSort;
+    }
+
     /**
      * Set the tooltip.
      */
     tooltip(val: string): this {
         this._headerTooltip = val;
         return this;
+    }
+
+    getTooltip(): string | undefined {
+        return this._headerTooltip;
     }
 
     /**
@@ -125,6 +137,10 @@ class UIListViewColumn {
         return this;
     }
 
+    getWidth(): number | undefined {
+        return this._width;
+    }
+
     /**
      * Set the weight.
      * ! It is recommended not to use it after initial setting.
@@ -132,6 +148,10 @@ class UIListViewColumn {
     weight(val: number): this {
         this._weight = val;
         return this;
+    }
+
+    getWeight(): number | undefined {
+        return this._width;
     }
 
     /**
@@ -150,5 +170,12 @@ class UIListViewColumn {
     maxWidth(val: number): this {
         this._maxWidth = val;
         return this;
+    }
+
+    getWidthRange(): UIOptionalRange {
+        return  {
+            min: this._minWidth,
+            max: this._maxWidth
+        }
     }
 }

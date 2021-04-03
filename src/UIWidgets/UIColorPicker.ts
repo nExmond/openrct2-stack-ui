@@ -58,6 +58,10 @@ class UIColorPicker extends UIWidget<ColourPickerWidget> {
         return this;
     }
 
+    getColor(): UIColor {
+        return this._color;
+    }
+
     /**
      * Observe the change in value.
      * @param block

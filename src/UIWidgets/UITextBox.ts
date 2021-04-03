@@ -58,12 +58,20 @@ class UITextBox extends UIWidget<TextBoxWidget> {
         return this;
     }
 
+    getText(): string {
+        return this._text;
+    }
+
     /**
      * Maximum number of digits. The default is 256 characters.
      */
     maxLength(val: number): this {
         this._maxLength = val;
         return this;
+    }
+
+    getMaxLength(): number {
+        return this._maxLength;
     }
 
     /**

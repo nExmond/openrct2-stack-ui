@@ -82,6 +82,10 @@ class UIViewport extends UIWidget<ViewportWidget> {
         return this;
     }
 
+    getPosition(): CoordsXY | CoordsXYZ {
+        return this._position;
+    }
+
     /**
      * Sets the zoom level of the map displayed by the viewport.
      * @param val 
@@ -92,12 +96,20 @@ class UIViewport extends UIWidget<ViewportWidget> {
         return this;
     }
 
+    getZoom(): UIViewportScale {
+        return this._zoom;
+    }
+
     /**
      * Sets the category of elements to be displayed in the viewport.
      */
     flags(val: UIViewportFlag): this {
         this._visibilityFlags = val;
         return this;
+    }
+
+    getFlags(): UIViewportFlag {
+        return this._visibilityFlags;
     }
 
     /**

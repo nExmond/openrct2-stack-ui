@@ -55,6 +55,10 @@ class UIDropdown extends UIWidget<DropdownWidget> {
 
     //Public
 
+    getItems(): string[] {
+        return this._items;
+    }
+
     /**
      * Select an item within a range.
      */
@@ -66,6 +70,10 @@ class UIDropdown extends UIWidget<DropdownWidget> {
             throw new Error(`Enter a value between 0 and ${max}.`);
         }
         return this;
+    }
+
+    getSelectedIndex(): number {
+        return this._selectedIndex;
     }
 
     /**

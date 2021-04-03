@@ -303,6 +303,10 @@ class UIStack extends UIWidget<GroupBoxWidget> {
 
     //Public
 
+    getAxis(): UIAxis {
+        return this._axis;
+    }
+
     /**
      * Widget spacing on stack.
      */
@@ -311,12 +315,24 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         return this;
     }
 
+    getSpacing(): number {
+        return this._spacing;
+    }
+
     /**
      * stack padding.
      */
     padding(val: UIEdgeInsets): this {
         this._padding = val;
         return this;
+    }
+
+    getPadding(): UIEdgeInsets {
+        return this._padding;
+    }
+
+    getIsGrouped(): boolean {
+        return this._isGrouped;
     }
 
     /**
@@ -333,5 +349,13 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         }
         this._groupTitle = val;
         return this;
+    }
+
+    getGroupBoxTitle(): string | undefined {
+        return this._groupTitle;
+    }
+
+    getChilds(): UIWidget<any>[] {
+        return this._childs;
     }
 }

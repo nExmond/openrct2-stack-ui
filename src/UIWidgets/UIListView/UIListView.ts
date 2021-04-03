@@ -84,6 +84,10 @@ class UIListView extends UIWidget<ListView> {
         return this;
     }
 
+    getScrollbarType(): UIScrollbarType {
+        return this._scrollbarType;
+    }
+
     /**
      * Set to make it easy to distinguish items.
      */
@@ -92,12 +96,20 @@ class UIListView extends UIWidget<ListView> {
         return this;
     }
 
+    getIsStriped(): boolean {
+        return this._isStriped;
+    }
+
     /**
      * Set whether to display the columns in the list.
      */
     showColumnHeaders(val: boolean): this {
         this._showColumnHeaders = val;
         return this;
+    }
+
+    getShowColumnHeaders(): boolean {
+        return this._showColumnHeaders;
     }
 
     /**
@@ -140,12 +152,20 @@ class UIListView extends UIWidget<ListView> {
         return this;
     }
 
+    getSelectedCell(): RowColumn | undefined {
+        return this._selectedCell;
+    }
+
     /**
      * Determines whether select can
      */
     canSelect(val: boolean): this {
         this._canSelect = val;
         return this;
+    }
+
+    getCanSelect(): boolean {
+        return this._canSelect;
     }
 
     /**
@@ -186,5 +206,13 @@ class UIListView extends UIWidget<ListView> {
     onClick(block: (listView: this, column: number, item: number) => void): this {
         this._onClick = block;
         return this;
+    }
+
+    getColumns(): UIListViewColumn[] {
+        return this._columns ?? [];
+    }
+
+    getItems(): UIListViewItem[] {
+        return this._items;
     }
 }

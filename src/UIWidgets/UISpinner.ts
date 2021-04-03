@@ -148,12 +148,24 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         return this;
     }
 
+    getStep(): number {
+        return this._step;
+    }
+
+    getFixed(): number {
+        return this._fixed;
+    }
+
     /**
      * Set a new value within the set value range. 
      */
     value(val: number): this {
         this._value = Math.max(this._min, Math.min(this._max, val))
         return this;
+    }
+
+    getValue(): number {
+        return this._value;
     }
 
     /**
@@ -163,6 +175,10 @@ class UISpinner extends UIWidget<SpinnerWidget> {
     formatter(black: (val: number) => string): this {
         this._formatter = black;
         return this;
+    }
+
+    getFormatter(): ((val: number) => string) | undefined {
+        return this._formatter;
     }
 
     /**

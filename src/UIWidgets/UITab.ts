@@ -62,12 +62,20 @@ class UITab {
         return this;
     }
 
+    getSpacing(): number | undefined {
+        return this._spacing;
+    }
+
     /**
      * Top stack padding.
      */
     padding(val: UIEdgeInsets): this {
         this._padding = val;
         return this;
+    }
+
+    getPadding(): UIEdgeInsets | undefined {
+        return this._padding;
     }
 
     /**
@@ -79,6 +87,14 @@ class UITab {
         return this;
     }
 
+    getIsExpandable(): boolean {
+        return this._isExpandable;
+    }
+
+    getMinSize(): UISize {
+        return this._minSize;
+    }
+
     /**
      * Set the maximum size of the window in tab.
      */
@@ -87,12 +103,20 @@ class UITab {
         return this;
     }
 
+    getMaxSize(): UISize {
+        return this._maxSize;
+    }
+
     /**
      * Set the image.
      */
     image(val: UIImage): this {
         this._image = val;
         return this;
+    }
+
+    getImage(): UIImage {
+        return this._image;
     }
     
     /**

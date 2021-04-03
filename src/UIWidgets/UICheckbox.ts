@@ -74,12 +74,20 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
         return this;
     }
 
+    getIsChecked(): boolean {
+        return this._isChecked;
+    }
+
     /**
      * Set the text.
      */
     text(val: string): this {
         this._text = val;
         return this;
+    }
+
+    getText() {
+        return this._text;
     }
 
     /**

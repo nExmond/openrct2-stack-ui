@@ -347,6 +347,10 @@ class UIWindow {
         return this;
     }
 
+    getSpacing(): number {
+        return this._spacing;
+    }
+
     /**
      * Top stack padding.
      */
@@ -355,12 +359,32 @@ class UIWindow {
         return this;
     }
 
+    getPadding(): UIEdgeInsets {
+        return this._padding;
+    }
+
     /**
      * Window coordinates on the screen.
      */
     origin(val: UIPoint): this {
         this._origin = val;
         return this;
+    }
+
+    getOrigin(): UIPoint {
+        return this._origin;
+    }
+
+    getSize(): UISize {
+        return this._size;
+    }
+
+    getMinSize(): UISize {
+        return this._minSize;
+    }
+
+    getMaxSize(): UISize {
+        return this._maxSize;
     }
 
     /**
@@ -372,12 +396,20 @@ class UIWindow {
         return this;
     }
 
+    getIsExpandable(): boolean {
+        return this._isExpandable;
+    }
+
     /**
      * Set the title of the window.
      */
     title(val: string): this {
         this._title = val;
         return this;
+    }
+
+    getTitle(): string {
+        return this._title;
     }
 
     /**
@@ -390,6 +422,10 @@ class UIWindow {
             this._selectedTabIndex = val;
         }
         return this;
+    }
+
+    getSelectedTabIndex(): number {
+        return this._selectedTabIndex;
     }
 
     /**
@@ -434,6 +470,10 @@ class UIWindow {
             tertiary: val
         }
         return this;
+    }
+
+    getTheme(): UIWindowTheme {
+        return this._theme;
     }
 
     /**

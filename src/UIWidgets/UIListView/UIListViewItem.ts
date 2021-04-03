@@ -47,4 +47,17 @@ class UIListViewItem {
             return this._textList.map(val => applyFont(val)!);
         }
     }
+
+    //Public
+
+    getIsSeparator(): boolean {
+        return this._isSeparator;
+    }
+
+    /**
+     * text displayed in the columns of the list.
+     */
+    getElements(): string[] {
+        return this._textList;
+    }
 }

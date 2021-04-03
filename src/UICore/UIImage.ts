@@ -86,6 +86,10 @@ class UIImage {
         return this;
     }
 
+    getDuration(): number {
+        return this._duration;
+    }
+
     /**
      * Set the offset of the image.
      * * Currently, it is only valid for images applied to tabs.
@@ -93,6 +97,10 @@ class UIImage {
     offset(val: UIPoint): this {
         this._offset = val;
         return this;
+    }
+    
+    getOffset(): UIPoint {
+        return this._offset;
     }
 
     /**
