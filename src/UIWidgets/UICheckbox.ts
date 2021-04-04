@@ -27,6 +27,7 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
         const checkbox = new UICheckbox(text);
         const minSize = text.containerSize();
         return checkbox
+            .height(15)
             .minSize(minSize);
     }
 
