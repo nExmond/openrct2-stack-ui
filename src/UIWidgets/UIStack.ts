@@ -120,8 +120,19 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         return this._isGrouped && typeof this._groupTitle === "undefined";
     }
 
+    protected _isNamedGroup(): boolean {
+        return this._isGrouped && typeof this._groupTitle !== "undefined";
+    }
+
     _estimatedSize(): UISize {
-        const size = this._containerSize();
+        var size = this._containerSize();
+        if (this._isNamedGroup()) {
+            const minWidth = (this._groupTitle?.size().width ?? 0) + 8;
+            size = {
+                width: Math.max(size.width, minWidth),
+                height: size.height
+            }
+        }
         const unNamedGroupCorrect = this._isUnNamedGroup() ? 4 : 0;
         return {
             width: size.width + this._insets.left + this._insets.right + this._padding.left + this._padding.right,
