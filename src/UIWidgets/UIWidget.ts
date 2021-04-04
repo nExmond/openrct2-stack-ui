@@ -100,7 +100,7 @@ class UIWidget<T extends Widget> {
     _update(widget: T) {
         widget.x = this._origin.x;
         widget.y = this._origin.y;
-        widget.width = this._size.width ?? 0;
+        widget.width = (this._size.width ?? 0) - 1;
         widget.height = (this._size.height ?? 0) - 1;
         widget.tooltip = this._tooltip;
         widget.isDisabled = this._isDisabled;
