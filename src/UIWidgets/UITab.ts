@@ -41,7 +41,7 @@ class UITab {
 
     _data(): WindowTabDesc {
         return {
-            image: this._image._data(),
+            image: this._image._data(true),
             widgets: this._contentView._getWidgets()
         }
     }

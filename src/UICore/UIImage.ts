@@ -51,24 +51,22 @@ class UIImage {
 
     //Private
 
-    _data(): number | ImageAnimation {
+    _data(usingTab: boolean = false): number | ImageAnimation {
         const frameCount = this._frames.length;
-        if (frameCount > 1) {
+        if (usingTab) {
             const isContiguous = this._frames.reduce((acc, val) => val === acc + 1 ? val : acc) == this._frames[this._frames.length - 1];
-            if (isContiguous) {
-                return {
-                    frameBase: this._frames[0],
-                    frameCount: this._frames.length,
-                    frameDuration: this._duration,
-                    offset: this._offset
-                }
+            return {
+                frameBase: this._frames[0],
+                frameCount: this._frames.length,
+                frameDuration: this._duration,
+                offset: this._offset
+            }
+        } else {
+            if (frameCount > 0) {
+                return this._frames[0];
             } else {
                 return -1;
             }
-        } else if (frameCount > 0) {
-            return this._frames[0];
-        } else {
-            return -1;
         }
     }
 
