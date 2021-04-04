@@ -68,7 +68,6 @@ class UIViewport extends UIWidget<ViewportWidget> {
 
         this._viewport.visibilityFlags = this._visibilityFlags;
 
-        this._position = ui.mainViewport.getCentrePosition();
         this.moveTo(this._position);
     }
 
@@ -124,7 +123,9 @@ class UIViewport extends UIWidget<ViewportWidget> {
      */
     moveTo(val: CoordsXY | CoordsXYZ) {
         this._position = val;
-        this._viewport.moveTo(val);
+        if (typeof this._viewport.moveTo !== "undefined") {
+            this._viewport.moveTo(val);
+        }
     }
 
     /**
@@ -132,7 +133,9 @@ class UIViewport extends UIWidget<ViewportWidget> {
      */
     scrollTo(val: CoordsXY | CoordsXYZ) {
         this._position = val;
-        this._viewport.scrollTo(val);
+        if (typeof this._viewport.scrollTo !== "undefined") {
+            this._viewport.scrollTo(val);
+        }
     }
 
     /**
