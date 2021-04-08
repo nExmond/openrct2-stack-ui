@@ -41,8 +41,6 @@ var openWindow = function () {
         .isExpandable(true)
         .image(UIImageConstruction.offset({ x: 4, y: 2 })),
         UITab.$(
-            UIViewport.$(),
-            UISpacer.$(),
             UIButton.$("탭 인덱스").bind(temp),
             UICheckbox.$("체크박스"),
             UIDropdown.$(["1", "2"]),
@@ -51,6 +49,17 @@ var openWindow = function () {
             UITextBox.$(),
             UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))
         ).image(UIImageTabAwards).isExpandable(true)
+        .title("Other title"),
+        UITab.$(
+            UIButton.$("탭 인덱스").bind(temp),
+            UICheckbox.$("체크박스"),
+            UIDropdown.$(["1", "2"]),
+            UIColorPicker.$(),
+            UISpinner.$(),
+            UITextBox.$(),
+            UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))
+        ).image(UIImageTabAwards).isExpandable(true)
+        .title("Other title22222")
     ).bind(window)
     .theme({ primary: UIColor.Gray, secondary: UIColor.DarkYellow })
     .padding({ top: 2, left: 2, bottom: 2, right: 2 })

@@ -12,6 +12,8 @@ class UITab {
     _padding: UIEdgeInsets | undefined;
     _isExpandable: boolean = false;
 
+    protected _title: string | undefined;
+
     protected _image: UIImage;
     _contentView: UIStack;
 
@@ -117,6 +119,19 @@ class UITab {
 
     getImage(): UIImage {
         return this._image;
+    }
+
+    /**
+     * Set the title to be displayed in the window when selecting a tab.
+     * If not specified, the title set in the window is used by default.
+     */
+    title(val: string): this {
+        this._title = val;
+        return this;
+    }
+
+    getTitle(): string | undefined {
+        return this._title;
     }
     
     /**

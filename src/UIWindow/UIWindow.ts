@@ -22,6 +22,7 @@ class UIWindow {
     protected _size!: UISize;
     protected _initialSize!: UISize;
 
+    protected _originalTitle: string;
     protected _title: string;
     protected _theme: UIWindowTheme = UIWindowThemeDefault;
 
@@ -43,6 +44,7 @@ class UIWindow {
      */
     constructor(title: string, contents: UIWidget<any>[] | UITab[]) {
         this._title = title;
+        this._originalTitle = title;
 
         if (contents.length > 0) {
             if (contents[0] instanceof UIWidget) {
@@ -168,6 +170,7 @@ class UIWindow {
             window._minSize = tabMinSize;
             window._maxSize = tabMaxSize;
             window._isExpandable = window._initialExpandableState || currentTab._isExpandable;
+            window._title = currentTab.getTitle() ?? this._originalTitle;
         })
     }
 
@@ -233,6 +236,8 @@ class UIWindow {
             return this;
         }
 
+        var title: string;
+
         this._initialExpandableState = this._isExpandable;
 
         const singlecontentView = this._singleContentView?.spacing(this._spacing).padding(this._padding);
@@ -241,6 +246,7 @@ class UIWindow {
             const constructed = this._uiConstructor.construct(singlecontentView, this._interactor);
             singleContentViewWidget = constructed.widgets;
             this._minSize = constructed.size;
+            title = this._originalTitle;
         };
 
         var tabDescriptions: WindowTabDesc[] | undefined;
@@ -250,6 +256,7 @@ class UIWindow {
             this._minSize = constructed.size;
             this._maxSize = this._tabs[this._selectedTabIndex]._maxSize;
             this._isExpandable ||= this._tabs?.[this._selectedTabIndex]._isExpandable ?? false;
+            title = this._tabs?.[this._selectedTabIndex].getTitle() ?? this._originalTitle;
         }
 
         const windowDesc: WindowDesc = {
