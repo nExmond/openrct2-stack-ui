@@ -13,6 +13,7 @@ class UITab {
     _isExpandable: boolean = false;
 
     protected _title: string | undefined;
+    protected _theme: UIWindowTheme | undefined;
 
     protected _image: UIImage;
     _contentView: UIStack;
@@ -132,6 +133,54 @@ class UITab {
 
     getTitle(): string | undefined {
         return this._title;
+    }
+
+    /**
+     * Sets the color theme for window and child widgets.
+     */
+    theme(val: UIWindowTheme): this {
+        this._theme = val;
+        return this;
+    }
+
+    /**
+     * Set the primary theme color.
+     */
+    themePrimaryColor(val: UIColor): this {
+        this._theme = {
+            primary: val,
+            secondary: this._theme?.secondary,
+            tertiary: this._theme?.tertiary
+        }
+        return this;
+    }
+
+    /**
+     * Set the secondary theme color.
+     */
+    themeSecondaryColor(val: UIColor): this {
+        this._theme = {
+            primary: this._theme?.primary,
+            secondary: val,
+            tertiary: this._theme?.tertiary
+        }
+        return this;
+    }
+
+    /**
+     * Set the terriary theme color.
+     */
+    themeTertiaryColor(val: UIColor): this {
+        this._theme = {
+            primary: this._theme?.primary,
+            secondary: this._theme?.secondary,
+            tertiary: val
+        }
+        return this;
+    }
+
+    getTheme(): UIWindowTheme | undefined {
+        return this._theme;
     }
     
     /**

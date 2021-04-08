@@ -49,7 +49,9 @@ var openWindow = function () {
             UITextBox.$(),
             UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))
         ).image(UIImageTabAwards).isExpandable(true)
-        .title("Other title"),
+        .title("Other title")
+        .themePrimaryColor(UIColor.LightBlue)
+        .themeSecondaryColor(UIColor.SalmonPink),
         UITab.$(
             UIButton.$("탭 인덱스").bind(temp),
             UICheckbox.$("체크박스"),
@@ -60,8 +62,10 @@ var openWindow = function () {
             UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))
         ).image(UIImageTabAwards).isExpandable(true)
         .title("Other title22222")
+        .themePrimaryColor(UIColor.White)
+        .themeSecondaryColor(UIColor.DarkOliveGreen),
     ).bind(window)
-    .theme({ primary: UIColor.Gray, secondary: UIColor.DarkYellow })
+    .theme({ primary: UIColor.Gray, secondary: UIColor.DarkPurple })
     .padding({ top: 2, left: 2, bottom: 2, right: 2 })
     .spacing(2)
     .show()

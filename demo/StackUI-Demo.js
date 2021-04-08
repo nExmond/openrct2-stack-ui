@@ -46,9 +46,13 @@ var openWindow = function () {
     ]).bind(buttonPagingImage)).title("Paging")).title("Button")).bind(tab1)
         .isExpandable(true)
         .image(UIImageConstruction.offset({ x: 4, y: 2 })), UITab.$(UIButton.$("탭 인덱스").bind(temp), UICheckbox.$("체크박스"), UIDropdown.$(["1", "2"]), UIColorPicker.$(), UISpinner.$(), UITextBox.$(), UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))).image(UIImageTabAwards).isExpandable(true)
-        .title("Other title"), UITab.$(UIButton.$("탭 인덱스").bind(temp), UICheckbox.$("체크박스"), UIDropdown.$(["1", "2"]), UIColorPicker.$(), UISpinner.$(), UITextBox.$(), UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))).image(UIImageTabAwards).isExpandable(true)
-        .title("Other title22222")).bind(window)
-        .theme({ primary: UIColor.Gray, secondary: UIColor.DarkYellow })
+        .title("Other title")
+        .themePrimaryColor(UIColor.LightBlue)
+        .themeSecondaryColor(UIColor.SalmonPink), UITab.$(UIButton.$("탭 인덱스").bind(temp), UICheckbox.$("체크박스"), UIDropdown.$(["1", "2"]), UIColorPicker.$(), UISpinner.$(), UITextBox.$(), UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))).image(UIImageTabAwards).isExpandable(true)
+        .title("Other title22222")
+        .themePrimaryColor(UIColor.White)
+        .themeSecondaryColor(UIColor.DarkOliveGreen)).bind(window)
+        .theme({ primary: UIColor.Gray, secondary: UIColor.DarkPurple })
         .padding({ top: 2, left: 2, bottom: 2, right: 2 })
         .spacing(2)
         .show();
@@ -1356,6 +1360,40 @@ var UITab = (function () {
     UITab.prototype.getTitle = function () {
         return this._title;
     };
+    UITab.prototype.theme = function (val) {
+        this._theme = val;
+        return this;
+    };
+    UITab.prototype.themePrimaryColor = function (val) {
+        var _a, _b;
+        this._theme = {
+            primary: val,
+            secondary: (_a = this._theme) === null || _a === void 0 ? void 0 : _a.secondary,
+            tertiary: (_b = this._theme) === null || _b === void 0 ? void 0 : _b.tertiary
+        };
+        return this;
+    };
+    UITab.prototype.themeSecondaryColor = function (val) {
+        var _a, _b;
+        this._theme = {
+            primary: (_a = this._theme) === null || _a === void 0 ? void 0 : _a.primary,
+            secondary: val,
+            tertiary: (_b = this._theme) === null || _b === void 0 ? void 0 : _b.tertiary
+        };
+        return this;
+    };
+    UITab.prototype.themeTertiaryColor = function (val) {
+        var _a, _b;
+        this._theme = {
+            primary: (_a = this._theme) === null || _a === void 0 ? void 0 : _a.primary,
+            secondary: (_b = this._theme) === null || _b === void 0 ? void 0 : _b.secondary,
+            tertiary: val
+        };
+        return this;
+    };
+    UITab.prototype.getTheme = function () {
+        return this._theme;
+    };
     UITab.prototype.bind = function (proxy) {
         proxy._bind(this);
         return this;
@@ -1837,6 +1875,7 @@ var UIWindow = (function () {
         this._uiConstructor = new UIConstructor();
         this._interactor = new UIInteractor();
         this._selectedTabIndex = 0;
+        this._defaultTheme = UIWindowThemeDefault;
         this._theme = UIWindowThemeDefault;
         this._spacing = 0;
         this._padding = UIEdgeInsetsZero;
@@ -1877,13 +1916,25 @@ var UIWindow = (function () {
     UIWindow.prototype._usingTab = function () {
         return typeof this._tabs !== "undefined";
     };
-    UIWindow.prototype._convertColors = function () {
-        var _a, _b, _c;
-        return [
-            (_a = this._theme.primary) !== null && _a !== void 0 ? _a : UIColor.Gray,
-            (_b = this._theme.secondary) !== null && _b !== void 0 ? _b : UIColor.Gray,
-            (_c = this._theme.tertiary) !== null && _c !== void 0 ? _c : UIColor.Gray
-        ];
+    UIWindow.prototype._convertColors = function (tabIndex) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+        if (tabIndex === void 0) { tabIndex = undefined; }
+        if (typeof tabIndex !== "undefined") {
+            var tab = (_a = this._tabs) === null || _a === void 0 ? void 0 : _a[tabIndex];
+            var theme = tab === null || tab === void 0 ? void 0 : tab.getTheme();
+            return [
+                (_c = (_b = theme === null || theme === void 0 ? void 0 : theme.primary) !== null && _b !== void 0 ? _b : this._theme.primary) !== null && _c !== void 0 ? _c : this._defaultTheme.primary,
+                (_e = (_d = theme === null || theme === void 0 ? void 0 : theme.secondary) !== null && _d !== void 0 ? _d : this._theme.secondary) !== null && _e !== void 0 ? _e : this._defaultTheme.secondary,
+                (_g = (_f = theme === null || theme === void 0 ? void 0 : theme.tertiary) !== null && _f !== void 0 ? _f : this._theme.tertiary) !== null && _g !== void 0 ? _g : this._defaultTheme.tertiary
+            ];
+        }
+        else {
+            return [
+                (_h = this._theme.primary) !== null && _h !== void 0 ? _h : this._defaultTheme.primary,
+                (_j = this._theme.secondary) !== null && _j !== void 0 ? _j : this._defaultTheme.secondary,
+                (_k = this._theme.tertiary) !== null && _k !== void 0 ? _k : this._defaultTheme.tertiary
+            ];
+        }
     };
     UIWindow.prototype._isOpened = function () {
         return typeof this._window !== "undefined";
@@ -1899,11 +1950,6 @@ var UIWindow = (function () {
                 width: window.width,
                 height: window.height
             };
-            this._theme = {
-                primary: window.colours[0],
-                secondary: window.colours[1],
-                tertiary: window.colours[2]
-            };
         }
     };
     UIWindow.prototype._update = function () {
@@ -1916,7 +1962,8 @@ var UIWindow = (function () {
         window.minHeight = this._isExpandable ? this._minSize.height : this._size.height;
         window.maxWidth = this._isExpandable ? this._maxSize.width : this._size.width;
         window.maxHeight = this._isExpandable ? this._maxSize.height : this._size.height;
-        window.colours = this._convertColors();
+        var selectedIndex = this._usingTab() ? this._selectedTabIndex : undefined;
+        window.colours = this._convertColors(selectedIndex);
         window.x = ui.width + 1;
         window.y = ui.height + 1;
         window.x = this._origin.x;
@@ -2002,6 +2049,7 @@ var UIWindow = (function () {
             return this;
         }
         var title;
+        var colors;
         this._initialExpandableState = this._isExpandable;
         var singlecontentView = (_a = this._singleContentView) === null || _a === void 0 ? void 0 : _a.spacing(this._spacing).padding(this._padding);
         var singleContentViewWidget;
@@ -2010,6 +2058,7 @@ var UIWindow = (function () {
             singleContentViewWidget = constructed.widgets;
             this._minSize = constructed.size;
             title = this._originalTitle;
+            colors = this._convertColors();
         }
         ;
         var tabDescriptions;
@@ -2020,18 +2069,19 @@ var UIWindow = (function () {
             this._maxSize = this._tabs[this._selectedTabIndex]._maxSize;
             this._isExpandable || (this._isExpandable = (_c = (_b = this._tabs) === null || _b === void 0 ? void 0 : _b[this._selectedTabIndex]._isExpandable) !== null && _c !== void 0 ? _c : false);
             title = (_e = (_d = this._tabs) === null || _d === void 0 ? void 0 : _d[this._selectedTabIndex].getTitle()) !== null && _e !== void 0 ? _e : this._originalTitle;
+            colors = this._convertColors(this._selectedTabIndex);
         }
         var windowDesc = {
             classification: this._title,
             width: this._minSize.width,
             height: this._minSize.height,
-            title: this._title,
+            title: title,
             minWidth: this._isExpandable ? this._minSize.width : undefined,
             maxWidth: this._isExpandable ? this._maxSize.width : undefined,
             minHeight: this._isExpandable ? this._minSize.height : undefined,
             maxHeight: this._isExpandable ? this._maxSize.height : undefined,
             widgets: singleContentViewWidget,
-            colours: this._convertColors(),
+            colours: colors,
             tabs: tabDescriptions,
             tabIndex: this._selectedTabIndex,
             onClose: function () {

@@ -24,6 +24,7 @@ class UIWindow {
 
     protected _originalTitle: string;
     protected _title: string;
+    protected _defaultTheme: UIWindowTheme = UIWindowThemeDefault;
     protected _theme: UIWindowTheme = UIWindowThemeDefault;
 
     protected _spacing = 0;
@@ -81,12 +82,22 @@ class UIWindow {
         return typeof this._tabs !== "undefined";
     }
 
-    _convertColors(): UIColor[] {
-        return [
-            this._theme.primary ?? UIColor.Gray,
-            this._theme.secondary ?? UIColor.Gray,
-            this._theme.tertiary ?? UIColor.Gray
-        ];
+    _convertColors(tabIndex: number | undefined = undefined): UIColor[] {
+        if (typeof tabIndex !== "undefined") {
+            const tab = this._tabs?.[tabIndex];
+            const theme = tab?.getTheme()
+            return [
+                theme?.primary ?? this._theme.primary ?? this._defaultTheme.primary!,
+                theme?.secondary ?? this._theme.secondary ?? this._defaultTheme.secondary!,
+                theme?.tertiary ?? this._theme.tertiary ?? this._defaultTheme.tertiary!
+            ];
+        }else{
+            return [
+                this._theme.primary ?? this._defaultTheme.primary!,
+                this._theme.secondary ?? this._defaultTheme.secondary!,
+                this._theme.tertiary ?? this._defaultTheme.tertiary!
+            ];
+        }
     }
 
     _isOpened(): boolean {
@@ -103,11 +114,6 @@ class UIWindow {
             this._size = {
                 width: window.width,
                 height: window.height
-            }
-            this._theme = {
-                primary: window.colours[0],
-                secondary: window.colours[1],
-                tertiary: window.colours[2]
             }
         }
     }
@@ -129,7 +135,8 @@ class UIWindow {
         window.maxWidth = this._isExpandable ? this._maxSize.width : this._size.width;
         window.maxHeight = this._isExpandable ? this._maxSize.height : this._size.height;
 
-        window.colours = this._convertColors();
+        const selectedIndex = this._usingTab() ? this._selectedTabIndex: undefined;
+        window.colours = this._convertColors(selectedIndex);
 
         //Because it is not rendered immediately, it moves and revert the coordinates.
         window.x = ui.width + 1;
@@ -236,7 +243,8 @@ class UIWindow {
             return this;
         }
 
-        var title: string;
+        var title!: string;
+        var colors!: UIColor[];
 
         this._initialExpandableState = this._isExpandable;
 
@@ -246,7 +254,9 @@ class UIWindow {
             const constructed = this._uiConstructor.construct(singlecontentView, this._interactor);
             singleContentViewWidget = constructed.widgets;
             this._minSize = constructed.size;
+
             title = this._originalTitle;
+            colors = this._convertColors();
         };
 
         var tabDescriptions: WindowTabDesc[] | undefined;
@@ -256,20 +266,22 @@ class UIWindow {
             this._minSize = constructed.size;
             this._maxSize = this._tabs[this._selectedTabIndex]._maxSize;
             this._isExpandable ||= this._tabs?.[this._selectedTabIndex]._isExpandable ?? false;
+            
             title = this._tabs?.[this._selectedTabIndex].getTitle() ?? this._originalTitle;
+            colors = this._convertColors(this._selectedTabIndex);
         }
 
         const windowDesc: WindowDesc = {
             classification: this._title,
             width: this._minSize.width,
             height: this._minSize.height,
-            title: this._title,
+            title: title,
             minWidth: this._isExpandable ? this._minSize.width : undefined,
             maxWidth: this._isExpandable ? this._maxSize.width : undefined,
             minHeight: this._isExpandable ? this._minSize.height : undefined,
             maxHeight: this._isExpandable ? this._maxSize.height : undefined,
             widgets: singleContentViewWidget,
-            colours: this._convertColors(),
+            colours: colors,
             tabs: tabDescriptions,
             tabIndex: this._selectedTabIndex,
             onClose: () => {
