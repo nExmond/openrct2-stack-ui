@@ -1,4 +1,4 @@
-/// <reference path="UIWidget.ts" />
+/// <reference path="../UIWidgets/UIWidget.ts" />
 
 /**
  * Divide the sections by purpose within the window.

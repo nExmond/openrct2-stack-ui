@@ -1,5 +1,5 @@
 /// <reference path="../../../UICore/TextColor.ts" />
-/// <reference path="../../../UICore/UIImage.ts" />
+/// <reference path="../../../UICore/UIImage/UIImage.ts" />
 
 /**
  * Top level node used to apply formatting.
@@ -10,7 +10,7 @@ class TextNode {
     protected _childs: TextNode[] = [];
 
     protected _outline: boolean = false;
-    protected _color: TextColor | undefined;
+    protected _color: TextColor = TextColor.WindowSecondary;
 
     /**
      * Creates an instance of *TextNode*.
@@ -43,6 +43,14 @@ class TextNode {
      */
     static $I(image: UIImage): ImageNode {
         const node = new ImageNode(image);
+        return node;
+    }
+
+    /**
+     * Create *ImageNode* instance without using new.
+     */
+    static $NL(isSmaller: boolean = false): _NewlineNode {
+        const node = new _NewlineNode(isSmaller);
         return node;
     }
 
@@ -196,7 +204,7 @@ ${tabs}}`;
     /**
      * Set color for this node and its subnodes.
      */
-    color(val: TextColor | undefined): this {
+    color(val: TextColor): this {
         this._color = val;
         return this;
     }

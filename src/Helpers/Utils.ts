@@ -46,7 +46,6 @@ interface String {
 }
 String.prototype.size = function (): UISize {
     const g = imageHelper.graphicsContext();
-    
     var imageBounds = UISizeZero;
 
     const regex = new RegExp(/{INLINE_SPRITE}{(\d{1,3})}{\d{1,3}}{\d{1,3}}/g);

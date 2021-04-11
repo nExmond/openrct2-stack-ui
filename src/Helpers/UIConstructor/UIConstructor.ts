@@ -1,5 +1,5 @@
 /// <reference path="../../UICore/UIEdgeInsets.ts" />
-/// <reference path="../../UIWidgets/UITab.ts" />
+/// <reference path="../../UIContainer/UITab.ts" />
 /// <reference path="../../UIWidgets/UIStack.ts" />
 /// <reference path="../UIInteractor.ts" />
 /// <reference path="UIConstructResult.ts" />

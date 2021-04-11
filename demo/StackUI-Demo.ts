@@ -1,77 +1,135 @@
 /// <reference path="../modules/openrct2.d.ts" />
 
-var openWindow = function () {
+var Window = function (): UIWindowProxy {
 
-    //proxy
+    //Proxy
+    const window = UIWDP.$();
+
+    //Construct
+    UIWindow.$("StackUI Demo -",
+
+    ).bind(window)
+        .isExpandable(true)
+        .spacing(2)
+
+    //Bind
+
+    return window;
+}
+
+var LabelWindow = function (): UIWindowProxy {
+
+    //Proxy
+    const window = UIWDP.$();
+
+    //Data
+    const formatted = TB.$(
+        TN.$(
+            TN.$I(UIImageShopItemChips),
+            TN.$S("Chips\n...").color(TextColor.PaleGold),
+            TN.$S((1432).format(TextFormat.StringId, 53)).outline(),
+            TN.$NL(),
+            TN.$S((1432).format(TextFormat.StringId, 53))
+        )
+    ).build();
+
+    //Construct
+    UIWindow.$("StackUI Demo - Label",
+        UIStack.$VG(
+            UILabel.$(formatted, true)
+        ).title("Label"),
+        UIStack.$HG(
+            UIStack.$HG(
+                UICheckbox.$("checkbox")
+            ).title("Basic"),
+            UIStack.$HG(
+                UICheckbox.$UN(),
+                UICheckbox.$UN(),
+                UICheckbox.$UN(),
+                UICheckbox.$UN(),
+                UICheckbox.$UN()
+            ).title("Unnamed")
+        ).title("Checkbox")
+    ).bind(window)
+
+    return window;
+}
+
+var ButtonWindow = function (): UIWindowProxy {
+
+    //Proxy
+    const window = UIWDP.$();
+
+    const buttonToggleTitle = UIWP.$<UIToggleButton>();
+    const buttonToggleImage = UIWP.$<UIToggleButton>();
+
+    //Construct
+    UIWindow.$("StackUI Demo - Button",
+        UIStack.$HG(
+            UIStack.$HG(
+                UIButton.$("button", true),
+                UIButton.$I(UIImageGuests)
+            ).title("Basic"),
+            UIStack.$HG(
+                UIToggleButton.$("button").bind(buttonToggleTitle),
+                UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage),
+            ).title("Toggle"),
+            UIStack.$HG(
+                UIPageImageButton.$IP(...[
+                    UIImageAwardBestValue,
+                    UIImageAwardMostBeautiful,
+                    UIImageAwardBestStaff
+                ])
+            ).title("Paging")
+        ).title("Button"),
+        UISpacer.$(10)
+    ).bind(window)
+        .isExpandable(true)
+        .spacing(2)
+
+    //Bind
+    buttonToggleImage.ui?.onClick(() => {
+        buttonToggleTitle.ui?.updateUI(w => {
+            w.isVisible(!w.getIsVisible());
+        })
+    });
+
+    return window;
+}
+
+var MainWindow = function (): UIWindowProxy {
+
+    //Proxy
     const window = UIWDP.$();
     const tab1 = UITP.$();
 
-    const buttonBasicTitle = UIWP.$<UIButton>();
-    const buttonBasicImage = UIWP.$<UIButton>();
-    const buttonToggleTitle = UIWP.$<UIToggleButton>();
-    const buttonToggleImage = UIWP.$<UIToggleButton>();
-    const buttonPagingImage = UIWP.$<UIPageImageButton>();
+    const buttonButton = UIWP.$<UIButton>();
+    const buttonWindow = ButtonWindow();
 
-    const temp = UIWP.$<UIButton>();
+    const labelButton = UIWP.$<UIButton>();
+    const labelWindow = LabelWindow();
 
-    //construct
+    //Construct
     UIWindow.$T("StackUI Demo",
         UITab.$(
-            UIButton.$("dddddd"),
-            UISpacer.$(),
-            UIStack.$H(
-                UIStack.$V(
-                    UIButton.$("button").bind(buttonBasicTitle),
-                    UIButton.$I(UIImageGuests).bind(buttonBasicImage),
-                ).title("Basic"),
-                UIStack.$V(
-                    UIToggleButton.$("button").bind(buttonToggleTitle),
-                    UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage),
-                ).title("Toggle"),
-                UISpacer.$(),
-                UIStack.$V(
-                    UIPageImageButton.$IP(...[
-                        UIImageAwardBestStaff,
-                        UIImageAwardBestValue, 
-                        UIImageAwardMostBeautiful
-                    ]).bind(buttonPagingImage)
-                ).title("Paging")
-            ).title("Button")
+            UIButton.$("UIButton").bind(buttonButton),
+            UIButton.$("UILabel").bind(labelButton),
+            UISpacer.$(10)
         ).bind(tab1)
-        .isExpandable(true)
-        .image(UIImageConstruction.offset({ x: 4, y: 2 })),
-        UITab.$(
-            UIButton.$("탭 인덱스").bind(temp),
-            UICheckbox.$("체크박스"),
-            UIDropdown.$(["1", "2"]),
-            UIColorPicker.$(),
-            UISpinner.$(),
-            UITextBox.$(),
-            UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))
-        ).image(UIImageTabAwards).isExpandable(true)
-        .title("Other title")
-        .themePrimaryColor(UIColor.LightBlue)
-        .themeSecondaryColor(UIColor.SalmonPink),
-        UITab.$(
-            UIButton.$("탭 인덱스").bind(temp),
-            UICheckbox.$("체크박스"),
-            UIDropdown.$(["1", "2"]),
-            UIColorPicker.$(),
-            UISpinner.$(),
-            UITextBox.$(),
-            UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))
-        ).image(UIImageTabAwards).isExpandable(true)
-        .title("Other title22222")
-        .themePrimaryColor(UIColor.White)
-        .themeSecondaryColor(UIColor.DarkOliveGreen),
+            .isExpandable(true)
     ).bind(window)
-    .theme({ primary: UIColor.Gray, secondary: UIColor.DarkPurple })
-    .padding({ top: 2, left: 2, bottom: 2, right: 2 })
-    .spacing(2)
-    .show()
+        .spacing(2)
 
-    //action
-};
+    //Bind
+    buttonButton.ui?.onClick(_ => {
+        buttonWindow.ui?.show();
+    });
+    labelButton.ui?.onClick(_ => {
+        labelWindow.ui?.show();
+    });
+
+    return window;
+}
 
 var main = function () {
 
@@ -82,9 +140,14 @@ var main = function () {
         return;
     }
 
+    var window: UIWindowProxy | undefined;
+
     // Add a menu item under the map icon on the top toolbar
     ui.registerMenuItem("StackUI Demo", function () {
-        openWindow();
+        if (typeof window === "undefined") {
+            window = MainWindow();
+        }
+        window.ui?.show();
     });
 }
 

@@ -1,6 +1,6 @@
 /// <reference path="../Helpers/UIConstructor/UIConstructor.ts" />
 /// <reference path="../UICore/UIEdgeInsets.ts" />
-/// <reference path="../UIWidgets/UITab.ts" />
+/// <reference path="./UITab.ts" />
 /// <reference path="../UIWidgets/UIStack.ts" />
 /// <reference path="UIWindowTheme.ts" />
 
@@ -8,6 +8,8 @@
  * Top-level object managing tabs and widgets.
  */
 class UIWindow {
+
+    protected _id = this.constructor.name + '-' + uuid();
 
     protected _uiConstructor = new UIConstructor();
     protected _interactor = new UIInteractor();
@@ -286,6 +288,7 @@ class UIWindow {
             tabIndex: this._selectedTabIndex,
             onClose: () => {
                 this._onClose?.call(this, this);
+                this._window = undefined;
             },
             onUpdate: () => {
                 this._onUpdate();
@@ -316,8 +319,8 @@ class UIWindow {
         }
         if (typeof this._tabs !== "undefined") {
             this._uiConstructor.didLoadTabs(this._tabs);
-            this._internalOnTabChange();
         }
+        this._reflectResizingFromChild();
 
         return this;
     }

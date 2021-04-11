@@ -35,7 +35,7 @@ class UIPageImageButton extends UIButton {
                 }
             });
         const imageSize: UISize = {
-            width: maxSize.width + 1,
+            width: maxSize.width + 3,
             height: maxSize.height + 2
         }
         return button

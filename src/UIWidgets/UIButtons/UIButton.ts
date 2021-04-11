@@ -1,5 +1,5 @@
 /// <reference path="../UIWidget.ts" />
-/// <reference path="../../UICore/UIImage.ts" />
+/// <reference path="../../UICore/UIImage/UIImage.ts" />
 
 /**
  * Widgets that execute actions with a click.
@@ -20,17 +20,23 @@ class UIButton extends UIWidget<ButtonWidget> {
     }
 
     //Convenience
-    
+
     /**
      * Create *UIButton* instance without using new.
      * Button to display text.
      */
-    static $<T extends UIButton>(this: StaticThis<T>, title: string): T {
+    static $<T extends UIButton>(this: StaticThis<T>, title: string, isFit: boolean = false): T {
         const button = new this();
+        const buttonWithTitle = button.title(title);
         const minSize = title.containerSize();
-        return button.title(title)
-            .size(minSize)
-            .minSize(minSize);
+        if (isFit) {
+            return buttonWithTitle
+                .size(minSize)
+                .minSize(minSize);
+        } else {
+            return buttonWithTitle
+                .minSize(minSize);
+        }
     }
 
     /**
@@ -41,8 +47,8 @@ class UIButton extends UIWidget<ButtonWidget> {
         const button = new this();
         const imageSize = image.size();
         const minSize: UISize = {
-            width: imageSize.width + 4,
-            height: imageSize.height + 4
+            width: imageSize.width + 3,
+            height: imageSize.height + 2
         }
         return button
             .image(image)
@@ -83,7 +89,7 @@ class UIButton extends UIWidget<ButtonWidget> {
         return typeof this._image !== "undefined";
     }
 
-    protected _internalOnChange() {}
+    protected _internalOnChange() { }
 
     //Public
 

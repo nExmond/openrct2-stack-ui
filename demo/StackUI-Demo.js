@@ -30,40 +30,72 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var openWindow = function () {
+var Window = function () {
     var window = UIWDP.$();
-    var tab1 = UITP.$();
-    var buttonBasicTitle = UIWP.$();
-    var buttonBasicImage = UIWP.$();
+    UIWindow.$("StackUI Demo -").bind(window)
+        .isExpandable(true)
+        .spacing(2);
+    return window;
+};
+var LabelWindow = function () {
+    var window = UIWDP.$();
+    var formatted = TB.$(TN.$(TN.$I(UIImageShopItemChips), TN.$S("Chips\n...").color(TextColor.PaleGold), TN.$S((1432).format(TextFormat.StringId, 53)).outline(), TN.$NL(), TN.$S((1432).format(TextFormat.StringId, 53)))).build();
+    UIWindow.$("StackUI Demo - Label", UIStack.$VG(UILabel.$(formatted, true)).title("Label"), UIStack.$HG(UIStack.$HG(UICheckbox.$("checkbox")).title("Basic"), UIStack.$HG(UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN()).title("Unnamed")).title("Checkbox")).bind(window);
+    return window;
+};
+var ButtonWindow = function () {
+    var _a;
+    var window = UIWDP.$();
     var buttonToggleTitle = UIWP.$();
     var buttonToggleImage = UIWP.$();
-    var buttonPagingImage = UIWP.$();
-    var temp = UIWP.$();
-    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("dddddd"), UISpacer.$(), UIStack.$H(UIStack.$V(UIButton.$("button").bind(buttonBasicTitle), UIButton.$I(UIImageGuests).bind(buttonBasicImage)).title("Basic"), UIStack.$V(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage)).title("Toggle"), UISpacer.$(), UIStack.$V(UIPageImageButton.$IP.apply(UIPageImageButton, [
-        UIImageAwardBestStaff,
+    UIWindow.$("StackUI Demo - Button", UIStack.$HG(UIStack.$HG(UIButton.$("button", true), UIButton.$I(UIImageGuests)).title("Basic"), UIStack.$HG(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage)).title("Toggle"), UIStack.$HG(UIPageImageButton.$IP.apply(UIPageImageButton, [
         UIImageAwardBestValue,
-        UIImageAwardMostBeautiful
-    ]).bind(buttonPagingImage)).title("Paging")).title("Button")).bind(tab1)
+        UIImageAwardMostBeautiful,
+        UIImageAwardBestStaff
+    ])).title("Paging")).title("Button"), UISpacer.$(10)).bind(window)
         .isExpandable(true)
-        .image(UIImageConstruction.offset({ x: 4, y: 2 })), UITab.$(UIButton.$("탭 인덱스").bind(temp), UICheckbox.$("체크박스"), UIDropdown.$(["1", "2"]), UIColorPicker.$(), UISpinner.$(), UITextBox.$(), UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))).image(UIImageTabAwards).isExpandable(true)
-        .title("Other title")
-        .themePrimaryColor(UIColor.LightBlue)
-        .themeSecondaryColor(UIColor.SalmonPink), UITab.$(UIButton.$("탭 인덱스").bind(temp), UICheckbox.$("체크박스"), UIDropdown.$(["1", "2"]), UIColorPicker.$(), UISpinner.$(), UITextBox.$(), UIListView.$([UIListViewColumn.$("속성")]).addItem(UIListViewItem.$(["값"]))).image(UIImageTabAwards).isExpandable(true)
-        .title("Other title22222")
-        .themePrimaryColor(UIColor.White)
-        .themeSecondaryColor(UIColor.DarkOliveGreen)).bind(window)
-        .theme({ primary: UIColor.Gray, secondary: UIColor.DarkPurple })
-        .padding({ top: 2, left: 2, bottom: 2, right: 2 })
-        .spacing(2)
-        .show();
+        .spacing(2);
+    (_a = buttonToggleImage.ui) === null || _a === void 0 ? void 0 : _a.onClick(function () {
+        var _a;
+        (_a = buttonToggleTitle.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+            w.isVisible(!w.getIsVisible());
+        });
+    });
+    return window;
+};
+var MainWindow = function () {
+    var _a, _b;
+    var window = UIWDP.$();
+    var tab1 = UITP.$();
+    var buttonButton = UIWP.$();
+    var buttonWindow = ButtonWindow();
+    var labelButton = UIWP.$();
+    var labelWindow = LabelWindow();
+    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("UIButton").bind(buttonButton), UIButton.$("UILabel").bind(labelButton), UISpacer.$(10)).bind(tab1)
+        .isExpandable(true)).bind(window)
+        .spacing(2);
+    (_a = buttonButton.ui) === null || _a === void 0 ? void 0 : _a.onClick(function (_) {
+        var _a;
+        (_a = buttonWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
+    });
+    (_b = labelButton.ui) === null || _b === void 0 ? void 0 : _b.onClick(function (_) {
+        var _a;
+        (_a = labelWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
+    });
+    return window;
 };
 var main = function () {
     if (typeof ui === "undefined") {
         console.log("Plugin not available on headless mode.");
         return;
     }
+    var window;
     ui.registerMenuItem("StackUI Demo", function () {
-        openWindow();
+        var _a;
+        if (typeof window === "undefined") {
+            window = MainWindow();
+        }
+        (_a = window.ui) === null || _a === void 0 ? void 0 : _a.show();
     });
 };
 registerPlugin({
@@ -380,406 +412,11 @@ var UIImage = (function () {
     };
     return UIImage;
 }());
-var UIImageNone = UIImage.$(-1);
-var UIImageShopItemBalloon = UIImage.$(5061);
-var UIImageShopItemToy = UIImage.$(5062);
-var UIImageShopItemMap = UIImage.$(5063);
-var UIImageShopItemPhoto = UIImage.$(5064);
-var UIImageShopItemUmbrella = UIImage.$(5065);
-var UIImageShopItemDrink = UIImage.$(5066);
-var UIImageShopItemBurger = UIImage.$(5067);
-var UIImageShopItemChips = UIImage.$(5068);
-var UIImageShopItemIceCream = UIImage.$(5069);
-var UIImageShopItemCandyfloss = UIImage.$(5070);
-var UIImageShopItemEmptyCan = UIImage.$(5071);
-var UIImageShopItemRubbish = UIImage.$(5072);
-var UIImageShopItemEmptyBurgerBox = UIImage.$(5073);
-var UIImageShopItemPizza = UIImage.$(5074);
-var UIImageShopItemVoucher = UIImage.$(5075);
-var UIImageShopItemPopcorn = UIImage.$(5076);
-var UIImageShopItemHotDog = UIImage.$(5077);
-var UIImageShopItemTentacle = UIImage.$(5078);
-var UIImageShopItemHat = UIImage.$(5079);
-var UIImageShopItemToffeeApple = UIImage.$(5080);
-var UIImageShopItemTshirt = UIImage.$(5081);
-var UIImageShopItemDoughnut = UIImage.$(5082);
-var UIImageShopItemCoffee = UIImage.$(5083);
-var UIImageShopItemEmptyCup = UIImage.$(5084);
-var UIImageShopItemChicken = UIImage.$(5085);
-var UIImageShopItemLemonade = UIImage.$(5086);
-var UIImageShopItemEmptyBox = UIImage.$(5087);
-var UIImageShopItemEmptyBottle = UIImage.$(5088);
-var UIImageShopItemPhoto2 = UIImage.$(5089);
-var UIImageShopItemPhoto3 = UIImage.$(5090);
-var UIImageShopItemPhoto4 = UIImage.$(5091);
-var UIImageShopItemPretzel = UIImage.$(5092);
-var UIImageShopItemChocolate = UIImage.$(5093);
-var UIImageShopItemIcedTea = UIImage.$(5094);
-var UIImageShopItemFunnelCake = UIImage.$(5095);
-var UIImageShopItemSunglasses = UIImage.$(5096);
-var UIImageShopItemBeefNoodles = UIImage.$(5097);
-var UIImageShopItemFriedRiceNoodles = UIImage.$(5098);
-var UIImageShopItemWontonSoup = UIImage.$(5099);
-var UIImageShopItemMeatballSoup = UIImage.$(5100);
-var UIImageShopItemFruitJuice = UIImage.$(5101);
-var UIImageShopItemSoybeanMilk = UIImage.$(5102);
-var UIImageShopItemSujeonggwa = UIImage.$(5103);
-var UIImageShopItemSubSandwich = UIImage.$(5104);
-var UIImageShopItemCookie = UIImage.$(5105);
-var UIImageShopItemEmptyBowlRed = UIImage.$(5106);
-var UIImageShopItemEmptyDrinkCarton = UIImage.$(5107);
-var UIImageShopItemEmptyJuiceCup = UIImage.$(5108);
-var UIImageShopItemRoastSausage = UIImage.$(5109);
-var UIImageShopItemEmptyBowlBlue = UIImage.$(5110);
-var UIImageStaffOrdersSweeping = UIImage.$(5111);
-var UIImageStaffOrdersWaterFlowers = UIImage.$(5112);
-var UIImageStaffOrdersEmptyBins = UIImage.$(5113);
-var UIImageStaffOrdersMowing = UIImage.$(5114);
-var UIImageStaffOrdersInspectRides = UIImage.$(5115);
-var UIImageStaffOrdersFixRides = UIImage.$(5116);
-var UIImageStaffPatrolPath = UIImage.$(5117);
-var UIImageStaffCostumePanda = UIImage.$(5118);
-var UIImageStaffCostumeTiger = UIImage.$(5119);
-var UIImageStaffCostumeElephant = UIImage.$(5120);
-var UIImageStaffCostumeRoman = UIImage.$(5121);
-var UIImageStaffCostumeGorilla = UIImage.$(5122);
-var UIImageStaffCostumeSnowman = UIImage.$(5123);
-var UIImageStaffCostumeKnight = UIImage.$(5124);
-var UIImageStaffCostumeAstronaut = UIImage.$(5125);
-var UIImageStaffCostumeBandit = UIImage.$(5126);
-var UIImageStaffCostumeSheriff = UIImage.$(5127);
-var UIImageStaffCostumePirate = UIImage.$(5128);
-var UIImageInformationSmall = UIImage.$(5129);
-var UIImageRatingIncrease = UIImage.$(5130);
-var UIImageRatingDecrease = UIImage.$(5131);
-var UIImageRideConstructionStraight = UIImage.$(5137);
-var UIImageRideConstructionLeftCurve = UIImage.$(5138);
-var UIImageRideConstructionRightCurve = UIImage.$(5139);
-var UIImageRideConstructionLeftCurveSmall = UIImage.$(5140);
-var UIImageRideConstructionRightCurveSmall = UIImage.$(5141);
-var UIImageRideConstructionLeftCurveLarge = UIImage.$(5142);
-var UIImageRideConstructionRightCurveLarge = UIImage.$(5143);
-var UIImageRideConstructionSlopeDownSteep = UIImage.$(5144);
-var UIImageRideConstructionSlopeDown = UIImage.$(5145);
-var UIImageRideConstructionSlopeLevel = UIImage.$(5146);
-var UIImageRideConstructionSlopeUp = UIImage.$(5147);
-var UIImageRideConstructionSlopeUpSteep = UIImage.$(5148);
-var UIImageRideConstructionVerticalRise = UIImage.$(5149);
-var UIImageRideConstructionVerticalDrop = UIImage.$(5150);
-var UIImageRideConstructionHelixDown = UIImage.$(5151);
-var UIImageRideConstructionHelixUp = UIImage.$(5152);
-var UIImageRideConstructionLeftBank = UIImage.$(5153);
-var UIImageRideConstructionNoBank = UIImage.$(5154);
-var UIImageRideConstructionRightBank = UIImage.$(5155);
-var UIImageRideConstructionUShapedTrack = UIImage.$(5156);
-var UIImageRideConstructionOShapedTrack = UIImage.$(5157);
-var UIImageRideConstructionRCTrack = UIImage.$(5158);
-var UIImageRideConstructionWaterChannel = UIImage.$(5159);
-var UIImagePrevious = UIImage.$(5160);
-var UIImageNext = UIImage.$(5161);
-var UIImageDemolishCurrentSection = UIImage.$(5162);
-var UIImageChainLift = UIImage.$(5163);
-var UIImageConstruction = UIImage.$(5164);
-var UIImageDemolish = UIImage.$(5165);
-var UIImageHearingViewport = UIImage.$(5166);
-var UIImageLocate = UIImage.$(5167);
-var UIImageRename = UIImage.$(5168);
-var UIImageRotateArrow = UIImage.$(5169);
-var UIImageMirrorArrow = UIImage.$(5170);
-var UIImageScenery = UIImage.$(5171);
-var UIImageSceneryCluster = UIImage.$(5172);
-var UIImagePaintbrush = UIImage.$(5173);
-var UIImagePickup = UIImage.$(5174);
-var UIImagePatrol = UIImage.$(5175);
-var UIImageBuyLandRights = UIImage.$(5176);
-var UIImageBuyConstructionRights = UIImage.$(5177);
-var UIImageNoEntry = UIImage.$(5178);
-var UIImageClosed = UIImage.$(5179);
-var UIImageOpen = UIImage.$(5180);
-var UIImageTesting = UIImage.$(5181);
-var UIImageToggleOpenClose = UIImage.$(5182);
-var UIImageFloppy = UIImage.$(5183);
-var UIImageShowGuestsThoughtsAboutThisRideAttraction = UIImage.$(5184);
-var UIImageShowGuestsQueuingForThisRideAttraction = UIImage.$(5185);
-var UIImageShowGuestsOnThisRideAttraction = UIImage.$(5186);
-var UIImageRide = UIImage.$(5187);
-var UIImageTrackPeep = UIImage.$(5188);
-var UIImageNewRide = UIImage.$(5189);
-var UIImageFinance = UIImage.$(5190);
-var UIImageNewScenery = UIImage.$(5191);
-var UIImageMap = UIImage.$(5192);
-var UIImageGuests = UIImage.$(5193);
-var UIImageAward = UIImage.$(5194);
-var UIImageGraph = UIImage.$(5195);
-var UIImageMechanic = UIImage.$(5196);
-var UIImageParkEntrance = UIImage.$(5197);
-var UIImageTabParkEntrance = UIImage.$(5200);
-var UIImageTabGears = UIImage.$A(5201, 4, 2);
-var UIImageTabWrench = UIImage.$A(5205, 16, 2);
-var UIImageTabPaint = UIImage.$A(5221, 8, 4);
-var UIImageTabTimer = UIImage.$A(5229, 8, 8);
-var UIImageTabGraphA = UIImage.$A(5237, 8, 4);
-var UIImageTabGraph = UIImage.$A(5245, 8, 4);
-var UIImageTabAdmission = UIImage.$A(5253, 8, 2);
-var UIImageTabFinancesSummary = UIImage.$A(5261, 8, 2);
-var UIImageTabThoughts = UIImage.$A(5269, 8, 2);
-var UIImageTabStats = UIImage.$A(5277, 7, 4);
-var UIImageTabStaffOptions = UIImage.$A(5318, 7, 2);
-var UIImageTabStaffOptionsOne = UIImage.$(5325);
-var UIImageTabGuestInventory = UIImage.$(5326);
-var UIImageTabFinancesResearch = UIImage.$A(5327, 8, 2);
-var UIImageTabMusic = UIImage.$A(5335, 16, 2);
-var UIImageTabShopsAndStalls = UIImage.$A(5351, 16, 4);
-var UIImageTabKiosksAndFacilities = UIImage.$A(5367, 8, 4);
-var UIImageTabFinancesFinancialGraph = UIImage.$A(5375, 16, 2);
-var UIImageTabFinancesProfitGraph = UIImage.$A(5391, 16, 2);
-var UIImageTabFinancesValueGraph = UIImage.$A(5407, 16, 2);
-var UIImageTabFinancesMarketing = UIImage.$A(5423, 19, 2);
-var UIImageTabRide = UIImage.$A(5442, 16, 4);
-var UIImageTabRideOne = UIImage.$(5448);
-var UIImageTabSceneryTrees = UIImage.$(5459);
-var UIImageTabSceneryUrban = UIImage.$(5460);
-var UIImageTabSceneryWalls = UIImage.$(5461);
-var UIImageTabScenerySignage = UIImage.$(5462);
-var UIImageTabSceneryPaths = UIImage.$(5463);
-var UIImageTabSceneryPathItems = UIImage.$(5464);
-var UIImageTabSceneryStatues = UIImage.$(5465);
-var UIImageTabPark = UIImage.$(5466);
-var UIImageTabWater = UIImage.$(5467);
-var UIImageTabStatsOne = UIImage.$(5468);
-var UIImageTabObjective = UIImage.$A(5511, 16, 4);
-var UIImageTabAwards = UIImage.$(5527);
-var UIImageTabRidesShop = UIImage.$A(5530, 7, 4);
-var UIImageTabRidesTransport = UIImage.$A(5537, 5, 4);
-var UIImageTabRidesGentle = UIImage.$A(5542, 4, 8);
-var UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 2);
-var UIImageTabRidesWater = UIImage.$A(5551, 6, 4);
-var UIImageTabRidesThrill = UIImage.$F([5562, 5563, 5562, 5561, 5560, 5559, 5558, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5558, 5559, 5560, 5561], 4);
-var UIImageTabGuests = UIImage.$A(5568, 8, 4);
-var UIImageAwardMostUntidy = UIImage.$(5469);
-var UIImageAwardMostTidy = UIImage.$(5470);
-var UIImageAwardBestRollerCoasters = UIImage.$(5471);
-var UIImageAwardBestValue = UIImage.$(5472);
-var UIImageAwardMostBeautiful = UIImage.$(5473);
-var UIImageAwardWorstValue = UIImage.$(5474);
-var UIImageAwardSafest = UIImage.$(5475);
-var UIImageAwardBestStaff = UIImage.$(5476);
-var UIImageAwardBestFood = UIImage.$(5477);
-var UIImageAwardWorstFood = UIImage.$(5478);
-var UIImageAwardBestRestrooms = UIImage.$(5479);
-var UIImageAwardMostDisappointing = UIImage.$(5480);
-var UIImageAwardBestWaterRides = UIImage.$(5481);
-var UIImageAwardBestCustomDesignedRides = UIImage.$(5482);
-var UIImageAwardMostDazzlingRideColors = UIImage.$(5483);
-var UIImageAwardMostConfusingLayout = UIImage.$(5484);
-var UIImageAwardBestGentleRides = UIImage.$(5485);
-var UIImagePeepLargeFaceVeryVeryUnhappy = UIImage.$(5284);
-var UIImagePeepLargeFaceVeryUnhappy = UIImage.$(5285);
-var UIImagePeepLargeFaceUnhappy = UIImage.$(5286);
-var UIImagePeepLargeFaceNormal = UIImage.$(5287);
-var UIImagePeepLargeFaceHappy = UIImage.$(5288);
-var UIImagePeepLargeFaceVeryHappy = UIImage.$(5289);
-var UIImagePeepLargeFaceVeryVeryHappy = UIImage.$(5290);
-var UIImagePeepLargeFaceTired = UIImage.$(5291);
-var UIImagePeepLargeFaceVeryTired = UIImage.$(5292);
-var UIImagePeepLargeFaceSick = UIImage.$(5293);
-var UIImagePeepLargeFaceVerySick = UIImage.$A(5294, 4, 8);
-var UIImagePeepLargeFaceVeryVerySick = UIImage.$A(5298, 16, 4);
-var UIImagePeepLargeFaceAngry = UIImage.$A(5314, 4, 8);
-var UIImagePeepSmallFaceVeryVeryUnhappy = UIImage.$(5486);
-var UIImagePeepSmallFaceVeryUnhappy = UIImage.$(5487);
-var UIImagePeepSmallFaceUnhappy = UIImage.$(5488);
-var UIImagePeepSmallFaceNormal = UIImage.$(5489);
-var UIImagePeepSmallFaceHappy = UIImage.$(5490);
-var UIImagePeepSmallFaceVeryHappy = UIImage.$(5491);
-var UIImagePeepSmallFaceVeryVeryHappy = UIImage.$(5492);
-var UIImagePeepSmallFaceTired = UIImage.$(5493);
-var UIImagePeepSmallFaceVeryTired = UIImage.$(5494);
-var UIImagePeepSmallFaceSick = UIImage.$(5495);
-var UIImagePeepSmallFaceVerySick = UIImage.$(5496);
-var UIImagePeepSmallFaceVeryVerySick = UIImage.$(5497);
-var UIImagePeepSmallFaceAngry = UIImage.$(5498);
-var UIImageFloorTextureGrass = UIImage.$(5579);
-var UIImageFloorTextureSand = UIImage.$(5580);
-var UIImageFloorTextureDirt = UIImage.$(5581);
-var UIImageFloorTextureRock = UIImage.$(5582);
-var UIImageFloorTextureMartian = UIImage.$(5583);
-var UIImageFloorTextureCheckerboard = UIImage.$(5584);
-var UIImageFloorTextureGrassClumps = UIImage.$(5585);
-var UIImageFloorTextureIce = UIImage.$(5586);
-var UIImageFloorTextureGridRed = UIImage.$(5587);
-var UIImageFloorTextureGridYellow = UIImage.$(5588);
-var UIImageFloorTextureGridPurple = UIImage.$(5589);
-var UIImageFloorTextureGridGreen = UIImage.$(5590);
-var UIImageFloorTextureSandDark = UIImage.$(5591);
-var UIImageFloorTextureSandLight = UIImage.$(5592);
-var UIImageWallTextureRock = UIImage.$(5593);
-var UIImageWallTextureWoodRed = UIImage.$(5594);
-var UIImageWallTextureWoodBlack = UIImage.$(5595);
-var UIImageWallTextureIce = UIImage.$(5596);
-var UIImageMazeConstructionMove = UIImage.$(5577);
-var UIImageConstructionDirectionNE = UIImage.$(5635);
-var UIImageConstructionDirectionSE = UIImage.$(5636);
-var UIImageConstructionDirectionSW = UIImage.$(5637);
-var UIImageConstructionDirectionNW = UIImage.$(5638);
-var UIImageConstructionFootpathLand = UIImage.$(5639);
-var UIImageConstructionFootpathBridge = UIImage.$(5640);
-var UIImageRideMazeWallHedgeThickFull = UIImage.$(21938);
-var UIImageRideMazeWallHedgeThickSWNE = UIImage.$(21939);
-var UIImageRideMazeWallHedgeThickNWSE = UIImage.$(21940);
-var UIImageRideMazeWallHedgeMediumSWNE = UIImage.$(21941);
-var UIImageRideMazeWallHedgeMediumNWSE = UIImage.$(21942);
-var UIImageRideMazeWallHedgeThinSWNE = UIImage.$(21943);
-var UIImageRideMazeWallHedgeThinNWSE = UIImage.$(21944);
-var UIImageRideMazeWallBrickThickFull = UIImage.$(21951);
-var UIImageRideMazeWallBrickThickSWNE = UIImage.$(21952);
-var UIImageRideMazeWallBrickThickNWSE = UIImage.$(21953);
-var UIImageRideMazeWallBrickMediumSWNE = UIImage.$(21954);
-var UIImageRideMazeWallBrickMediumNWSE = UIImage.$(21955);
-var UIImageRideMazeWallBrickThinSWNE = UIImage.$(21956);
-var UIImageRideMazeWallBrickThinNWSE = UIImage.$(21957);
-var UIImageRideMazeWallIceThickFull = UIImage.$(21964);
-var UIImageRideMazeWallIceThickSWNE = UIImage.$(21965);
-var UIImageRideMazeWallIceThickNWSE = UIImage.$(21966);
-var UIImageRideMazeWallIceMediumSWNE = UIImage.$(21967);
-var UIImageRideMazeWallIceMediumNWSE = UIImage.$(21968);
-var UIImageRideMazeWallIceThinSWNE = UIImage.$(21969);
-var UIImageRideMazeWallIceThinNWSE = UIImage.$(21970);
-var UIImageRideMazeWallWoodenThickFull = UIImage.$(21977);
-var UIImageRideMazeWallWoodenThickSWNE = UIImage.$(21978);
-var UIImageRideMazeWallWoodenThickNWSE = UIImage.$(21979);
-var UIImageRideMazeWallWoodenMediumSWNE = UIImage.$(21980);
-var UIImageRideMazeWallWoodenMediumNWSE = UIImage.$(21981);
-var UIImageRideMazeWallWoodenThinSWNE = UIImage.$(21982);
-var UIImageRideMazeWallWoodenThinNWSE = UIImage.$(21983);
-var UIImageFirecracker = UIImage.$A(22927, 28, 2);
-var UIImageLandOwnershipAvailable = UIImage.$(22955);
-var UIImageLandConstructionRightsAvailable = UIImage.$(22956);
-var UIImageNextWeather = UIImage.$(23189);
-var UIImageWeatherSun = UIImage.$(23190);
-var UIImageWeatherSunCloud = UIImage.$(23191);
-var UIImageWeatherCloud = UIImage.$(23192);
-var UIImageWeatherLightRain = UIImage.$(23193);
-var UIImageWeatherHeavyRain = UIImage.$(23194);
-var UIImageWeatherStorm = UIImage.$(23195);
-var UIImageWeatherSnow = UIImage.$(23196);
-var UIImageRatingLow = UIImage.$(23197);
-var UIImageRatingHigh = UIImage.$(23198);
-var UIImageMenuCheckmark = UIImage.$(23199);
-var UIImageMenuNewGame = UIImage.$(23207);
-var UIImageMenuLoadGame = UIImage.$(23208);
-var UIImageMenuTutorial = UIImage.$(23209);
-var UIImageMenuExit = UIImage.$(23210);
-var UIImageMenuToolbox = UIImage.$(23211);
-var UIImageMenuLogo = UIImage.$(23212);
-var UIImageMenuLogoSmall = UIImage.$(23213);
-var UIImageFlatTextureGrass1 = UIImage.$(28959);
-var UIImageFlatTextureGrass2 = UIImage.$(28960);
-var UIImageFlatTextureGrass3 = UIImage.$(28961);
-var UIImageFlatTextureGrass4 = UIImage.$(28962);
-var UIImageFlatTextureGrass5 = UIImage.$(28963);
-var UIImageFlatTextureGrass6 = UIImage.$(28964);
-var UIImageFlatTextureSandLight1 = UIImage.$(28965);
-var UIImageFlatTextureSandLight2 = UIImage.$(28966);
-var UIImageFlatTextureSandLight3 = UIImage.$(28967);
-var UIImageFlatTextureSandLight4 = UIImage.$(28968);
-var UIImageFlatTextureSandLight5 = UIImage.$(28969);
-var UIImageFlatTextureSandLight6 = UIImage.$(28970);
-var UIImageFlatTextureSandDark1 = UIImage.$(28971);
-var UIImageFlatTextureSandDark2 = UIImage.$(28972);
-var UIImageFlatTextureSandDark3 = UIImage.$(28973);
-var UIImageFlatTextureSandDark4 = UIImage.$(28974);
-var UIImageFlatTextureSandDark5 = UIImage.$(28975);
-var UIImageFlatTextureSandDark6 = UIImage.$(28976);
-var UIImageFlatTextureDirt1 = UIImage.$(28977);
-var UIImageFlatTextureDirt2 = UIImage.$(28978);
-var UIImageFlatTextureDirt3 = UIImage.$(28979);
-var UIImageFlatTextureDirt4 = UIImage.$(28980);
-var UIImageFlatTextureDirt5 = UIImage.$(28981);
-var UIImageFlatTextureDirt6 = UIImage.$(28982);
-var UIImageFlatTextureSand1 = UIImage.$(28983);
-var UIImageFlatTextureSand2 = UIImage.$(28984);
-var UIImageFlatTextureSand3 = UIImage.$(28985);
-var UIImageFlatTextureSand4 = UIImage.$(28986);
-var UIImageFlatTextureSand5 = UIImage.$(28987);
-var UIImageFlatTextureSand6 = UIImage.$(28988);
-var UIImageFlatTextureRock1 = UIImage.$(28989);
-var UIImageFlatTextureRock2 = UIImage.$(28990);
-var UIImageFlatTextureRock3 = UIImage.$(28991);
-var UIImageFlatTextureRock4 = UIImage.$(28992);
-var UIImageFlatTextureRock5 = UIImage.$(28993);
-var UIImageFlatTextureRock6 = UIImage.$(28994);
-var UIImageFlatTextureMartian1 = UIImage.$(28995);
-var UIImageFlatTextureMartian2 = UIImage.$(28996);
-var UIImageFlatTextureMartian3 = UIImage.$(28997);
-var UIImageFlatTextureMartian4 = UIImage.$(28998);
-var UIImageFlatTextureMartian5 = UIImage.$(28999);
-var UIImageFlatTextureMartian6 = UIImage.$(29000);
-var UIImageFlatTextureGrassClumps1 = UIImage.$(29001);
-var UIImageFlatTextureGrassClumps2 = UIImage.$(29002);
-var UIImageFlatTextureGrassClumps3 = UIImage.$(29003);
-var UIImageFlatTextureGrassClumps4 = UIImage.$(29004);
-var UIImageFlatTextureGrassClumps5 = UIImage.$(29005);
-var UIImageFlatTextureGrassClumps6 = UIImage.$(29006);
-var UIImageFlatTextureIce1 = UIImage.$(29007);
-var UIImageFlatTextureIce2 = UIImage.$(29008);
-var UIImageFlatTextureIce3 = UIImage.$(29009);
-var UIImageFlatTextureIce4 = UIImage.$(29010);
-var UIImageFlatTextureIce5 = UIImage.$(29011);
-var UIImageFlatTextureIce6 = UIImage.$(29012);
-var UIImageWallMedievalGray = UIImage.$(112511);
-var UIImageWallTin = UIImage.$(124211);
-var UIImageWallSandBrick = UIImage.$(152747);
-var UIImageWallRustyTin = UIImage.$(163772);
-var UIImageWallSand = UIImage.$(163784);
-var UIImageWallLightSand = UIImage.$(168735);
-var UIImageWallBordeauxRed = UIImage.$(171630);
-var UIImageWallViolet = UIImage.$(171641);
-var UIImageG2Logo = UIImage.$(29357);
-var UIImageG2Title = UIImage.$(29358);
-var UIImageG2Fastforward = UIImage.$(29359);
-var UIImageG2SpeedArrow = UIImage.$(29360);
-var UIImageG2HyperArrow = UIImage.$(29361);
-var UIImageG2TabLand = UIImage.$(29362);
-var UIImageG2Placeholder = UIImage.$(29363);
-var UIImageG2ZoomIn = UIImage.$(29364);
-var UIImageG2ZoomOut = UIImage.$(29366);
-var UIImageG2TabTree = UIImage.$(29368);
-var UIImageG2TabPencil = UIImage.$(29369);
-var UIImageG2LargeScenery = UIImage.$(29370);
-var UIImageG2Trees = UIImage.$(29371);
-var UIImageG2Footpath = UIImage.$(29372);
-var UIImageG1CloseDisable = UIImage.$(29373);
-var UIImageG1CloseEnable = UIImage.$(29375);
-var UIImageG1TestDisable = UIImage.$(29377);
-var UIImageG1TestEnable = UIImage.$(29379);
-var UIImageG1OpenDisable = UIImage.$(29381);
-var UIImageG1OpenEnable = UIImage.$(29383);
-var UIImageG2Simulate = UIImage.$(29481);
-var UIImageG1SimulateDisable = UIImage.$(29482);
-var UIImageG1SimulateEnable = UIImage.$(29483);
-var UIImageG2Restart = UIImage.$(29385);
-var UIImageG2Stop = UIImage.$(29386);
-var UIImageG2Play = UIImage.$(29387);
-var UIImageG2Skip = UIImage.$(29388);
-var UIImageG2Sandbox = UIImage.$(29389);
-var UIImageG2TabNews = UIImage.$(29414);
-var UIImageG2Locked = UIImage.$(29415);
-var UIImageG2MenuMultiplayer = UIImage.$(29416);
-var UIImageG2Sort = UIImage.$(29433);
-var UIImageG2Copy = UIImage.$(29434);
-var UIImageG2Paste = UIImage.$(29435);
-var UIImageG2Search = UIImage.$(29461);
-var UIImageG2Pipette = UIImage.$(29467);
-var UIImageG2Chat = UIImage.$(29468);
-var UIImageG2SceneryScatterLow = UIImage.$(29489);
-var UIImageG2SceneryScatterMedium = UIImage.$(29490);
-var UIImageG2SceneryScatterHigh = UIImage.$(29491);
-var UIImageG2View = UIImage.$(29494);
 var TextNode = (function () {
     function TextNode(childs) {
         this._childs = [];
         this._outline = false;
+        this._color = TextColor.WindowSecondary;
         this._childs = childs;
     }
     TextNode.$ = function () {
@@ -796,6 +433,11 @@ var TextNode = (function () {
     };
     TextNode.$I = function (image) {
         var node = new ImageNode(image);
+        return node;
+    };
+    TextNode.$NL = function (isSmaller) {
+        if (isSmaller === void 0) { isSmaller = false; }
+        var node = new _NewlineNode(isSmaller);
         return node;
     };
     TextNode.prototype._isLeaf = function () {
@@ -1872,6 +1514,7 @@ var UIWindowThemeDefault = {
 };
 var UIWindow = (function () {
     function UIWindow(title, contents) {
+        this._id = this.constructor.name + '-' + uuid();
         this._uiConstructor = new UIConstructor();
         this._interactor = new UIInteractor();
         this._selectedTabIndex = 0;
@@ -2087,6 +1730,7 @@ var UIWindow = (function () {
             onClose: function () {
                 var _a;
                 (_a = _this._onClose) === null || _a === void 0 ? void 0 : _a.call(_this, _this);
+                _this._window = undefined;
             },
             onUpdate: function () {
                 _this._onUpdate();
@@ -2115,8 +1759,8 @@ var UIWindow = (function () {
         }
         if (typeof this._tabs !== "undefined") {
             this._uiConstructor.didLoadTabs(this._tabs);
-            this._internalOnTabChange();
         }
+        this._reflectResizingFromChild();
         return this;
     };
     UIWindow.prototype.updateUI = function (block) {
@@ -2275,6 +1919,402 @@ var UITextAlignment;
     UITextAlignment["Left"] = "left";
     UITextAlignment["Center"] = "centred";
 })(UITextAlignment || (UITextAlignment = {}));
+var UIImageNone = UIImage.$(-1);
+var UIImageShopItemBalloon = UIImage.$(5061);
+var UIImageShopItemToy = UIImage.$(5062);
+var UIImageShopItemMap = UIImage.$(5063);
+var UIImageShopItemPhoto = UIImage.$(5064);
+var UIImageShopItemUmbrella = UIImage.$(5065);
+var UIImageShopItemDrink = UIImage.$(5066);
+var UIImageShopItemBurger = UIImage.$(5067);
+var UIImageShopItemChips = UIImage.$(5068);
+var UIImageShopItemIceCream = UIImage.$(5069);
+var UIImageShopItemCandyfloss = UIImage.$(5070);
+var UIImageShopItemEmptyCan = UIImage.$(5071);
+var UIImageShopItemRubbish = UIImage.$(5072);
+var UIImageShopItemEmptyBurgerBox = UIImage.$(5073);
+var UIImageShopItemPizza = UIImage.$(5074);
+var UIImageShopItemVoucher = UIImage.$(5075);
+var UIImageShopItemPopcorn = UIImage.$(5076);
+var UIImageShopItemHotDog = UIImage.$(5077);
+var UIImageShopItemTentacle = UIImage.$(5078);
+var UIImageShopItemHat = UIImage.$(5079);
+var UIImageShopItemToffeeApple = UIImage.$(5080);
+var UIImageShopItemTshirt = UIImage.$(5081);
+var UIImageShopItemDoughnut = UIImage.$(5082);
+var UIImageShopItemCoffee = UIImage.$(5083);
+var UIImageShopItemEmptyCup = UIImage.$(5084);
+var UIImageShopItemChicken = UIImage.$(5085);
+var UIImageShopItemLemonade = UIImage.$(5086);
+var UIImageShopItemEmptyBox = UIImage.$(5087);
+var UIImageShopItemEmptyBottle = UIImage.$(5088);
+var UIImageShopItemPhoto2 = UIImage.$(5089);
+var UIImageShopItemPhoto3 = UIImage.$(5090);
+var UIImageShopItemPhoto4 = UIImage.$(5091);
+var UIImageShopItemPretzel = UIImage.$(5092);
+var UIImageShopItemChocolate = UIImage.$(5093);
+var UIImageShopItemIcedTea = UIImage.$(5094);
+var UIImageShopItemFunnelCake = UIImage.$(5095);
+var UIImageShopItemSunglasses = UIImage.$(5096);
+var UIImageShopItemBeefNoodles = UIImage.$(5097);
+var UIImageShopItemFriedRiceNoodles = UIImage.$(5098);
+var UIImageShopItemWontonSoup = UIImage.$(5099);
+var UIImageShopItemMeatballSoup = UIImage.$(5100);
+var UIImageShopItemFruitJuice = UIImage.$(5101);
+var UIImageShopItemSoybeanMilk = UIImage.$(5102);
+var UIImageShopItemSujeonggwa = UIImage.$(5103);
+var UIImageShopItemSubSandwich = UIImage.$(5104);
+var UIImageShopItemCookie = UIImage.$(5105);
+var UIImageShopItemEmptyBowlRed = UIImage.$(5106);
+var UIImageShopItemEmptyDrinkCarton = UIImage.$(5107);
+var UIImageShopItemEmptyJuiceCup = UIImage.$(5108);
+var UIImageShopItemRoastSausage = UIImage.$(5109);
+var UIImageShopItemEmptyBowlBlue = UIImage.$(5110);
+var UIImageStaffOrdersSweeping = UIImage.$(5111);
+var UIImageStaffOrdersWaterFlowers = UIImage.$(5112);
+var UIImageStaffOrdersEmptyBins = UIImage.$(5113);
+var UIImageStaffOrdersMowing = UIImage.$(5114);
+var UIImageStaffOrdersInspectRides = UIImage.$(5115);
+var UIImageStaffOrdersFixRides = UIImage.$(5116);
+var UIImageStaffPatrolPath = UIImage.$(5117);
+var UIImageStaffCostumePanda = UIImage.$(5118);
+var UIImageStaffCostumeTiger = UIImage.$(5119);
+var UIImageStaffCostumeElephant = UIImage.$(5120);
+var UIImageStaffCostumeRoman = UIImage.$(5121);
+var UIImageStaffCostumeGorilla = UIImage.$(5122);
+var UIImageStaffCostumeSnowman = UIImage.$(5123);
+var UIImageStaffCostumeKnight = UIImage.$(5124);
+var UIImageStaffCostumeAstronaut = UIImage.$(5125);
+var UIImageStaffCostumeBandit = UIImage.$(5126);
+var UIImageStaffCostumeSheriff = UIImage.$(5127);
+var UIImageStaffCostumePirate = UIImage.$(5128);
+var UIImageInformationSmall = UIImage.$(5129);
+var UIImageRatingIncrease = UIImage.$(5130);
+var UIImageRatingDecrease = UIImage.$(5131);
+var UIImageRideConstructionStraight = UIImage.$(5137);
+var UIImageRideConstructionLeftCurve = UIImage.$(5138);
+var UIImageRideConstructionRightCurve = UIImage.$(5139);
+var UIImageRideConstructionLeftCurveSmall = UIImage.$(5140);
+var UIImageRideConstructionRightCurveSmall = UIImage.$(5141);
+var UIImageRideConstructionLeftCurveLarge = UIImage.$(5142);
+var UIImageRideConstructionRightCurveLarge = UIImage.$(5143);
+var UIImageRideConstructionSlopeDownSteep = UIImage.$(5144);
+var UIImageRideConstructionSlopeDown = UIImage.$(5145);
+var UIImageRideConstructionSlopeLevel = UIImage.$(5146);
+var UIImageRideConstructionSlopeUp = UIImage.$(5147);
+var UIImageRideConstructionSlopeUpSteep = UIImage.$(5148);
+var UIImageRideConstructionVerticalRise = UIImage.$(5149);
+var UIImageRideConstructionVerticalDrop = UIImage.$(5150);
+var UIImageRideConstructionHelixDown = UIImage.$(5151);
+var UIImageRideConstructionHelixUp = UIImage.$(5152);
+var UIImageRideConstructionLeftBank = UIImage.$(5153);
+var UIImageRideConstructionNoBank = UIImage.$(5154);
+var UIImageRideConstructionRightBank = UIImage.$(5155);
+var UIImageRideConstructionUShapedTrack = UIImage.$(5156);
+var UIImageRideConstructionOShapedTrack = UIImage.$(5157);
+var UIImageRideConstructionRCTrack = UIImage.$(5158);
+var UIImageRideConstructionWaterChannel = UIImage.$(5159);
+var UIImagePrevious = UIImage.$(5160);
+var UIImageNext = UIImage.$(5161);
+var UIImageDemolishCurrentSection = UIImage.$(5162);
+var UIImageChainLift = UIImage.$(5163);
+var UIImageConstruction = UIImage.$(5164);
+var UIImageDemolish = UIImage.$(5165);
+var UIImageHearingViewport = UIImage.$(5166);
+var UIImageLocate = UIImage.$(5167);
+var UIImageRename = UIImage.$(5168);
+var UIImageRotateArrow = UIImage.$(5169);
+var UIImageMirrorArrow = UIImage.$(5170);
+var UIImageScenery = UIImage.$(5171);
+var UIImageSceneryCluster = UIImage.$(5172);
+var UIImagePaintbrush = UIImage.$(5173);
+var UIImagePickup = UIImage.$(5174);
+var UIImagePatrol = UIImage.$(5175);
+var UIImageBuyLandRights = UIImage.$(5176);
+var UIImageBuyConstructionRights = UIImage.$(5177);
+var UIImageNoEntry = UIImage.$(5178);
+var UIImageClosed = UIImage.$(5179);
+var UIImageOpen = UIImage.$(5180);
+var UIImageTesting = UIImage.$(5181);
+var UIImageToggleOpenClose = UIImage.$(5182);
+var UIImageFloppy = UIImage.$(5183);
+var UIImageShowGuestsThoughtsAboutThisRideAttraction = UIImage.$(5184);
+var UIImageShowGuestsQueuingForThisRideAttraction = UIImage.$(5185);
+var UIImageShowGuestsOnThisRideAttraction = UIImage.$(5186);
+var UIImageRide = UIImage.$(5187);
+var UIImageTrackPeep = UIImage.$(5188);
+var UIImageNewRide = UIImage.$(5189);
+var UIImageFinance = UIImage.$(5190);
+var UIImageNewScenery = UIImage.$(5191);
+var UIImageMap = UIImage.$(5192);
+var UIImageGuests = UIImage.$(5193);
+var UIImageAward = UIImage.$(5194);
+var UIImageGraph = UIImage.$(5195);
+var UIImageMechanic = UIImage.$(5196);
+var UIImageParkEntrance = UIImage.$(5197);
+var UIImageTabParkEntrance = UIImage.$(5200);
+var UIImageTabGears = UIImage.$A(5201, 4, 2);
+var UIImageTabWrench = UIImage.$A(5205, 16, 2);
+var UIImageTabPaint = UIImage.$A(5221, 8, 4);
+var UIImageTabTimer = UIImage.$A(5229, 8, 8);
+var UIImageTabGraphA = UIImage.$A(5237, 8, 4);
+var UIImageTabGraph = UIImage.$A(5245, 8, 4);
+var UIImageTabAdmission = UIImage.$A(5253, 8, 2);
+var UIImageTabFinancesSummary = UIImage.$A(5261, 8, 2);
+var UIImageTabThoughts = UIImage.$A(5269, 8, 2);
+var UIImageTabStats = UIImage.$A(5277, 7, 4);
+var UIImageTabStaffOptions = UIImage.$A(5318, 7, 2);
+var UIImageTabStaffOptionsOne = UIImage.$(5325);
+var UIImageTabGuestInventory = UIImage.$(5326);
+var UIImageTabFinancesResearch = UIImage.$A(5327, 8, 2);
+var UIImageTabMusic = UIImage.$A(5335, 16, 2);
+var UIImageTabShopsAndStalls = UIImage.$A(5351, 16, 4);
+var UIImageTabKiosksAndFacilities = UIImage.$A(5367, 8, 4);
+var UIImageTabFinancesFinancialGraph = UIImage.$A(5375, 16, 2);
+var UIImageTabFinancesProfitGraph = UIImage.$A(5391, 16, 2);
+var UIImageTabFinancesValueGraph = UIImage.$A(5407, 16, 2);
+var UIImageTabFinancesMarketing = UIImage.$A(5423, 19, 2);
+var UIImageTabRide = UIImage.$A(5442, 16, 4);
+var UIImageTabRideOne = UIImage.$(5448);
+var UIImageTabSceneryTrees = UIImage.$(5459);
+var UIImageTabSceneryUrban = UIImage.$(5460);
+var UIImageTabSceneryWalls = UIImage.$(5461);
+var UIImageTabScenerySignage = UIImage.$(5462);
+var UIImageTabSceneryPaths = UIImage.$(5463);
+var UIImageTabSceneryPathItems = UIImage.$(5464);
+var UIImageTabSceneryStatues = UIImage.$(5465);
+var UIImageTabPark = UIImage.$(5466);
+var UIImageTabWater = UIImage.$(5467);
+var UIImageTabStatsOne = UIImage.$(5468);
+var UIImageTabObjective = UIImage.$A(5511, 16, 4);
+var UIImageTabAwards = UIImage.$(5527);
+var UIImageTabRidesShop = UIImage.$A(5530, 7, 4);
+var UIImageTabRidesTransport = UIImage.$A(5537, 5, 4);
+var UIImageTabRidesGentle = UIImage.$A(5542, 4, 8);
+var UIImageTabRidesRollerCoasters = UIImage.$A(5546, 5, 2);
+var UIImageTabRidesWater = UIImage.$A(5551, 6, 4);
+var UIImageTabRidesThrill = UIImage.$F([5562, 5563, 5562, 5561, 5560, 5559, 5558, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5557, 5558, 5559, 5560, 5561], 4);
+var UIImageTabGuests = UIImage.$A(5568, 8, 4);
+var UIImageAwardMostUntidy = UIImage.$(5469);
+var UIImageAwardMostTidy = UIImage.$(5470);
+var UIImageAwardBestRollerCoasters = UIImage.$(5471);
+var UIImageAwardBestValue = UIImage.$(5472);
+var UIImageAwardMostBeautiful = UIImage.$(5473);
+var UIImageAwardWorstValue = UIImage.$(5474);
+var UIImageAwardSafest = UIImage.$(5475);
+var UIImageAwardBestStaff = UIImage.$(5476);
+var UIImageAwardBestFood = UIImage.$(5477);
+var UIImageAwardWorstFood = UIImage.$(5478);
+var UIImageAwardBestRestrooms = UIImage.$(5479);
+var UIImageAwardMostDisappointing = UIImage.$(5480);
+var UIImageAwardBestWaterRides = UIImage.$(5481);
+var UIImageAwardBestCustomDesignedRides = UIImage.$(5482);
+var UIImageAwardMostDazzlingRideColors = UIImage.$(5483);
+var UIImageAwardMostConfusingLayout = UIImage.$(5484);
+var UIImageAwardBestGentleRides = UIImage.$(5485);
+var UIImagePeepLargeFaceVeryVeryUnhappy = UIImage.$(5284);
+var UIImagePeepLargeFaceVeryUnhappy = UIImage.$(5285);
+var UIImagePeepLargeFaceUnhappy = UIImage.$(5286);
+var UIImagePeepLargeFaceNormal = UIImage.$(5287);
+var UIImagePeepLargeFaceHappy = UIImage.$(5288);
+var UIImagePeepLargeFaceVeryHappy = UIImage.$(5289);
+var UIImagePeepLargeFaceVeryVeryHappy = UIImage.$(5290);
+var UIImagePeepLargeFaceTired = UIImage.$(5291);
+var UIImagePeepLargeFaceVeryTired = UIImage.$(5292);
+var UIImagePeepLargeFaceSick = UIImage.$(5293);
+var UIImagePeepLargeFaceVerySick = UIImage.$A(5294, 4, 8);
+var UIImagePeepLargeFaceVeryVerySick = UIImage.$A(5298, 16, 4);
+var UIImagePeepLargeFaceAngry = UIImage.$A(5314, 4, 8);
+var UIImagePeepSmallFaceVeryVeryUnhappy = UIImage.$(5486);
+var UIImagePeepSmallFaceVeryUnhappy = UIImage.$(5487);
+var UIImagePeepSmallFaceUnhappy = UIImage.$(5488);
+var UIImagePeepSmallFaceNormal = UIImage.$(5489);
+var UIImagePeepSmallFaceHappy = UIImage.$(5490);
+var UIImagePeepSmallFaceVeryHappy = UIImage.$(5491);
+var UIImagePeepSmallFaceVeryVeryHappy = UIImage.$(5492);
+var UIImagePeepSmallFaceTired = UIImage.$(5493);
+var UIImagePeepSmallFaceVeryTired = UIImage.$(5494);
+var UIImagePeepSmallFaceSick = UIImage.$(5495);
+var UIImagePeepSmallFaceVerySick = UIImage.$(5496);
+var UIImagePeepSmallFaceVeryVerySick = UIImage.$(5497);
+var UIImagePeepSmallFaceAngry = UIImage.$(5498);
+var UIImageFloorTextureGrass = UIImage.$(5579);
+var UIImageFloorTextureSand = UIImage.$(5580);
+var UIImageFloorTextureDirt = UIImage.$(5581);
+var UIImageFloorTextureRock = UIImage.$(5582);
+var UIImageFloorTextureMartian = UIImage.$(5583);
+var UIImageFloorTextureCheckerboard = UIImage.$(5584);
+var UIImageFloorTextureGrassClumps = UIImage.$(5585);
+var UIImageFloorTextureIce = UIImage.$(5586);
+var UIImageFloorTextureGridRed = UIImage.$(5587);
+var UIImageFloorTextureGridYellow = UIImage.$(5588);
+var UIImageFloorTextureGridPurple = UIImage.$(5589);
+var UIImageFloorTextureGridGreen = UIImage.$(5590);
+var UIImageFloorTextureSandDark = UIImage.$(5591);
+var UIImageFloorTextureSandLight = UIImage.$(5592);
+var UIImageWallTextureRock = UIImage.$(5593);
+var UIImageWallTextureWoodRed = UIImage.$(5594);
+var UIImageWallTextureWoodBlack = UIImage.$(5595);
+var UIImageWallTextureIce = UIImage.$(5596);
+var UIImageMazeConstructionMove = UIImage.$(5577);
+var UIImageConstructionDirectionNE = UIImage.$(5635);
+var UIImageConstructionDirectionSE = UIImage.$(5636);
+var UIImageConstructionDirectionSW = UIImage.$(5637);
+var UIImageConstructionDirectionNW = UIImage.$(5638);
+var UIImageConstructionFootpathLand = UIImage.$(5639);
+var UIImageConstructionFootpathBridge = UIImage.$(5640);
+var UIImageRideMazeWallHedgeThickFull = UIImage.$(21938);
+var UIImageRideMazeWallHedgeThickSWNE = UIImage.$(21939);
+var UIImageRideMazeWallHedgeThickNWSE = UIImage.$(21940);
+var UIImageRideMazeWallHedgeMediumSWNE = UIImage.$(21941);
+var UIImageRideMazeWallHedgeMediumNWSE = UIImage.$(21942);
+var UIImageRideMazeWallHedgeThinSWNE = UIImage.$(21943);
+var UIImageRideMazeWallHedgeThinNWSE = UIImage.$(21944);
+var UIImageRideMazeWallBrickThickFull = UIImage.$(21951);
+var UIImageRideMazeWallBrickThickSWNE = UIImage.$(21952);
+var UIImageRideMazeWallBrickThickNWSE = UIImage.$(21953);
+var UIImageRideMazeWallBrickMediumSWNE = UIImage.$(21954);
+var UIImageRideMazeWallBrickMediumNWSE = UIImage.$(21955);
+var UIImageRideMazeWallBrickThinSWNE = UIImage.$(21956);
+var UIImageRideMazeWallBrickThinNWSE = UIImage.$(21957);
+var UIImageRideMazeWallIceThickFull = UIImage.$(21964);
+var UIImageRideMazeWallIceThickSWNE = UIImage.$(21965);
+var UIImageRideMazeWallIceThickNWSE = UIImage.$(21966);
+var UIImageRideMazeWallIceMediumSWNE = UIImage.$(21967);
+var UIImageRideMazeWallIceMediumNWSE = UIImage.$(21968);
+var UIImageRideMazeWallIceThinSWNE = UIImage.$(21969);
+var UIImageRideMazeWallIceThinNWSE = UIImage.$(21970);
+var UIImageRideMazeWallWoodenThickFull = UIImage.$(21977);
+var UIImageRideMazeWallWoodenThickSWNE = UIImage.$(21978);
+var UIImageRideMazeWallWoodenThickNWSE = UIImage.$(21979);
+var UIImageRideMazeWallWoodenMediumSWNE = UIImage.$(21980);
+var UIImageRideMazeWallWoodenMediumNWSE = UIImage.$(21981);
+var UIImageRideMazeWallWoodenThinSWNE = UIImage.$(21982);
+var UIImageRideMazeWallWoodenThinNWSE = UIImage.$(21983);
+var UIImageFirecracker = UIImage.$A(22927, 28, 2);
+var UIImageLandOwnershipAvailable = UIImage.$(22955);
+var UIImageLandConstructionRightsAvailable = UIImage.$(22956);
+var UIImageNextWeather = UIImage.$(23189);
+var UIImageWeatherSun = UIImage.$(23190);
+var UIImageWeatherSunCloud = UIImage.$(23191);
+var UIImageWeatherCloud = UIImage.$(23192);
+var UIImageWeatherLightRain = UIImage.$(23193);
+var UIImageWeatherHeavyRain = UIImage.$(23194);
+var UIImageWeatherStorm = UIImage.$(23195);
+var UIImageWeatherSnow = UIImage.$(23196);
+var UIImageRatingLow = UIImage.$(23197);
+var UIImageRatingHigh = UIImage.$(23198);
+var UIImageMenuCheckmark = UIImage.$(23199);
+var UIImageMenuNewGame = UIImage.$(23207);
+var UIImageMenuLoadGame = UIImage.$(23208);
+var UIImageMenuTutorial = UIImage.$(23209);
+var UIImageMenuExit = UIImage.$(23210);
+var UIImageMenuToolbox = UIImage.$(23211);
+var UIImageMenuLogo = UIImage.$(23212);
+var UIImageMenuLogoSmall = UIImage.$(23213);
+var UIImageFlatTextureGrass1 = UIImage.$(28959);
+var UIImageFlatTextureGrass2 = UIImage.$(28960);
+var UIImageFlatTextureGrass3 = UIImage.$(28961);
+var UIImageFlatTextureGrass4 = UIImage.$(28962);
+var UIImageFlatTextureGrass5 = UIImage.$(28963);
+var UIImageFlatTextureGrass6 = UIImage.$(28964);
+var UIImageFlatTextureSandLight1 = UIImage.$(28965);
+var UIImageFlatTextureSandLight2 = UIImage.$(28966);
+var UIImageFlatTextureSandLight3 = UIImage.$(28967);
+var UIImageFlatTextureSandLight4 = UIImage.$(28968);
+var UIImageFlatTextureSandLight5 = UIImage.$(28969);
+var UIImageFlatTextureSandLight6 = UIImage.$(28970);
+var UIImageFlatTextureSandDark1 = UIImage.$(28971);
+var UIImageFlatTextureSandDark2 = UIImage.$(28972);
+var UIImageFlatTextureSandDark3 = UIImage.$(28973);
+var UIImageFlatTextureSandDark4 = UIImage.$(28974);
+var UIImageFlatTextureSandDark5 = UIImage.$(28975);
+var UIImageFlatTextureSandDark6 = UIImage.$(28976);
+var UIImageFlatTextureDirt1 = UIImage.$(28977);
+var UIImageFlatTextureDirt2 = UIImage.$(28978);
+var UIImageFlatTextureDirt3 = UIImage.$(28979);
+var UIImageFlatTextureDirt4 = UIImage.$(28980);
+var UIImageFlatTextureDirt5 = UIImage.$(28981);
+var UIImageFlatTextureDirt6 = UIImage.$(28982);
+var UIImageFlatTextureSand1 = UIImage.$(28983);
+var UIImageFlatTextureSand2 = UIImage.$(28984);
+var UIImageFlatTextureSand3 = UIImage.$(28985);
+var UIImageFlatTextureSand4 = UIImage.$(28986);
+var UIImageFlatTextureSand5 = UIImage.$(28987);
+var UIImageFlatTextureSand6 = UIImage.$(28988);
+var UIImageFlatTextureRock1 = UIImage.$(28989);
+var UIImageFlatTextureRock2 = UIImage.$(28990);
+var UIImageFlatTextureRock3 = UIImage.$(28991);
+var UIImageFlatTextureRock4 = UIImage.$(28992);
+var UIImageFlatTextureRock5 = UIImage.$(28993);
+var UIImageFlatTextureRock6 = UIImage.$(28994);
+var UIImageFlatTextureMartian1 = UIImage.$(28995);
+var UIImageFlatTextureMartian2 = UIImage.$(28996);
+var UIImageFlatTextureMartian3 = UIImage.$(28997);
+var UIImageFlatTextureMartian4 = UIImage.$(28998);
+var UIImageFlatTextureMartian5 = UIImage.$(28999);
+var UIImageFlatTextureMartian6 = UIImage.$(29000);
+var UIImageFlatTextureGrassClumps1 = UIImage.$(29001);
+var UIImageFlatTextureGrassClumps2 = UIImage.$(29002);
+var UIImageFlatTextureGrassClumps3 = UIImage.$(29003);
+var UIImageFlatTextureGrassClumps4 = UIImage.$(29004);
+var UIImageFlatTextureGrassClumps5 = UIImage.$(29005);
+var UIImageFlatTextureGrassClumps6 = UIImage.$(29006);
+var UIImageFlatTextureIce1 = UIImage.$(29007);
+var UIImageFlatTextureIce2 = UIImage.$(29008);
+var UIImageFlatTextureIce3 = UIImage.$(29009);
+var UIImageFlatTextureIce4 = UIImage.$(29010);
+var UIImageFlatTextureIce5 = UIImage.$(29011);
+var UIImageFlatTextureIce6 = UIImage.$(29012);
+var UIImageWallMedievalGray = UIImage.$(112511);
+var UIImageWallTin = UIImage.$(124211);
+var UIImageWallSandBrick = UIImage.$(152747);
+var UIImageWallRustyTin = UIImage.$(163772);
+var UIImageWallSand = UIImage.$(163784);
+var UIImageWallLightSand = UIImage.$(168735);
+var UIImageWallBordeauxRed = UIImage.$(171630);
+var UIImageWallViolet = UIImage.$(171641);
+var UIImageG2Logo = UIImage.$(29357);
+var UIImageG2Title = UIImage.$(29358);
+var UIImageG2Fastforward = UIImage.$(29359);
+var UIImageG2SpeedArrow = UIImage.$(29360);
+var UIImageG2HyperArrow = UIImage.$(29361);
+var UIImageG2TabLand = UIImage.$(29362);
+var UIImageG2Placeholder = UIImage.$(29363);
+var UIImageG2ZoomIn = UIImage.$(29364);
+var UIImageG2ZoomOut = UIImage.$(29366);
+var UIImageG2TabTree = UIImage.$(29368);
+var UIImageG2TabPencil = UIImage.$(29369);
+var UIImageG2LargeScenery = UIImage.$(29370);
+var UIImageG2Trees = UIImage.$(29371);
+var UIImageG2Footpath = UIImage.$(29372);
+var UIImageG1CloseDisable = UIImage.$(29373);
+var UIImageG1CloseEnable = UIImage.$(29375);
+var UIImageG1TestDisable = UIImage.$(29377);
+var UIImageG1TestEnable = UIImage.$(29379);
+var UIImageG1OpenDisable = UIImage.$(29381);
+var UIImageG1OpenEnable = UIImage.$(29383);
+var UIImageG2Simulate = UIImage.$(29481);
+var UIImageG1SimulateDisable = UIImage.$(29482);
+var UIImageG1SimulateEnable = UIImage.$(29483);
+var UIImageG2Restart = UIImage.$(29385);
+var UIImageG2Stop = UIImage.$(29386);
+var UIImageG2Play = UIImage.$(29387);
+var UIImageG2Skip = UIImage.$(29388);
+var UIImageG2Sandbox = UIImage.$(29389);
+var UIImageG2TabNews = UIImage.$(29414);
+var UIImageG2Locked = UIImage.$(29415);
+var UIImageG2MenuMultiplayer = UIImage.$(29416);
+var UIImageG2Sort = UIImage.$(29433);
+var UIImageG2Copy = UIImage.$(29434);
+var UIImageG2Paste = UIImage.$(29435);
+var UIImageG2Search = UIImage.$(29461);
+var UIImageG2Pipette = UIImage.$(29467);
+var UIImageG2Chat = UIImage.$(29468);
+var UIImageG2SceneryScatterLow = UIImage.$(29489);
+var UIImageG2SceneryScatterMedium = UIImage.$(29490);
+var UIImageG2SceneryScatterHigh = UIImage.$(29491);
+var UIImageG2View = UIImage.$(29494);
 var UICheckbox = (function (_super) {
     __extends(UICheckbox, _super);
     function UICheckbox(text) {
@@ -2287,7 +2327,8 @@ var UICheckbox = (function (_super) {
         var checkbox = new UICheckbox(text);
         var minSize = text.containerSize();
         return checkbox
-            .height(15)
+            .height(11)
+            .width(minSize.width + 11)
             .minSize(minSize);
     };
     UICheckbox.$UN = function () {
@@ -2430,13 +2471,19 @@ var UILabel = (function (_super) {
         _this._text = text;
         return _this;
     }
-    UILabel.$ = function (text) {
+    UILabel.$ = function (text, isFit) {
+        if (isFit === void 0) { isFit = false; }
         var label = new UILabel(text);
         var minSize = text.containerSize();
-        console.log(minSize);
-        return label
-            .height(15)
-            .minSize(minSize);
+        if (isFit) {
+            return label
+                .height(minSize.height)
+                .minSize(minSize);
+        }
+        else {
+            return label
+                .minSize(minSize);
+        }
     };
     UILabel.prototype._build = function () {
         var _this = this;
@@ -2472,44 +2519,6 @@ var UILabel = (function (_super) {
     };
     return UILabel;
 }(UIWidget));
-var UIALabel = (function (_super) {
-    __extends(UIALabel, _super);
-    function UIALabel(text, useLineSpacing) {
-        if (useLineSpacing === void 0) { useLineSpacing = false; }
-        var _this = this;
-        var label = UILabel.$(text);
-        var height = text.containerSize().height;
-        var labelHeight = 15;
-        var spacerHeight = Math.ceil((height - (useLineSpacing ? 0 : labelHeight)) / 2);
-        _this = _super.call(this, UIAxis.Vertical, [UISpacer.$(spacerHeight), label, UISpacer.$(spacerHeight)]) || this;
-        _this._label = label;
-        return _this;
-    }
-    UIALabel.$L = function (text, useLineSpacing) {
-        if (useLineSpacing === void 0) { useLineSpacing = false; }
-        var alignedLabel = new UIALabel(text, useLineSpacing);
-        return alignedLabel;
-    };
-    UIALabel.prototype.align = function (val) {
-        this._label.align(val);
-        return this;
-    };
-    UIALabel.prototype.getAlign = function () {
-        return this._label.getAlign();
-    };
-    UIALabel.prototype.text = function (val) {
-        this._label.text(val);
-        return this;
-    };
-    UIALabel.prototype.getText = function () {
-        return this._label.getText();
-    };
-    UIALabel.prototype.onChange = function (block) {
-        this._label.onChange(block);
-        return this;
-    };
-    return UIALabel;
-}(UIStack));
 var UISpacer = (function (_super) {
     __extends(UISpacer, _super);
     function UISpacer(spacing) {
@@ -2758,19 +2767,27 @@ var UIButton = (function (_super) {
         _this._isPressed = false;
         return _this;
     }
-    UIButton.$ = function (title) {
+    UIButton.$ = function (title, isFit) {
+        if (isFit === void 0) { isFit = false; }
         var button = new this();
+        var buttonWithTitle = button.title(title);
         var minSize = title.containerSize();
-        return button.title(title)
-            .size(minSize)
-            .minSize(minSize);
+        if (isFit) {
+            return buttonWithTitle
+                .size(minSize)
+                .minSize(minSize);
+        }
+        else {
+            return buttonWithTitle
+                .minSize(minSize);
+        }
     };
     UIButton.$I = function (image) {
         var button = new this();
         var imageSize = image.size();
         var minSize = {
-            width: imageSize.width + 4,
-            height: imageSize.height + 4
+            width: imageSize.width + 3,
+            height: imageSize.height + 2
         };
         return button
             .image(image)
@@ -2882,7 +2899,7 @@ var UIPageImageButton = (function (_super) {
             };
         });
         var imageSize = {
-            width: maxSize.width + 1,
+            width: maxSize.width + 3,
             height: maxSize.height + 2
         };
         return button
