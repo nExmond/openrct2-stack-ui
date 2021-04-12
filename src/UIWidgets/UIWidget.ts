@@ -26,6 +26,8 @@ class UIWidget<T extends Widget> {
 
     protected _font: TextFont | undefined;
 
+    protected _didLoad: ((widget: UIWidget<T>) => void) | undefined;
+
     constructor() {
         //https://stackoverflow.com/questions/13613524/get-an-objects-class-name-at-runtime
         this._name = this.constructor.name + '-' + uuid();
@@ -124,6 +126,7 @@ class UIWidget<T extends Widget> {
         this._interactor._update(this._name, (widget: T) => {
             this._widget = widget;
         });
+        this._didLoad?.call(this, this);
     }
 
     _resetSize() {
@@ -299,6 +302,14 @@ class UIWidget<T extends Widget> {
      */
     resetSize(): this {
         return this.size(this._minSize);
+    }
+
+    /**
+     * This function is called immediately after the widget is displayed.
+     */
+    didLoad(block: (widget: this) => void): this {
+        this._didLoad = block as (widget: UIWidget<T>) => void;
+        return this;
     }
 
     /**

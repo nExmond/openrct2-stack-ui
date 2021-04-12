@@ -37,24 +37,116 @@ var Window = function () {
         .spacing(2);
     return window;
 };
-var LabelWindow = function () {
+var ViewportWindow = function () {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
     var window = UIWDP.$();
-    var formatted = TB.$(TN.$(TN.$I(UIImageShopItemChips), TN.$S("Chips\n...").color(TextColor.PaleGold), TN.$S((1432).format(TextFormat.StringId, 53)).outline(), TN.$NL(), TN.$S((1432).format(TextFormat.StringId, 53)))).build();
-    UIWindow.$("StackUI Demo - Label", UIStack.$VG(UILabel.$(formatted, true)).title("Label"), UIStack.$HG(UIStack.$HG(UICheckbox.$("checkbox")).title("Basic"), UIStack.$HG(UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN()).title("Unnamed")).title("Checkbox")).bind(window);
+    var checkboxHide = UIWP.$();
+    var checkboxRights = UIWP.$();
+    var checkboxHeights = UIWP.$();
+    var checkboxSoundOn = UIWP.$();
+    var checkboxInvisible = UIWP.$();
+    var checkboxSeethrough = UIWP.$();
+    var checkboxClipView = UIWP.$();
+    var checkboxGuidelines = UIWP.$();
+    var checkboxUndergroundInside = UIWP.$();
+    var checkboxTransparentBackground = UIWP.$();
+    var viewport = UIWP.$();
+    var buttonZoomIn = UIWP.$();
+    var buttonZoomOut = UIWP.$();
+    UIWindow.$("StackUI Demo - Viewport", UIStack.$H(UIStack.$V(UIStack.$HG(UIStack.$V(UIStack.$H(UIStack.$V(UICheckbox.$("Hide").bind(checkboxHide), UICheckbox.$("Rights").bind(checkboxRights), UICheckbox.$("Heights").bind(checkboxHeights)), UIStack.$V(UICheckbox.$("SoundOn").bind(checkboxSoundOn), UICheckbox.$("Invisible").bind(checkboxInvisible), UICheckbox.$("Seethrough").bind(checkboxSeethrough)), UIStack.$V(UICheckbox.$("ClipView").bind(checkboxClipView), UICheckbox.$("Guidelines").bind(checkboxGuidelines))).spacing(2), UIStack.$V(UICheckbox.$("Underground Inside").bind(checkboxUndergroundInside), UICheckbox.$("Transparent Background").bind(checkboxTransparentBackground)))).title("Flags")
+        .padding({ top: 0, right: 2, bottom: 0, left: 2 }), UIViewport.$().bind(viewport)), UIStack.$V(UIButton.$I(UIImageG2ZoomIn).bind(buttonZoomIn), UIButton.$I(UIImageG2ZoomOut).bind(buttonZoomOut)))).bind(window)
+        .isExpandable(true)
+        .spacing(2);
+    function updateFlags(isChecked) {
+        var _a;
+        var flags = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            flags[_i - 1] = arguments[_i];
+        }
+        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+            var current = w.getFlags();
+            if (isChecked) {
+                w.flags(current | flags.reduce(function (acc, val) { return acc | val; }));
+            }
+            else {
+                w.flags(current ^ flags.reduce(function (acc, val) { return acc ^ val; }));
+            }
+        });
+    }
+    (_a = checkboxHide.ui) === null || _a === void 0 ? void 0 : _a.onChange(function (_, isChecked) {
+        updateFlags(isChecked, UIViewportFlag.HideBase, UIViewportFlag.HideVertical);
+    });
+    (_b = checkboxRights.ui) === null || _b === void 0 ? void 0 : _b.onChange(function (_, isChecked) {
+        updateFlags(isChecked, UIViewportFlag.LandOwnership, UIViewportFlag.ConstructionRights);
+    });
+    (_c = checkboxHeights.ui) === null || _c === void 0 ? void 0 : _c.onChange(function (_, isChecked) {
+        updateFlags(isChecked, UIViewportFlag.LandHeights, UIViewportFlag.TrackHeights, UIViewportFlag.PathHeights);
+    });
+    (_d = checkboxSoundOn.ui) === null || _d === void 0 ? void 0 : _d.onChange(function (_, isChecked) {
+        updateFlags(isChecked, UIViewportFlag.SoundOn);
+    });
+    (_e = checkboxInvisible.ui) === null || _e === void 0 ? void 0 : _e.onChange(function (_, isChecked) {
+        updateFlags(isChecked, UIViewportFlag.InvisibleSupports, UIViewportFlag.InvisiblePeeps, UIViewportFlag.InvisibleSprites);
+    });
+    (_f = checkboxSeethrough.ui) === null || _f === void 0 ? void 0 : _f.onChange(function (_, isChecked) {
+        updateFlags(isChecked, UIViewportFlag.SeethroughRides, UIViewportFlag.SeethroughScenery, UIViewportFlag.SeethroughPaths);
+    });
+    (_g = checkboxClipView.ui) === null || _g === void 0 ? void 0 : _g.onChange(function (_, isChecked) {
+        updateFlags(isChecked, UIViewportFlag.ClipView);
+    });
+    (_h = checkboxGuidelines.ui) === null || _h === void 0 ? void 0 : _h.onChange(function (_, isChecked) {
+        updateFlags(isChecked, UIViewportFlag.Gridlines);
+    });
+    (_j = checkboxUndergroundInside.ui) === null || _j === void 0 ? void 0 : _j.onChange(function (_, isChecked) {
+        updateFlags(isChecked, UIViewportFlag.UndergroundInside);
+    });
+    (_k = checkboxTransparentBackground.ui) === null || _k === void 0 ? void 0 : _k.onChange(function (_, isChecked) {
+        updateFlags(isChecked, UIViewportFlag.TransparentBackground);
+    });
+    function updateButton(zoom) {
+        var _a, _b;
+        var inDisable = zoom == 0;
+        (_a = buttonZoomIn.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+            w.isDisabled(inDisable);
+        });
+        var outDisable = zoom == 3;
+        (_b = buttonZoomOut.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) {
+            w.isDisabled(outDisable);
+        });
+    }
+    (_l = viewport.ui) === null || _l === void 0 ? void 0 : _l.didLoad(function (w) {
+        updateButton(w.getZoom());
+    });
+    (_m = buttonZoomIn.ui) === null || _m === void 0 ? void 0 : _m.onClick(function (button) {
+        var _a;
+        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+            var nextScale = w.getZoom() - 1;
+            w.zoom(nextScale);
+            updateButton(nextScale);
+        });
+    });
+    (_o = buttonZoomOut.ui) === null || _o === void 0 ? void 0 : _o.onClick(function (button) {
+        var _a;
+        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+            var nextScale = w.getZoom() + 1;
+            w.zoom(nextScale);
+            updateButton(nextScale);
+        });
+    });
     return window;
 };
-var ButtonWindow = function () {
+var LabelWindow = function () {
     var _a;
     var window = UIWDP.$();
     var buttonToggleTitle = UIWP.$();
     var buttonToggleImage = UIWP.$();
-    UIWindow.$("StackUI Demo - Button", UIStack.$HG(UIStack.$HG(UIButton.$("button", true), UIButton.$I(UIImageGuests)).title("Basic"), UIStack.$HG(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage)).title("Toggle"), UIStack.$HG(UIPageImageButton.$IP.apply(UIPageImageButton, [
+    var formatted = TB.$(TN.$(TN.$I(UIImageShopItemChips), TN.$S("Chips\n...").color(TextColor.PaleGold), TN.$S((1432).format(TextFormat.StringId, 53)).outline(), TN.$NL(), TN.$S((1432).format(TextFormat.StringId, 53)))).build();
+    UIWindow.$("StackUI Demo - Label", UIStack.$VG(UILabel.$(formatted, true)).title("Label"), UIStack.$HG(UIStack.$HG(UICheckbox.$("checkbox")).title("Basic"), UIStack.$HG(UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN()).title("Unnamed")).title("Checkbox"), UIStack.$HG(UIColorPicker.$(UIColor.BrightRed), UIColorPicker.$(UIColor.LightOrange), UIColorPicker.$(UIColor.BrightYellow), UIColorPicker.$(UIColor.BrightGreen), UIColorPicker.$(UIColor.LightBlue), UIColorPicker.$(UIColor.DarkBlue), UIColorPicker.$(UIColor.LightPurple)).title("ColorPicker"), UIStack.$VG(UIDropdown.$(["Item1", "Item2", "Item3"]).selected(1)).title("Dropdown"), UIStack.$VG(UISpinner.$()).title("Spinner"), UIStack.$VG(UITextBox.$()).title("TextBox"), UIStack.$HG(UIStack.$HG(UIButton.$("button", true), UIButton.$I(UIImageGuests)).title("Basic"), UIStack.$HG(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage)).title("Toggle"), UIStack.$HG(UIPageImageButton.$IP.apply(UIPageImageButton, [
         UIImageAwardBestValue,
         UIImageAwardMostBeautiful,
         UIImageAwardBestStaff
     ])).title("Paging")).title("Button"), UISpacer.$(10)).bind(window)
-        .isExpandable(true)
-        .spacing(2);
+        .isExpandable(true);
     (_a = buttonToggleImage.ui) === null || _a === void 0 ? void 0 : _a.onClick(function () {
         var _a;
         (_a = buttonToggleTitle.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
@@ -67,20 +159,20 @@ var MainWindow = function () {
     var _a, _b;
     var window = UIWDP.$();
     var tab1 = UITP.$();
-    var buttonButton = UIWP.$();
-    var buttonWindow = ButtonWindow();
     var labelButton = UIWP.$();
     var labelWindow = LabelWindow();
-    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("UIButton").bind(buttonButton), UIButton.$("UILabel").bind(labelButton), UISpacer.$(10)).bind(tab1)
+    var viewportButton = UIWP.$();
+    var viewportWindow = ViewportWindow();
+    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("UILabel").bind(labelButton), UIButton.$("UIViewport").bind(viewportButton), UISpacer.$(10)).bind(tab1)
         .isExpandable(true)).bind(window)
         .spacing(2);
-    (_a = buttonButton.ui) === null || _a === void 0 ? void 0 : _a.onClick(function (_) {
-        var _a;
-        (_a = buttonWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
-    });
-    (_b = labelButton.ui) === null || _b === void 0 ? void 0 : _b.onClick(function (_) {
+    (_a = labelButton.ui) === null || _a === void 0 ? void 0 : _a.onClick(function (_) {
         var _a;
         (_a = labelWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
+    });
+    (_b = viewportButton.ui) === null || _b === void 0 ? void 0 : _b.onClick(function (_) {
+        var _a;
+        (_a = viewportWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
     });
     return window;
 };
@@ -803,9 +895,11 @@ var UIWidget = (function () {
     };
     UIWidget.prototype._loadWidget = function () {
         var _this = this;
+        var _a;
         this._interactor._update(this._name, function (widget) {
             _this._widget = widget;
         });
+        (_a = this._didLoad) === null || _a === void 0 ? void 0 : _a.call(this, this);
     };
     UIWidget.prototype._resetSize = function () {
         if (typeof this._initialSize !== "undefined") {
@@ -922,6 +1016,10 @@ var UIWidget = (function () {
     };
     UIWidget.prototype.resetSize = function () {
         return this.size(this._minSize);
+    };
+    UIWidget.prototype.didLoad = function (block) {
+        this._didLoad = block;
+        return this;
     };
     UIWidget.prototype.description = function () {
         return "\nname: " + this._name + "\norigin: { x: " + this._origin.x + ", y: " + this._origin.y + " }\nsize: { width: " + this._size.width + ", height: " + this._size.height + " }\n";
@@ -1151,7 +1249,7 @@ var UIStack = (function (_super) {
             var minWidth = ((_b = (_a = this._groupTitle) === null || _a === void 0 ? void 0 : _a.size().width) !== null && _b !== void 0 ? _b : 0) + 8;
             size = {
                 width: Math.max(size.width, minWidth),
-                height: size.height
+                height: size.height + 1
             };
         }
         var unNamedGroupCorrect = this._isUnNamedGroup() ? 4 : 0;
@@ -1189,20 +1287,21 @@ var UIStack = (function (_super) {
             this._origin = origin;
             this._size = thisEstimatedSize;
         }
+        var exactSizeChilds = this._childs.filter(function (val) { return !val._isUndefinedSize(_this._axis); });
+        var undefinedSizeChilds = this._childs.filter(function (val) { return val._isUndefinedSize(_this._axis); });
+        var numberOfUndefinedSizeChilds = undefinedSizeChilds.length;
+        var undefinedSizeStacks = undefinedSizeChilds.filter(function (val) { return val instanceof UIStack; });
+        var sumOfSpacing = this._spacing * (this._childs.length - 1);
+        var correctBottomPadding = this._childs.filter(function (val) { return val instanceof UIStack; }).length == 0 ? 1 : 0;
         var childContainerSize = {
             width: thisEstimatedSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
-            height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect
+            height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect - correctBottomPadding
         };
         var childOrigin = {
             x: this._origin.x + this._insets.left + this._padding.left + this._offset.x,
             y: this._origin.y + this._insets.top + this._padding.top + this._offset.y
         };
         var point = childOrigin;
-        var exactSizeChilds = this._childs.filter(function (val) { return !val._isUndefinedSize(_this._axis); });
-        var undefinedSizeChilds = this._childs.filter(function (val) { return val._isUndefinedSize(_this._axis); });
-        var numberOfUndefinedSizeChilds = undefinedSizeChilds.length;
-        var undefinedSizeStacks = undefinedSizeChilds.filter(function (val) { return val instanceof UIStack; });
-        var sumOfSpacing = this._spacing * (this._childs.length - 1);
         switch (this._axis) {
             case UIAxis.Vertical: {
                 var sumOfExactChildHeights = 0;
@@ -1506,6 +1605,7 @@ var UIColorFlag;
     UIColorFlag[UIColorFlag["Outline"] = 32] = "Outline";
     UIColorFlag[UIColorFlag["Inset"] = 64] = "Inset";
     UIColorFlag[UIColorFlag["Translucent"] = 128] = "Translucent";
+    UIColorFlag[UIColorFlag["Unknown"] = 256] = "Unknown";
 })(UIColorFlag || (UIColorFlag = {}));
 var UIWindowThemeDefault = {
     primary: UIColor.Gray,

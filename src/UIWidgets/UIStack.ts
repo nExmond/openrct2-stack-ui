@@ -130,7 +130,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
             const minWidth = (this._groupTitle?.size().width ?? 0) + 8;
             size = {
                 width: Math.max(size.width, minWidth),
-                height: size.height
+                height: size.height + 1
             }
         }
         const unNamedGroupCorrect = this._isUnNamedGroup() ? 4 : 0;
@@ -171,22 +171,23 @@ class UIStack extends UIWidget<GroupBoxWidget> {
             this._size = thisEstimatedSize;
         }
 
+        const exactSizeChilds = this._childs.filter((val) => !val._isUndefinedSize(this._axis));
+        const undefinedSizeChilds = this._childs.filter((val) => val._isUndefinedSize(this._axis));
+        const numberOfUndefinedSizeChilds = undefinedSizeChilds.length;
+        const undefinedSizeStacks = undefinedSizeChilds.filter((val) => val instanceof UIStack);
+        const sumOfSpacing = this._spacing * (this._childs.length - 1);
+
+        const correctBottomPadding = this._childs.filter((val) => val instanceof UIStack).length == 0 ? 1: 0;
+
         const childContainerSize: UISize = {
             width: thisEstimatedSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
-            height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect
+            height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect - correctBottomPadding
         };
         const childOrigin: UIPoint = {
             x: this._origin.x + this._insets.left + this._padding.left + this._offset.x,
             y: this._origin.y + this._insets.top + this._padding.top + this._offset.y
         }
         var point = childOrigin;
-
-        const exactSizeChilds = this._childs.filter((val) => !val._isUndefinedSize(this._axis));
-        const undefinedSizeChilds = this._childs.filter((val) => val._isUndefinedSize(this._axis));
-        const numberOfUndefinedSizeChilds = undefinedSizeChilds.length;
-        const undefinedSizeStacks = undefinedSizeChilds.filter((val) => val instanceof UIStack);
-
-        const sumOfSpacing = this._spacing * (this._childs.length - 1);
 
         switch (this._axis) {
             case UIAxis.Vertical: {

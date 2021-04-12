@@ -21,6 +21,6 @@ enum UIColor {
 enum UIColorFlag {
     Outline = 1 << 5,
     Inset = 1 << 6,
-    Translucent = 1 << 7
-    // , Unknown = 1 << 8
+    Translucent = 1 << 7,
+    Unknown = 1 << 8
 }
