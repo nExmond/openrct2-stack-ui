@@ -23,13 +23,20 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
     /**
      * Create a *UICheckbox* instance containing title without using new.
      */
-    static $(text: string): UICheckbox {
+    static $(text: string, isFit: boolean = false): UICheckbox {
         const checkbox = new UICheckbox(text);
-        const minSize = text.containerSize();
-        return checkbox
-            .height(11)
-            .width(minSize.width + 11)
-            .minSize(minSize);
+        const containerSize = text.containerSize();
+        const minSize = {
+            width: containerSize.width + 11,
+            height: containerSize.height
+        }
+        const minSizeCheckbox = checkbox.height(11).minSize(minSize);
+        if (isFit) {
+            return minSizeCheckbox
+                .width(minSize.width);
+        } else {
+            return minSizeCheckbox;
+        }
     }
 
     /**
