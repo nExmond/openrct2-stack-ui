@@ -178,11 +178,11 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         const undefinedSizeStacks = undefinedSizeChilds.filter((val) => val instanceof UIStack);
         const sumOfSpacing = this._spacing * (this._childs.length - 1);
 
-        const correctBottomPadding = this._childs.filter((val) => val instanceof UIStack).length == 0 ? 1: 0;
+        const correctEdgePadding = this._childs.filter((val) => val instanceof UIStack).length == 0 ? 1: 0;
 
         const childContainerSize: UISize = {
             width: thisEstimatedSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
-            height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect - correctBottomPadding
+            height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect - correctEdgePadding
         };
         const childOrigin: UIPoint = {
             x: this._origin.x + this._insets.left + this._padding.left + this._offset.x,

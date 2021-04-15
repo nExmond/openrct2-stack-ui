@@ -37,7 +37,13 @@ var ViewportWindow = function (): UIWindowProxy {
 
     const buttonZoomIn = UIWP.$<UIButton>();
     const buttonZoomOut = UIWP.$<UIButton>();
+    const buttonRocateM2C = UIWP.$<UIButton>();
+    const buttonRotate = UIWP.$<UIButton>();
 
+    const buttonRocateC2M = UIWP.$<UIButton>();
+
+    //Data
+    const buttonSize = 25;
 
     //Construct
     UIWindow.$("StackUI Demo - Viewport",
@@ -71,8 +77,18 @@ var ViewportWindow = function (): UIWindowProxy {
                 UIViewport.$().bind(viewport)
             ),
             UIStack.$V(
-                UIButton.$I(UIImageG2ZoomIn).bind(buttonZoomIn),
+                UIButton.$I(UIImageG2ZoomIn).bind(buttonZoomIn)
+                    .size(buttonSize),
                 UIButton.$I(UIImageG2ZoomOut).bind(buttonZoomOut)
+                    .size(buttonSize),
+                UIButton.$I(UIImageLocate).bind(buttonRocateM2C)
+                    .size(buttonSize),
+                UIButton.$I(UIImageRotateArrow).bind(buttonRotate)
+                    .size(buttonSize),
+                UISpacer.$(),
+                UIButton.$I(UIImageG2Search).bind(buttonRocateC2M)
+                    .size(buttonSize),
+                UISpacer.$(10)
             )
         )
     ).bind(window)
@@ -164,7 +180,7 @@ var ViewportWindow = function (): UIWindowProxy {
 
     viewport.ui?.didLoad(w => {
         updateButton(w.getZoom());
-    })
+    });
 
     buttonZoomIn.ui?.onClick(button => {
         viewport.ui?.updateUI(w => {
@@ -179,6 +195,18 @@ var ViewportWindow = function (): UIWindowProxy {
             w.zoom(nextScale);
             updateButton(nextScale);
         });
+    });
+    buttonRocateM2C.ui?.onClick(button => {
+        viewport.ui?.mainViewportScrollToThis();
+    });
+    buttonRotate.ui?.onClick(button => {
+        viewport.ui?.updateUI(w => {
+            const nextRotation = (w.getRotation() + 1) % 4;
+            w.rotation(nextRotation);
+        });
+    });
+    buttonRocateC2M.ui?.onClick(button => {
+        viewport.ui?.moveToMainViewportCenter();
     });
 
     return window;
@@ -207,7 +235,7 @@ var LabelWindow = function (): UIWindowProxy {
 
 
     //Construct
-    UIWindow.$("StackUI Demo - Label",
+    UIWindow.$("StackUI Demo - Basic",
         UIStack.$VG(
             UILabel.$(formatted, true)
         ).title("Label"),

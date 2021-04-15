@@ -38,7 +38,7 @@ var Window = function () {
     return window;
 };
 var ViewportWindow = function () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
     var window = UIWDP.$();
     var checkboxHide = UIWP.$();
     var checkboxRights = UIWP.$();
@@ -53,8 +53,17 @@ var ViewportWindow = function () {
     var viewport = UIWP.$();
     var buttonZoomIn = UIWP.$();
     var buttonZoomOut = UIWP.$();
+    var buttonRocateM2C = UIWP.$();
+    var buttonRotate = UIWP.$();
+    var buttonRocateC2M = UIWP.$();
+    var buttonSize = 25;
     UIWindow.$("StackUI Demo - Viewport", UIStack.$H(UIStack.$V(UIStack.$HG(UIStack.$V(UIStack.$H(UIStack.$V(UICheckbox.$("Hide").bind(checkboxHide), UICheckbox.$("Rights").bind(checkboxRights), UICheckbox.$("Heights").bind(checkboxHeights)), UIStack.$V(UICheckbox.$("SoundOn").bind(checkboxSoundOn), UICheckbox.$("Invisible").bind(checkboxInvisible), UICheckbox.$("Seethrough").bind(checkboxSeethrough)), UIStack.$V(UICheckbox.$("ClipView").bind(checkboxClipView), UICheckbox.$("Guidelines").bind(checkboxGuidelines))).spacing(2), UIStack.$V(UICheckbox.$("Underground Inside").bind(checkboxUndergroundInside), UICheckbox.$("Transparent Background").bind(checkboxTransparentBackground)))).title("Flags")
-        .padding({ top: 0, right: 2, bottom: 0, left: 2 }), UIViewport.$().bind(viewport)), UIStack.$V(UIButton.$I(UIImageG2ZoomIn).bind(buttonZoomIn), UIButton.$I(UIImageG2ZoomOut).bind(buttonZoomOut)))).bind(window)
+        .padding({ top: 0, right: 2, bottom: 0, left: 2 }), UIViewport.$().bind(viewport)), UIStack.$V(UIButton.$I(UIImageG2ZoomIn).bind(buttonZoomIn)
+        .size(buttonSize), UIButton.$I(UIImageG2ZoomOut).bind(buttonZoomOut)
+        .size(buttonSize), UIButton.$I(UIImageLocate).bind(buttonRocateM2C)
+        .size(buttonSize), UIButton.$I(UIImageRotateArrow).bind(buttonRotate)
+        .size(buttonSize), UISpacer.$(), UIButton.$I(UIImageG2Search).bind(buttonRocateC2M)
+        .size(buttonSize), UISpacer.$(10)))).bind(window)
         .isExpandable(true)
         .spacing(2);
     function updateFlags(isChecked) {
@@ -133,6 +142,21 @@ var ViewportWindow = function () {
             updateButton(nextScale);
         });
     });
+    (_p = buttonRocateM2C.ui) === null || _p === void 0 ? void 0 : _p.onClick(function (button) {
+        var _a;
+        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.mainViewportScrollToThis();
+    });
+    (_q = buttonRotate.ui) === null || _q === void 0 ? void 0 : _q.onClick(function (button) {
+        var _a;
+        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+            var nextRotation = (w.getRotation() + 1) % 4;
+            w.rotation(nextRotation);
+        });
+    });
+    (_r = buttonRocateC2M.ui) === null || _r === void 0 ? void 0 : _r.onClick(function (button) {
+        var _a;
+        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.moveToMainViewportCenter();
+    });
     return window;
 };
 var LabelWindow = function () {
@@ -141,7 +165,7 @@ var LabelWindow = function () {
     var buttonToggleTitle = UIWP.$();
     var buttonToggleImage = UIWP.$();
     var formatted = TB.$(TN.$(TN.$I(UIImageShopItemChips), TN.$S("Chips\n...").color(TextColor.PaleGold), TN.$S((1432).format(TextFormat.StringId, 53)).outline(), TN.$NL(), TN.$S((1432).format(TextFormat.StringId, 53)))).build();
-    UIWindow.$("StackUI Demo - Label", UIStack.$VG(UILabel.$(formatted, true)).title("Label"), UIStack.$HG(UIStack.$HG(UICheckbox.$("checkbox")).title("Basic"), UIStack.$HG(UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN()).title("Unnamed")).title("Checkbox"), UIStack.$HG(UIColorPicker.$(UIColor.BrightRed), UIColorPicker.$(UIColor.LightOrange), UIColorPicker.$(UIColor.BrightYellow), UIColorPicker.$(UIColor.BrightGreen), UIColorPicker.$(UIColor.LightBlue), UIColorPicker.$(UIColor.DarkBlue), UIColorPicker.$(UIColor.LightPurple)).title("ColorPicker"), UIStack.$VG(UIDropdown.$(["Item1", "Item2", "Item3"]).selected(1)).title("Dropdown"), UIStack.$VG(UISpinner.$()).title("Spinner"), UIStack.$VG(UITextBox.$()).title("TextBox"), UIStack.$HG(UIStack.$HG(UIButton.$("button", true), UIButton.$I(UIImageGuests)).title("Basic"), UIStack.$HG(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage)).title("Toggle"), UIStack.$HG(UIPageImageButton.$IP.apply(UIPageImageButton, [
+    UIWindow.$("StackUI Demo - Basic", UIStack.$VG(UILabel.$(formatted, true)).title("Label"), UIStack.$HG(UIStack.$HG(UICheckbox.$("checkbox")).title("Basic"), UIStack.$HG(UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN()).title("Unnamed")).title("Checkbox"), UIStack.$HG(UIColorPicker.$(UIColor.BrightRed), UIColorPicker.$(UIColor.LightOrange), UIColorPicker.$(UIColor.BrightYellow), UIColorPicker.$(UIColor.BrightGreen), UIColorPicker.$(UIColor.LightBlue), UIColorPicker.$(UIColor.DarkBlue), UIColorPicker.$(UIColor.LightPurple), UIColorPicker.$(UIColor.White)).title("ColorPicker").spacing(50), UIStack.$VG(UIDropdown.$(["Item1", "Item2", "Item3"]).selected(1)).title("Dropdown"), UIStack.$VG(UISpinner.$()).title("Spinner"), UIStack.$VG(UITextBox.$()).title("TextBox"), UIStack.$HG(UIStack.$HG(UIButton.$("button", true), UIButton.$I(UIImageGuests)).title("Basic"), UIStack.$HG(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage)).title("Toggle"), UIStack.$HG(UIPageImageButton.$IP.apply(UIPageImageButton, [
         UIImageAwardBestValue,
         UIImageAwardMostBeautiful,
         UIImageAwardBestStaff
@@ -849,7 +873,7 @@ var UIWidget = (function () {
             height: (_b = this._size.height) !== null && _b !== void 0 ? _b : estimatedSize.height
         };
         this._size = {
-            width: size.width - 1,
+            width: size.width - 2,
             height: size.height
         };
         switch (axis) {
@@ -1267,6 +1291,7 @@ var UIStack = (function (_super) {
             this._initialSize = this._size;
         }
         var thisEstimatedSize = this._estimatedSize();
+        var storedEstimatedSize = thisEstimatedSize;
         thisEstimatedSize = {
             width: Math.max(thisEstimatedSize.width, estimatedSize.width),
             height: Math.max(thisEstimatedSize.height, estimatedSize.height)
@@ -1292,16 +1317,17 @@ var UIStack = (function (_super) {
         var numberOfUndefinedSizeChilds = undefinedSizeChilds.length;
         var undefinedSizeStacks = undefinedSizeChilds.filter(function (val) { return val instanceof UIStack; });
         var sumOfSpacing = this._spacing * (this._childs.length - 1);
-        var correctBottomPadding = this._childs.filter(function (val) { return val instanceof UIStack; }).length == 0 ? 1 : 0;
+        var correctEdgePadding = this._childs.filter(function (val) { return val instanceof UIStack; }).length == 0 ? 1 : 0;
         var childContainerSize = {
             width: thisEstimatedSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
-            height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect - correctBottomPadding
+            height: thisEstimatedSize.height - (this._insets.top + this._insets.bottom + this._padding.top + this._padding.bottom) + unNamedGroupCorrect - correctEdgePadding
         };
         var childOrigin = {
             x: this._origin.x + this._insets.left + this._padding.left + this._offset.x,
             y: this._origin.y + this._insets.top + this._padding.top + this._offset.y
         };
         var point = childOrigin;
+        var isUndefinedChildsCount = this._childs.filter(function (val) { return val._isUndefinedSize(_this._axis); }).length;
         switch (this._axis) {
             case UIAxis.Vertical: {
                 var sumOfExactChildHeights = 0;
@@ -1312,7 +1338,6 @@ var UIStack = (function (_super) {
                 if (numberOfUndefinedSizeChilds > 0) {
                     autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights) / numberOfUndefinedSizeChilds);
                 }
-                var storedAutoHeight = autoHeight;
                 var stackMaxHeights = 0;
                 if (undefinedSizeStacks.length > 0) {
                     stackMaxHeights = undefinedSizeStacks.map(function (val) { return Math.max(autoHeight, val._estimatedSize().height); }).reduce(function (acc, val) { return acc + val; });
@@ -1321,6 +1346,7 @@ var UIStack = (function (_super) {
                 if (othersCount > 0) {
                     autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights - stackMaxHeights) / othersCount);
                 }
+                var stackSpacing = (thisEstimatedSize.height - storedEstimatedSize.height) / isUndefinedChildsCount;
                 for (var _i = 0, _a = this._childs; _i < _a.length; _i++) {
                     var child = _a[_i];
                     var isStack = child instanceof UIStack;
@@ -1328,7 +1354,7 @@ var UIStack = (function (_super) {
                     var childEstimatedHeight = child._estimatedSize().height;
                     var childEstimatedSize = {
                         width: childContainerSize.width,
-                        height: isHeightUndefined ? (isStack ? Math.max(childEstimatedHeight, storedAutoHeight) : autoHeight) : childEstimatedHeight
+                        height: isHeightUndefined ? (isStack ? childEstimatedHeight + stackSpacing : autoHeight) : childEstimatedHeight
                     };
                     point = child._layout(this._axis, { x: childOrigin.x, y: point.y }, childEstimatedSize);
                     point = { x: point.x, y: point.y + this._spacing };
@@ -1344,7 +1370,6 @@ var UIStack = (function (_super) {
                 if (numberOfUndefinedSizeChilds > 0) {
                     autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths) / numberOfUndefinedSizeChilds);
                 }
-                var storedAutoWidth = autoWidth;
                 var stackMaxWidths = 0;
                 if (undefinedSizeStacks.length > 0) {
                     stackMaxWidths = undefinedSizeStacks.map(function (val) { return Math.max(autoWidth, val._estimatedSize().width); }).reduce(function (acc, val) { return acc + val; });
@@ -1353,13 +1378,14 @@ var UIStack = (function (_super) {
                 if (othersCount > 0) {
                     autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths - stackMaxWidths) / othersCount);
                 }
+                var stackSpacing = (thisEstimatedSize.width - storedEstimatedSize.width) / isUndefinedChildsCount;
                 for (var _b = 0, _c = this._childs; _b < _c.length; _b++) {
                     var child = _c[_b];
                     var isStack = child instanceof UIStack;
                     var isWidthUndefined = child._isUndefinedSize(this._axis);
                     var childEstimatedWidth = child._estimatedSize().width;
                     var childEstimatedSize = {
-                        width: isWidthUndefined ? (isStack ? Math.max(childEstimatedWidth, storedAutoWidth) : autoWidth) : childEstimatedWidth,
+                        width: isWidthUndefined ? (isStack ? childEstimatedWidth + stackSpacing : autoWidth) : childEstimatedWidth,
                         height: childContainerSize.height
                     };
                     point = child._layout(this._axis, { x: point.x, y: childOrigin.y }, childEstimatedSize);
@@ -2423,13 +2449,22 @@ var UICheckbox = (function (_super) {
         _this._text = text !== null && text !== void 0 ? text : "";
         return _this;
     }
-    UICheckbox.$ = function (text) {
+    UICheckbox.$ = function (text, isFit) {
+        if (isFit === void 0) { isFit = false; }
         var checkbox = new UICheckbox(text);
-        var minSize = text.containerSize();
-        return checkbox
-            .height(11)
-            .width(minSize.width + 11)
-            .minSize(minSize);
+        var containerSize = text.containerSize();
+        var minSize = {
+            width: containerSize.width + 11,
+            height: containerSize.height
+        };
+        var minSizeCheckbox = checkbox.height(11).minSize(minSize);
+        if (isFit) {
+            return minSizeCheckbox
+                .width(minSize.width);
+        }
+        else {
+            return minSizeCheckbox;
+        }
     };
     UICheckbox.$UN = function () {
         var checkbox = new UICheckbox(undefined);
@@ -3332,7 +3367,8 @@ var UIViewport = (function (_super) {
     __extends(UIViewport, _super);
     function UIViewport() {
         var _this = _super.call(this) || this;
-        _this._zoom = UIViewportScale.One;
+        _this._rotation = ui.mainViewport.rotation;
+        _this._zoom = ui.mainViewport.zoom;
         _this._visibilityFlags = UIViewportFlag.None;
         _this._position = ui.mainViewport.getCentrePosition();
         return _this;
@@ -3349,8 +3385,8 @@ var UIViewport = (function (_super) {
             top: this._origin.y,
             right: this._origin.x + ((_a = this._size.width) !== null && _a !== void 0 ? _a : 0),
             bottom: this._origin.y + ((_b = this._size.height) !== null && _b !== void 0 ? _b : 0),
-            rotation: ui.mainViewport.rotation,
-            zoom: ui.mainViewport.zoom,
+            rotation: this._rotation,
+            zoom: this._zoom,
             visibilityFlags: this._visibilityFlags
         };
         this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "viewport", viewport: this._viewport });
@@ -3362,6 +3398,7 @@ var UIViewport = (function (_super) {
         this._viewport.top = this._origin.y;
         this._viewport.right = this._origin.x + ((_a = this._size.width) !== null && _a !== void 0 ? _a : 0);
         this._viewport.bottom = this._origin.y + ((_b = this._size.height) !== null && _b !== void 0 ? _b : 0);
+        this._viewport.rotation = this._rotation;
         this._viewport.zoom = this._zoom;
         this._viewport.visibilityFlags = this._visibilityFlags;
         this.moveTo(this._position);
@@ -3381,6 +3418,13 @@ var UIViewport = (function (_super) {
     UIViewport.prototype.getPosition = function () {
         return this._position;
     };
+    UIViewport.prototype.rotation = function (val) {
+        this._rotation = val;
+        return this;
+    };
+    UIViewport.prototype.getRotation = function () {
+        return this._rotation;
+    };
     UIViewport.prototype.zoom = function (val) {
         this._zoom = val;
         return this;
@@ -3399,19 +3443,24 @@ var UIViewport = (function (_super) {
         return this._viewport.getCentrePosition();
     };
     UIViewport.prototype.moveTo = function (val) {
+        var _a;
         this._position = val;
-        if (typeof this._viewport.moveTo !== "undefined") {
+        if (typeof ((_a = this._viewport) === null || _a === void 0 ? void 0 : _a.moveTo) !== "undefined") {
             this._viewport.moveTo(val);
         }
     };
     UIViewport.prototype.scrollTo = function (val) {
+        var _a;
         this._position = val;
-        if (typeof this._viewport.scrollTo !== "undefined") {
+        if (typeof ((_a = this._viewport) === null || _a === void 0 ? void 0 : _a.scrollTo) !== "undefined") {
             this._viewport.scrollTo(val);
         }
     };
     UIViewport.prototype.scrollToMainViewportCenter = function () {
         this.scrollTo(ui.mainViewport.getCentrePosition());
+    };
+    UIViewport.prototype.moveToMainViewportCenter = function () {
+        this.moveTo(ui.mainViewport.getCentrePosition());
     };
     UIViewport.prototype.mainViewportScrollToThis = function () {
         if (typeof this._viewport !== "undefined") {
