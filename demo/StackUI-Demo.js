@@ -211,12 +211,12 @@ var TestWindow = function () {
         'third',
         'fourth'
     ]).isVisible(true), UISpinner.$()
-        .range(-10, 10)
-        .step(1)
+        .range(-10000, 10000)
+        .step(1000)
         .fixed(4)
         .value(0)
         .formatter(function (val) {
-        return val.format(TextFormat.Currency2dp) + UIImageShopItemCookie.string();
+        return val.format(TextFormat.Currency) + UIImageShopItemCookie.string();
     }), UIButton.$('6')
         .height(15), UIButton.$I(UIImageG2ZoomIn).bind(buttonZoom), UIButton.$('8')
         .height(20)).spacing(4)
@@ -227,7 +227,7 @@ var TestWindow = function () {
         .flags(UIViewportFlag.InvisibleSupports)).spacing(4), UIStack.$H(UISpacer.$(), UIButton.$('dddd')
         .height(50).width(100)), UIStack.$H(UIButton.$('10')
         .width(100), UIButton.$('Clear!').bind(buttonClear)
-        .width(350).height(100), UITextBox.$()
+        .height(100), UITextBox.$()
         .maxLength(20)).spacing(4), UILabel.$('Label----------------------!')
         .align(UITextAlignment.Center)).bind(window)
         .spacing(4)
@@ -478,7 +478,6 @@ Number.prototype.format = function (format) {
     for (var _i = 1; _i < arguments.length; _i++) {
         arg[_i - 1] = arguments[_i];
     }
-    console.log(this.valueOf());
     return context.formatString.apply(context, __spreadArray(["{" + format + "}", this.valueOf()], arg));
 };
 String.prototype.color = function (color) {
@@ -2860,7 +2859,7 @@ var UISpinner = (function (_super) {
                 var desc = {
                     title: _this._dialogueTitle,
                     description: _this._dialogueMessage,
-                    initialValue: _this._text,
+                    initialValue: _this._value.toString(),
                     maxLength: maxLength,
                     callback: function (value) {
                         var prev = _this._value;
@@ -2914,13 +2913,12 @@ var UISpinner = (function (_super) {
     };
     UISpinner.prototype._updateMinWidth = function () {
         var text;
-        var correction = 0;
+        var correction = this._min < 0 ? 4 : 0;
         if (this._usingFormatter()) {
-            text = this._formatter(this._value);
-            correction = this._value < 0 ? 4 : 0;
+            text = this._formatter(this._max);
         }
         else {
-            text = this._value.toFixed(this.__fixed());
+            text = this._max.toFixed(this.__fixed());
         }
         var textMinWidth = text.containerSize().width + correction;
         this.minWidth(textMinWidth + 11 * 2);
@@ -2933,6 +2931,7 @@ var UISpinner = (function (_super) {
             this._min = min;
             this._max = max;
         }
+        this._updateMinWidth();
         return this;
     };
     UISpinner.prototype.step = function (val) {
@@ -2963,6 +2962,7 @@ var UISpinner = (function (_super) {
     };
     UISpinner.prototype.value = function (val) {
         this._value = Math.max(this._min, Math.min(this._max, val));
+        this._updateMinWidth();
         return this;
     };
     UISpinner.prototype.getValue = function () {

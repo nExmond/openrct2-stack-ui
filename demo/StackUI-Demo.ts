@@ -376,12 +376,12 @@ var TestWindow = (): UIWindowProxy => {
                         'fourth'
                     ]).isVisible(true),
                     UISpinner.$()
-                        .range(-10, 10)
-                        .step(1)
+                        .range(-10000, 10000)
+                        .step(1000)
                         .fixed(4)
                         .value(0)
                         .formatter((val): string => {
-                            return val.format(TextFormat.Currency2dp) + UIImageShopItemCookie.string();
+                            return val.format(TextFormat.Currency) + UIImageShopItemCookie.string();
                         }),
                     UIButton.$('6')
                         .height(15),
@@ -407,7 +407,7 @@ var TestWindow = (): UIWindowProxy => {
             UIButton.$('10')
                 .width(100),
             UIButton.$('Clear!').bind(buttonClear)
-                .width(350).height(100),
+                .height(100),
             UITextBox.$()
                 .maxLength(20)
         ).spacing(4),

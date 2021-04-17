@@ -63,7 +63,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
                 const desc: TextInputDesc = {
                     title: this._dialogueTitle,
                     description: this._dialogueMessage,
-                    initialValue: this._text,
+                    initialValue: this._value.toString(),
                     maxLength: maxLength,
                     callback: (value: string) => {
                         const prev = this._value;
@@ -119,12 +119,11 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     protected _updateMinWidth() {
         var text: string;
-        var correction = 0;
+        var correction = this._min < 0 ? 4: 0;
         if (this._usingFormatter()) {
-            text = this._formatter!(this._value);
-            correction = this._value < 0 ? 4: 0;
+            text = this._formatter!(this._max);
         } else {
-            text = this._value.toFixed(this.__fixed());
+            text = this._max.toFixed(this.__fixed());
         }
         const textMinWidth = text.containerSize().width + correction;
         this.minWidth(textMinWidth + 11 * 2);
@@ -142,6 +141,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
             this._min = min;
             this._max = max;
         }
+        this._updateMinWidth();
         return this;
     }
 
@@ -188,6 +188,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
      */
     value(val: number): this {
         this._value = Math.max(this._min, Math.min(this._max, val))
+        this._updateMinWidth();
         return this;
     }
 
