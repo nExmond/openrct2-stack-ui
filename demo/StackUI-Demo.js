@@ -648,7 +648,7 @@ var UIImage = (function () {
     UIImage.prototype.description = function () {
         return "Duration: " + this._duration + "\nFrames: " + this._frames.map(function (val) { return val.toString(); }).reduce(function (acc, val) { return acc + '-' + val; });
     };
-    UIImage.prototype.text = function () {
+    UIImage.prototype.string = function () {
         return this.singleFrame().imageString();
     };
     return UIImage;
@@ -1834,15 +1834,24 @@ var UIWindow = (function () {
         }
     };
     UIWindow.prototype._update = function () {
+        var _this = this;
         var window = this._window;
         if (typeof window === "undefined") {
             return;
         }
         window.title = this._title;
-        window.minWidth = this._isExpandable ? this._minSize.width : this._size.width;
-        window.minHeight = this._isExpandable ? this._minSize.height : this._size.height;
-        window.maxWidth = this._isExpandable ? this._maxSize.width : this._size.width;
-        window.maxHeight = this._isExpandable ? this._maxSize.height : this._size.height;
+        var expandableValue = function (isWidth, rng) {
+            if (isWidth) {
+                return _this._isExpandable ? rng.width : Math.max(_this._minSize.width, _this._size.width);
+            }
+            else {
+                return _this._isExpandable ? rng.height : Math.max(_this._minSize.height, _this._size.height);
+            }
+        };
+        window.minWidth = expandableValue(true, this._minSize);
+        window.minHeight = expandableValue(false, this._minSize);
+        window.maxWidth = expandableValue(true, this._maxSize);
+        window.maxHeight = expandableValue(false, this._maxSize);
         var selectedIndex = this._usingTab() ? this._selectedTabIndex : undefined;
         window.colours = this._convertColors(selectedIndex);
         window.x = ui.width + 1;

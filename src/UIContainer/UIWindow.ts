@@ -132,10 +132,17 @@ class UIWindow {
         //Property does not have getter or setter.
         // window.tabIndex = this._selectedTabIndex;
 
-        window.minWidth = this._isExpandable ? this._minSize.width : this._size.width;
-        window.minHeight = this._isExpandable ? this._minSize.height : this._size.height;
-        window.maxWidth = this._isExpandable ? this._maxSize.width : this._size.width;
-        window.maxHeight = this._isExpandable ? this._maxSize.height : this._size.height;
+        var expandableValue = (isWidth: boolean, rng: UISize): number => {
+            if (isWidth) {
+                return this._isExpandable ? rng.width : Math.max(this._minSize.width, this._size.width);
+            } else {
+                return this._isExpandable ? rng.height : Math.max(this._minSize.height, this._size.height);
+            }
+        }        
+        window.minWidth = expandableValue(true, this._minSize);
+        window.minHeight = expandableValue(false, this._minSize);
+        window.maxWidth = expandableValue(true, this._maxSize);
+        window.maxHeight = expandableValue(false, this._maxSize);
 
         const selectedIndex = this._usingTab() ? this._selectedTabIndex: undefined;
         window.colours = this._convertColors(selectedIndex);
