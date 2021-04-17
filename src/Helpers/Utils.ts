@@ -7,6 +7,7 @@ interface Array<T> {
     flatMap<T>(): T[];
     flatMapFunc<T>(d: number): T[];
     compactMap<T>(): T[];
+    sum(): number;
 }
 Array.prototype.flatMapFunc = function <T>(d = 1): T[] {
     return d > 0 ? this.reduce((acc, val) => acc.concat(Array.isArray(val) ? val.flatMapFunc(d - 1) : val), []) : this.slice();
@@ -16,6 +17,9 @@ Array.prototype.flatMap = function <T>(): T[] {
 }
 Array.prototype.compactMap = function <T>(): T[] {
     return this.filter((val) => val !== undefined);
+}
+Array.prototype.sum = function (): number {
+    return this.reduce((acc: number, val: number) => acc + val, 0);
 }
 
 //https://www.cloudhadoop.com/2018/10/guide-to-unique-identifiers-uuid-guid.html
@@ -50,7 +54,7 @@ String.prototype.size = function (): UISize {
 
     const regex = new RegExp(/{INLINE_SPRITE}{(\d{1,3})}{\d{1,3}}{\d{1,3}}/g);
     const match = this.match(regex);
-    if (match !== null) {
+    if (match) {
         console.log("WARNING: Images inserted in text may be displayed incorrectly.");
 
         const images = match.map(val => {
