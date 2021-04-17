@@ -301,6 +301,158 @@ var LabelWindow = function (): UIWindowProxy {
     return window;
 }
 
+var TestWindow = (): UIWindowProxy => {
+
+    //Proxy
+    const window = UIWindowProxy.$();
+
+    const checkboxIsExpandable = UIWidgetProxy.$<UICheckbox>();
+    const buttonZoom = UIWidgetProxy.$<UIButton>();
+    const buttonchangeColor = UIWidgetProxy.$<UIButton>();
+
+    const viewport = UIWidgetProxy.$<UIViewport>();
+    const buttonClear = UIWidgetProxy.$<UIButton>();
+
+    //Constants
+    var containerPadding: UIEdgeInsets = { top: 2, left: 2, bottom: 2, right: 2 };
+
+    UIWindow.$(
+        'Window title',
+        UIButton.$('1')
+            .tooltip('Tooltip'),
+        UIStack.$H(
+            UIStack.$VG(
+                UIStack.$HG(
+                    UIColorPicker.$(),
+                    UIColorPicker.$()
+                        .isDisabled(true)
+                        .color(UIColor.BrightRed),
+                    UIColorPicker.$()
+                        .color(Math.floor(Math.random() * 32)),
+                    UIColorPicker.$()
+                        .isDisabled(true)
+                        .color(Math.floor(Math.random() * 32)),
+                    UIColorPicker.$()
+                        .color(Math.floor(Math.random() * 32)),
+                    UIColorPicker.$()
+                        .color(Math.floor(Math.random() * 32)),
+                    UIColorPicker.$()
+                        .color(Math.floor(Math.random() * 32)),
+                    UIColorPicker.$()
+                        .color(Math.floor(Math.random() * 32)),
+                    UIColorPicker.$()
+                        .color(Math.floor(Math.random() * 32)),
+                    UIColorPicker.$()
+                        .color(Math.floor(Math.random() * 32)),
+                ).title('ColorSet')
+                    .isDisabled(true)
+                    .padding(containerPadding),
+                UIStack.$VG(
+                    UIButton.$('2')
+                        .isDisabled(true),
+                    UIButton.$('2'),
+                    UIButton.$('2'),
+                    UIButton.$('2')
+                ).padding(containerPadding),
+                UIButton.$('2'),
+                UIStack.$H(
+                    UIButton.$('3'),
+                    UISpacer.$(10),
+                    UIButton.$('4'),
+                    UICheckbox.$UN().bind(checkboxIsExpandable)
+                ).spacing(4),
+                UIButton.$('A')
+            ).title('GroupBox')
+                .spacing(4)
+                .padding(containerPadding),
+            UISpacer.$(10),
+            UIStack.$HG(
+                UIButton.$('5'),
+                UIStack.$VG(
+                    UIDropdown.$([
+                        'first',
+                        'second',
+                        'third',
+                        'fourth'
+                    ]).isVisible(true),
+                    UISpinner.$()
+                        .range(-1, 1)
+                        .step(0.1, 2)
+                        .value(-0.1)
+                        .formatter((val): string => {
+                            return val.toFixed(2) + '%'
+                        }),
+                    UIButton.$('6')
+                        .height(15),
+                    UIButton.$I(UIImageG2ZoomIn).bind(buttonZoom),
+                    UIButton.$('8')
+                        .height(20)
+                ).spacing(4)
+                    .padding(containerPadding),
+                UIButton.$('change color').bind(buttonchangeColor)
+            ).spacing(4)
+                .padding(containerPadding),
+            UIViewport.$().bind(viewport)
+                .size({ width: 200, height: 200 })
+                .zoom(UIViewportScale.Quater)
+                .flags(UIViewportFlag.InvisibleSupports)
+        ).spacing(4),
+        UIStack.$H(
+            UISpacer.$(),
+            UIButton.$('dddd')
+                .height(50).width(100)
+        ),
+        UIStack.$H(
+            UIButton.$('10')
+                .width(100),
+            UIButton.$('Clear!').bind(buttonClear)
+                .width(350).height(100),
+            UITextBox.$()
+                .maxLength(20)
+        ).spacing(4),
+        UILabel.$('Label----------------------!')
+            .align(UITextAlignment.Center)
+    ).bind(window)
+        .spacing(4)
+        .padding(containerPadding)
+
+    //Bind
+    checkboxIsExpandable.ui?.onChange((_, isChecked) => {
+        console.log(isChecked);
+        window.ui?.updateUI((val) => {
+            if (isChecked) {
+                val.isExpandable(true);
+            } else {
+                val.isExpandable(false);
+            }
+        });
+    });
+    buttonZoom.ui?.onClick(_ => {
+        viewport.ui?.mainViewportScrollToThis();
+        window.ui?.updateUI(w => {
+            w.title('Moving........');
+        })
+    })
+    buttonchangeColor.ui?.onClick(_ => {
+        window.ui?.updateUI(w => {
+            w.theme({
+                primary: UIColor.DarkGreen | UIColorFlag.Translucent,
+                secondary: UIColor.SalmonPink | UIColorFlag.Outline,
+                tertiary: UIColor.SaturatedRed | UIColorFlag.Inset
+            });
+        });
+    });
+
+    buttonClear.ui?.onClick(_ => {
+        viewport.ui?.moveTo({ x: Math.random() * ui.width, y: Math.random() * ui.height });
+        viewport.ui?.updateUI(w => {
+            w.size(Math.random() * 200);
+        })
+    })
+
+    return window;
+}
+
 var MainWindow = function (): UIWindowProxy {
 
     //Proxy
@@ -313,11 +465,15 @@ var MainWindow = function (): UIWindowProxy {
     const viewportButton = UIWP.$<UIButton>();
     const viewportWindow = ViewportWindow();
 
+    const testButton = UIWP.$<UIButton>();
+    const testWindow = TestWindow();
+
     //Construct
     UIWindow.$T("StackUI Demo",
         UITab.$(
             UIButton.$("UILabel").bind(labelButton),
             UIButton.$("UIViewport").bind(viewportButton),
+            UIButton.$("Test").bind(testButton),
             UISpacer.$(10)
         ).bind(tab1)
             .isExpandable(true)
@@ -330,6 +486,9 @@ var MainWindow = function (): UIWindowProxy {
     });
     viewportButton.ui?.onClick(_ => {
         viewportWindow.ui?.show();
+    });
+    testButton.ui?.onClick(_ => {
+        testWindow.ui?.show();
     });
 
     return window;

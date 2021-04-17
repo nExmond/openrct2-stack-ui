@@ -165,7 +165,7 @@ var LabelWindow = function () {
     var buttonToggleTitle = UIWP.$();
     var buttonToggleImage = UIWP.$();
     var formatted = TB.$(TN.$(TN.$I(UIImageShopItemChips), TN.$S("Chips\n...").color(TextColor.PaleGold), TN.$S((1432).format(TextFormat.StringId, 53)).outline(), TN.$NL(), TN.$S((1432).format(TextFormat.StringId, 53)))).build();
-    UIWindow.$("StackUI Demo - Basic", UIStack.$VG(UILabel.$(formatted, true)).title("Label"), UIStack.$HG(UIStack.$HG(UICheckbox.$("checkbox")).title("Basic"), UIStack.$HG(UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN()).title("Unnamed")).title("Checkbox"), UIStack.$HG(UIColorPicker.$(UIColor.BrightRed), UIColorPicker.$(UIColor.LightOrange), UIColorPicker.$(UIColor.BrightYellow), UIColorPicker.$(UIColor.BrightGreen), UIColorPicker.$(UIColor.LightBlue), UIColorPicker.$(UIColor.DarkBlue), UIColorPicker.$(UIColor.LightPurple), UIColorPicker.$(UIColor.White)).title("ColorPicker").spacing(50), UIStack.$VG(UIDropdown.$(["Item1", "Item2", "Item3"]).selected(1)).title("Dropdown"), UIStack.$VG(UISpinner.$()).title("Spinner"), UIStack.$VG(UITextBox.$()).title("TextBox"), UIStack.$HG(UIStack.$HG(UIButton.$("button", true), UIButton.$I(UIImageGuests)).title("Basic"), UIStack.$HG(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage)).title("Toggle"), UIStack.$HG(UIPageImageButton.$IP.apply(UIPageImageButton, [
+    UIWindow.$("StackUI Demo - Basic", UIStack.$VG(UILabel.$(formatted, true)).title("Label"), UIStack.$HG(UIStack.$HG(UICheckbox.$("checkbox")).title("Basic"), UIStack.$HG(UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN()).title("Unnamed")).title("Checkbox"), UIStack.$HG(UIColorPicker.$(UIColor.BrightRed), UIColorPicker.$(UIColor.LightOrange), UIColorPicker.$(UIColor.BrightYellow), UIColorPicker.$(UIColor.BrightGreen), UIColorPicker.$(UIColor.LightBlue), UIColorPicker.$(UIColor.DarkBlue), UIColorPicker.$(UIColor.LightPurple)).title("ColorPicker"), UIStack.$VG(UIDropdown.$(["Item1", "Item2", "Item3"]).selected(1)).title("Dropdown"), UIStack.$VG(UISpinner.$()).title("Spinner"), UIStack.$VG(UITextBox.$()).title("TextBox"), UIStack.$HG(UIStack.$HG(UIButton.$("button", true), UIButton.$I(UIImageGuests)).title("Basic"), UIStack.$HG(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage)).title("Toggle"), UIStack.$HG(UIPageImageButton.$IP.apply(UIPageImageButton, [
         UIImageAwardBestValue,
         UIImageAwardMostBeautiful,
         UIImageAwardBestStaff
@@ -179,15 +179,107 @@ var LabelWindow = function () {
     });
     return window;
 };
+var TestWindow = function () {
+    var _a, _b, _c, _d;
+    var window = UIWindowProxy.$();
+    var checkboxIsExpandable = UIWidgetProxy.$();
+    var buttonZoom = UIWidgetProxy.$();
+    var buttonchangeColor = UIWidgetProxy.$();
+    var viewport = UIWidgetProxy.$();
+    var buttonClear = UIWidgetProxy.$();
+    var containerPadding = { top: 2, left: 2, bottom: 2, right: 2 };
+    UIWindow.$('Window title', UIButton.$('1')
+        .tooltip('Tooltip'), UIStack.$H(UIStack.$VG(UIStack.$HG(UIColorPicker.$(), UIColorPicker.$()
+        .isDisabled(true)
+        .color(UIColor.BrightRed), UIColorPicker.$()
+        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
+        .isDisabled(true)
+        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
+        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
+        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
+        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
+        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
+        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
+        .color(Math.floor(Math.random() * 32))).title('ColorSet')
+        .isDisabled(true)
+        .padding(containerPadding), UIStack.$VG(UIButton.$('2')
+        .isDisabled(true), UIButton.$('2'), UIButton.$('2'), UIButton.$('2')).padding(containerPadding), UIButton.$('2'), UIStack.$H(UIButton.$('3'), UISpacer.$(10), UIButton.$('4'), UICheckbox.$UN().bind(checkboxIsExpandable)).spacing(4), UIButton.$('A')).title('GroupBox')
+        .spacing(4)
+        .padding(containerPadding), UISpacer.$(10), UIStack.$HG(UIButton.$('5'), UIStack.$VG(UIDropdown.$([
+        'first',
+        'second',
+        'third',
+        'fourth'
+    ]).isVisible(true), UISpinner.$()
+        .range(-1, 1)
+        .step(0.1, 2)
+        .value(-0.1)
+        .formatter(function (val) {
+        return val.toFixed(2) + '%';
+    }), UIButton.$('6')
+        .height(15), UIButton.$I(UIImageG2ZoomIn).bind(buttonZoom), UIButton.$('8')
+        .height(20)).spacing(4)
+        .padding(containerPadding), UIButton.$('change color').bind(buttonchangeColor)).spacing(4)
+        .padding(containerPadding), UIViewport.$().bind(viewport)
+        .size({ width: 200, height: 200 })
+        .zoom(UIViewportScale.Quater)
+        .flags(UIViewportFlag.InvisibleSupports)).spacing(4), UIStack.$H(UISpacer.$(), UIButton.$('dddd')
+        .height(50).width(100)), UIStack.$H(UIButton.$('10')
+        .width(100), UIButton.$('Clear!').bind(buttonClear)
+        .width(350).height(100), UITextBox.$()
+        .maxLength(20)).spacing(4), UILabel.$('Label----------------------!')
+        .align(UITextAlignment.Center)).bind(window)
+        .spacing(4)
+        .padding(containerPadding);
+    (_a = checkboxIsExpandable.ui) === null || _a === void 0 ? void 0 : _a.onChange(function (_, isChecked) {
+        var _a;
+        console.log(isChecked);
+        (_a = window.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (val) {
+            if (isChecked) {
+                val.isExpandable(true);
+            }
+            else {
+                val.isExpandable(false);
+            }
+        });
+    });
+    (_b = buttonZoom.ui) === null || _b === void 0 ? void 0 : _b.onClick(function (_) {
+        var _a, _b;
+        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.mainViewportScrollToThis();
+        (_b = window.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) {
+            w.title('Moving........');
+        });
+    });
+    (_c = buttonchangeColor.ui) === null || _c === void 0 ? void 0 : _c.onClick(function (_) {
+        var _a;
+        (_a = window.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+            w.theme({
+                primary: UIColor.DarkGreen | UIColorFlag.Translucent,
+                secondary: UIColor.SalmonPink | UIColorFlag.Outline,
+                tertiary: UIColor.SaturatedRed | UIColorFlag.Inset
+            });
+        });
+    });
+    (_d = buttonClear.ui) === null || _d === void 0 ? void 0 : _d.onClick(function (_) {
+        var _a, _b;
+        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.moveTo({ x: Math.random() * ui.width, y: Math.random() * ui.height });
+        (_b = viewport.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) {
+            w.size(Math.random() * 200);
+        });
+    });
+    return window;
+};
 var MainWindow = function () {
-    var _a, _b;
+    var _a, _b, _c;
     var window = UIWDP.$();
     var tab1 = UITP.$();
     var labelButton = UIWP.$();
     var labelWindow = LabelWindow();
     var viewportButton = UIWP.$();
     var viewportWindow = ViewportWindow();
-    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("UILabel").bind(labelButton), UIButton.$("UIViewport").bind(viewportButton), UISpacer.$(10)).bind(tab1)
+    var testButton = UIWP.$();
+    var testWindow = TestWindow();
+    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("UILabel").bind(labelButton), UIButton.$("UIViewport").bind(viewportButton), UIButton.$("Test").bind(testButton), UISpacer.$(10)).bind(tab1)
         .isExpandable(true)).bind(window)
         .spacing(2);
     (_a = labelButton.ui) === null || _a === void 0 ? void 0 : _a.onClick(function (_) {
@@ -197,6 +289,10 @@ var MainWindow = function () {
     (_b = viewportButton.ui) === null || _b === void 0 ? void 0 : _b.onClick(function (_) {
         var _a;
         (_a = viewportWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
+    });
+    (_c = testButton.ui) === null || _c === void 0 ? void 0 : _c.onClick(function (_) {
+        var _a;
+        (_a = testWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
     });
     return window;
 };
@@ -290,6 +386,9 @@ Array.prototype.flatMap = function () {
 Array.prototype.compactMap = function () {
     return this.filter(function (val) { return val !== undefined; });
 };
+Array.prototype.sum = function () {
+    return this.reduce(function (acc, val) { return acc + val; }, 0);
+};
 function uuid() {
     var uuidValue = '', k, randomValue;
     for (k = 0; k < 32; k++) {
@@ -307,7 +406,7 @@ String.prototype.size = function () {
     var imageBounds = UISizeZero;
     var regex = new RegExp(/{INLINE_SPRITE}{(\d{1,3})}{\d{1,3}}{\d{1,3}}/g);
     var match = this.match(regex);
-    if (match !== null) {
+    if (match) {
         console.log("WARNING: Images inserted in text may be displayed incorrectly.");
         var images = (_a = match.map(function (val) {
             var strings = val.split('{').map(function (val) { return val.split('}'); }).flatMap();
@@ -873,7 +972,7 @@ var UIWidget = (function () {
             height: (_b = this._size.height) !== null && _b !== void 0 ? _b : estimatedSize.height
         };
         this._size = {
-            width: size.width - 2,
+            width: size.width - 1,
             height: size.height
         };
         switch (axis) {
@@ -1312,11 +1411,8 @@ var UIStack = (function (_super) {
             this._origin = origin;
             this._size = thisEstimatedSize;
         }
-        var exactSizeChilds = this._childs.filter(function (val) { return !val._isUndefinedSize(_this._axis); });
         var undefinedSizeChilds = this._childs.filter(function (val) { return val._isUndefinedSize(_this._axis); });
         var numberOfUndefinedSizeChilds = undefinedSizeChilds.length;
-        var undefinedSizeStacks = undefinedSizeChilds.filter(function (val) { return val instanceof UIStack; });
-        var sumOfSpacing = this._spacing * (this._childs.length - 1);
         var correctEdgePadding = this._childs.filter(function (val) { return val instanceof UIStack; }).length == 0 ? 1 : 0;
         var childContainerSize = {
             width: thisEstimatedSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
@@ -1327,34 +1423,17 @@ var UIStack = (function (_super) {
             y: this._origin.y + this._insets.top + this._padding.top + this._offset.y
         };
         var point = childOrigin;
-        var isUndefinedChildsCount = this._childs.filter(function (val) { return val._isUndefinedSize(_this._axis); }).length;
         switch (this._axis) {
             case UIAxis.Vertical: {
-                var sumOfExactChildHeights = 0;
-                if (exactSizeChilds.length > 0) {
-                    sumOfExactChildHeights = exactSizeChilds.map(function (val) { return val._estimatedSize().height; }).reduce(function (acc, val) { return acc + val; });
-                }
-                var autoHeight = 0;
-                if (numberOfUndefinedSizeChilds > 0) {
-                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights) / numberOfUndefinedSizeChilds);
-                }
-                var stackMaxHeights = 0;
-                if (undefinedSizeStacks.length > 0) {
-                    stackMaxHeights = undefinedSizeStacks.map(function (val) { return Math.max(autoHeight, val._estimatedSize().height); }).reduce(function (acc, val) { return acc + val; });
-                }
-                var othersCount = numberOfUndefinedSizeChilds - undefinedSizeStacks.length;
-                if (othersCount > 0) {
-                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights - stackMaxHeights) / othersCount);
-                }
-                var stackSpacing = (thisEstimatedSize.height - storedEstimatedSize.height) / isUndefinedChildsCount;
+                var stackSpacing = (thisEstimatedSize.height - storedEstimatedSize.height) / numberOfUndefinedSizeChilds;
                 for (var _i = 0, _a = this._childs; _i < _a.length; _i++) {
                     var child = _a[_i];
-                    var isStack = child instanceof UIStack;
                     var isHeightUndefined = child._isUndefinedSize(this._axis);
                     var childEstimatedHeight = child._estimatedSize().height;
+                    var correctIsUndefined = isHeightUndefined ? stackSpacing : 0;
                     var childEstimatedSize = {
                         width: childContainerSize.width,
-                        height: isHeightUndefined ? (isStack ? childEstimatedHeight + stackSpacing : autoHeight) : childEstimatedHeight
+                        height: childEstimatedHeight + correctIsUndefined
                     };
                     point = child._layout(this._axis, { x: childOrigin.x, y: point.y }, childEstimatedSize);
                     point = { x: point.x, y: point.y + this._spacing };
@@ -1362,30 +1441,14 @@ var UIStack = (function (_super) {
                 break;
             }
             case UIAxis.Horizontal: {
-                var sumOfExactChildWidths = 0;
-                if (exactSizeChilds.length > 0) {
-                    sumOfExactChildWidths = exactSizeChilds.map(function (val) { return val._estimatedSize().width; }).reduce(function (acc, val) { return acc + val; });
-                }
-                var autoWidth = 0;
-                if (numberOfUndefinedSizeChilds > 0) {
-                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths) / numberOfUndefinedSizeChilds);
-                }
-                var stackMaxWidths = 0;
-                if (undefinedSizeStacks.length > 0) {
-                    stackMaxWidths = undefinedSizeStacks.map(function (val) { return Math.max(autoWidth, val._estimatedSize().width); }).reduce(function (acc, val) { return acc + val; });
-                }
-                var othersCount = numberOfUndefinedSizeChilds - undefinedSizeStacks.length;
-                if (othersCount > 0) {
-                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths - stackMaxWidths) / othersCount);
-                }
-                var stackSpacing = (thisEstimatedSize.width - storedEstimatedSize.width) / isUndefinedChildsCount;
+                var stackSpacing = (thisEstimatedSize.width - storedEstimatedSize.width) / numberOfUndefinedSizeChilds;
                 for (var _b = 0, _c = this._childs; _b < _c.length; _b++) {
                     var child = _c[_b];
-                    var isStack = child instanceof UIStack;
                     var isWidthUndefined = child._isUndefinedSize(this._axis);
                     var childEstimatedWidth = child._estimatedSize().width;
+                    var correctIsUndefined = isWidthUndefined ? stackSpacing : 0;
                     var childEstimatedSize = {
-                        width: isWidthUndefined ? (isStack ? childEstimatedWidth + stackSpacing : autoWidth) : childEstimatedWidth,
+                        width: childEstimatedWidth + correctIsUndefined,
                         height: childContainerSize.height
                     };
                     point = child._layout(this._axis, { x: point.x, y: childOrigin.y }, childEstimatedSize);
@@ -1414,8 +1477,8 @@ var UIStack = (function (_super) {
     };
     UIStack.prototype._update = function (widget) {
         var _a;
-        _super.prototype._update.call(this, widget);
-        if (this._isGrouped) {
+        if (this._isGrouped && widget) {
+            _super.prototype._update.call(this, widget);
             widget.name = (_a = this._groupTitle) !== null && _a !== void 0 ? _a : "";
         }
     };
@@ -1472,8 +1535,9 @@ var UIStack = (function (_super) {
 var UIConstructor = (function () {
     function UIConstructor() {
     }
-    UIConstructor.prototype.constructTabs = function (tabs, selectedIndex, interactor, spacing, padding) {
+    UIConstructor.prototype.constructTabs = function (tabs, selectedIndex, interactor, spacing, padding, usingBuild) {
         var _a, _b;
+        if (usingBuild === void 0) { usingBuild = true; }
         if (selectedIndex >= tabs.length || selectedIndex < 0) {
             throw new Error("SelectedIndex is less than the count of tabs and must be at least 0.");
         }
@@ -1483,7 +1547,7 @@ var UIConstructor = (function () {
             var stack = tab._contentView
                 .spacing((_a = tab._spacing) !== null && _a !== void 0 ? _a : spacing)
                 .padding((_b = tab._padding) !== null && _b !== void 0 ? _b : padding);
-            var results = this.construct(stack, interactor, UIEdgeInsetsTabContainer);
+            var results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, usingBuild);
             tab._minSize = {
                 width: Math.max(minWidth, results.size.width),
                 height: results.size.height
@@ -1500,11 +1564,12 @@ var UIConstructor = (function () {
             tabs: tabs.map(function (val) { return val._data(); })
         };
     };
-    UIConstructor.prototype.construct = function (stack, interactor, insets) {
+    UIConstructor.prototype.construct = function (stack, interactor, insets, usingBuild) {
         if (insets === void 0) { insets = UIEdgeInsetsContainer; }
+        if (usingBuild === void 0) { usingBuild = true; }
         this._injectInteractor(stack, interactor);
         return {
-            size: this.calculateBounds(stack, insets),
+            size: this.calculateBounds(stack, insets, usingBuild),
             widgets: stack._getWidgets()
         };
     };
@@ -1513,14 +1578,17 @@ var UIConstructor = (function () {
         stack._interactor = interactor;
         flattedChilds.forEach(function (val) { return val._interactor = interactor; });
     };
-    UIConstructor.prototype.calculateBounds = function (stack, insets) {
+    UIConstructor.prototype.calculateBounds = function (stack, insets, usingBuild) {
+        if (usingBuild === void 0) { usingBuild = true; }
         var origin = {
             x: insets.left,
             y: insets.top
         };
         var estimatedSize = stack._estimatedSize();
         stack._layout(UIAxis.Vertical, origin, estimatedSize);
-        stack._build();
+        if (usingBuild) {
+            stack._build();
+        }
         return {
             width: estimatedSize.width + insets.left + insets.right,
             height: estimatedSize.height + insets.top + insets.bottom
@@ -1761,7 +1829,6 @@ var UIWindow = (function () {
             width: Math.max(Math.min(this._size.width, tabMaxSize.width), tabMinSize.width),
             height: Math.max(Math.min(this._size.height, tabMaxSize.height), tabMinSize.height)
         };
-        currentTab._contentView._loadWidget();
         this._refresh(size);
         this.updateUI(function (window) {
             var _a;
@@ -1788,14 +1855,14 @@ var UIWindow = (function () {
             var currentTab = this._tabs[this._selectedTabIndex];
             contentView = currentTab._contentView;
             contentView._resetSize();
-            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
+            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, false);
             minSize = currentTab._minSize;
             maxSize = currentTab._maxSize;
         }
         else if (typeof this._singleContentView !== "undefined") {
             contentView = this._singleContentView;
             contentView._resetSize();
-            var construct = this._uiConstructor.construct(this._singleContentView, this._interactor);
+            var construct = this._uiConstructor.construct(this._singleContentView, this._interactor, UIEdgeInsetsContainer, false);
             minSize = construct.size;
             maxSize = this._maxSize;
         }
@@ -1803,7 +1870,6 @@ var UIWindow = (function () {
             width: Math.max(Math.min(this._size.width, maxSize.width), minSize.width),
             height: Math.max(Math.min(this._size.height, maxSize.height), minSize.height)
         };
-        contentView === null || contentView === void 0 ? void 0 : contentView._loadWidget();
         this._refresh(size);
         this.updateUI(function (window) {
             window._minSize = minSize;
@@ -2607,7 +2673,7 @@ var UILabel = (function (_super) {
         return _this;
     }
     UILabel.$ = function (text, isFit) {
-        if (isFit === void 0) { isFit = false; }
+        if (isFit === void 0) { isFit = true; }
         var label = new UILabel(text);
         var minSize = text.containerSize();
         if (isFit) {
