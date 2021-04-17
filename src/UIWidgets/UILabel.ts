@@ -24,7 +24,7 @@ class UILabel extends UIWidget<LabelWidget> {
     /**
      * Create *UILabel* instance without using new.
      */
-    static $(text: string, isFit: boolean = false): UILabel {
+    static $(text: string, isFit: boolean = true): UILabel {
         const label = new UILabel(text);
         const minSize = text.containerSize();
         if (isFit) {
