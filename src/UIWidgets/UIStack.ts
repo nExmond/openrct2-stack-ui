@@ -29,7 +29,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         super();
         this._axis = axis;
         this._childs = widgets;
-        this._childs.forEach((val) => {
+        this._childs.forEach(val => {
             if (val instanceof UISpacer) {
                 val._confirm(axis);
             }
@@ -81,7 +81,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     //Private
 
     _getUIWidgets(): UIWidget<any>[] {
-        const widgets: UIWidget<any>[] = this._childs.map((val) => val._getUIWidgets()).flatMap();
+        const widgets: UIWidget<any>[] = this._childs.map(val => val._getUIWidgets()).flatMap();
         if (this._isGrouped) {
             widgets.unshift(this);
         }
@@ -89,7 +89,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     _getWidgets(): Widget[] {
-        const widgets: Widget[] = this._childs.map((val) => val._getWidgets()).flatMap();
+        const widgets: Widget[] = this._childs.map(val => val._getWidgets()).flatMap();
         if (this._isGrouped) {
             widgets.unshift(this._widget);
         }
@@ -97,7 +97,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     protected _containerSize(): UISize {
-        return this._childs.map((val) => val._estimatedSize())
+        return this._childs.map(val => val._estimatedSize())
             .reduce((acc, val) => {
                 switch (this._axis) {
                     case UIAxis.Vertical: {
@@ -141,7 +141,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     _isUndefinedSize(axis: UIAxis): boolean {
-        return this._childs.filter((val) => val._isUndefinedSize(axis)).length > 0;
+        return this._childs.filter(val => val._isUndefinedSize(axis)).length > 0;
     }
 
     _layout(axis: UIAxis, origin: UIPoint, estimatedSize: UISize): UIPoint {
@@ -172,10 +172,10 @@ class UIStack extends UIWidget<GroupBoxWidget> {
             this._size = thisEstimatedSize;
         }
 
-        const undefinedSizeChilds = this._childs.filter((val) => val._isUndefinedSize(this._axis));
+        const undefinedSizeChilds = this._childs.filter(val => val._isUndefinedSize(this._axis));
         const numberOfUndefinedSizeChilds = undefinedSizeChilds.length;
 
-        const correctEdgePadding = this._childs.filter((val) => val instanceof UIStack).length == 0 ? 1 : 0;
+        const correctEdgePadding = this._childs.filter(val => val instanceof UIStack).length == 0 ? 1 : 0;
 
         const childContainerSize: UISize = {
             width: thisEstimatedSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
@@ -244,7 +244,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         if (this._isGrouped) {
             super._loadWidget();
         }
-        this._childs.forEach((val) => val._loadWidget());
+        this._childs.forEach(val => val._loadWidget());
     }
 
     _build() {
@@ -255,7 +255,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
                 type: "groupbox"
             }
         }
-        this._childs.forEach((val) => val._build())
+        this._childs.forEach(val => val._build())
     }
 
     _update(widget: any) {
@@ -267,14 +267,14 @@ class UIStack extends UIWidget<GroupBoxWidget> {
 
     _resetSize() {
         super._resetSize();
-        this._childs.forEach((val) => val._resetSize());
+        this._childs.forEach(val => val._resetSize());
     }
 
     _refreshUI() {
         if (this._isGrouped) {
             super._refreshUI();
         }
-        this._childs.forEach((val) => val._refreshUI());
+        this._childs.forEach(val => val._refreshUI());
     }
 
     //Public

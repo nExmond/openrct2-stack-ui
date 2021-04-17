@@ -49,7 +49,7 @@ Errors can occur when resizing windows.
         return {
             size: selectedTab._minSize,
             widgets: [],
-            tabs: tabs.map((val) => val._data())
+            tabs: tabs.map(val => val._data())
         }
     }
 
@@ -72,7 +72,7 @@ Errors can occur when resizing windows.
 
         const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
         stack._interactor = interactor;
-        flattedChilds.forEach((val) => val._interactor = interactor);
+        flattedChilds.forEach(val => val._interactor = interactor);
     }
 
     protected calculateBounds(stack: UIStack, insets: UIEdgeInsets, usingBuild: boolean = true): UISize {
@@ -100,8 +100,8 @@ Errors can occur when resizing windows.
      * @param tabs 
      */
     didLoadTabs(tabs: UITab[]) {
-        const flattedChilds: UIWidget<any>[] = tabs.map((val) => val._contentView._getUIWidgets()).flatMap();
-        flattedChilds.forEach((val) => val._loadWidget());
+        const flattedChilds: UIWidget<any>[] = tabs.map(val => val._contentView._getUIWidgets()).flatMap();
+        flattedChilds.forEach(val => val._loadWidget());
     }
 
     /**
@@ -110,7 +110,7 @@ Errors can occur when resizing windows.
      */
     didLoad(stack: UIStack) {
         const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
-        flattedChilds.forEach((val) => val._loadWidget());
+        flattedChilds.forEach(val => val._loadWidget());
     }
 
     /**

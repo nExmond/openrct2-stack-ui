@@ -122,7 +122,7 @@ class UIButton extends UIWidget<ButtonWidget> {
             intervalHelper.start(this._name, val._duration * 20, () => {
                 var index = count % val._frames.length;
                 var frame = val._frames[index];
-                this.updateUI((widget) => {
+                this.updateUI(widget => {
                     widget._image = frame;
                 });
                 count += 1;

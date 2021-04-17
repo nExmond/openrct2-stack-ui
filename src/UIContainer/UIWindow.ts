@@ -174,7 +174,7 @@ class UIWindow {
             height: Math.max(Math.min(this._size.height, tabMaxSize.height), tabMinSize.height)
         }
         this._refresh(size);
-        this.updateUI((window) => {
+        this.updateUI(window => {
             window._minSize = tabMinSize;
             window._maxSize = tabMaxSize;
             window._isExpandable = window._initialExpandableState || currentTab._isExpandable;
@@ -224,7 +224,7 @@ class UIWindow {
             height: Math.max(Math.min(this._size.height, maxSize.height), minSize.height)
         }
         this._refresh(size);
-        this.updateUI((window) => {
+        this.updateUI(window => {
             window._minSize = minSize;
             window._maxSize = maxSize;
         })
@@ -305,7 +305,7 @@ class UIWindow {
         };
         this._sync();
 
-        this._interactor._findWidget((name) => {
+        this._interactor._findWidget(name => {
             return this.findWidget(name);
         });
         this._interactor._refresh(() => {

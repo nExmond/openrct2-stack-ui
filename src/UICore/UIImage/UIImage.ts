@@ -112,8 +112,8 @@ class UIImage {
      * Compare the sprite IDs that make up the image and the order of the same.
      */
     isEqual(val: UIImage): boolean {
-        const left = this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
-        const right = val._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
+        const left = this._frames.map(val => val.toString()).reduce((acc, val) => acc + '-' + val);
+        const right = val._frames.map(val => val.toString()).reduce((acc, val) => acc + '-' + val);
         return left === right;
     }
 
@@ -142,6 +142,6 @@ class UIImage {
      * @returns description 
      */
     description(): string {
-        return "Duration: " + this._duration + "\nFrames: " + this._frames.map((val) => val.toString()).reduce((acc, val) => acc + '-' + val);
+        return "Duration: " + this._duration + "\nFrames: " + this._frames.map(val => val.toString()).reduce((acc, val) => acc + '-' + val);
     }
 }

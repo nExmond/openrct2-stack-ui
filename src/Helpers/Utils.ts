@@ -16,7 +16,7 @@ Array.prototype.flatMap = function <T>(): T[] {
     return this.flatMapFunc(1);
 }
 Array.prototype.compactMap = function <T>(): T[] {
-    return this.filter((val) => val !== undefined);
+    return this.filter(val => val !== undefined);
 }
 Array.prototype.sum = function (): number {
     return this.reduce((acc: number, val: number) => acc + val, 0);

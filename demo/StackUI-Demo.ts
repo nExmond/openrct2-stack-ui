@@ -419,7 +419,7 @@ var TestWindow = (): UIWindowProxy => {
     //Bind
     checkboxIsExpandable.ui?.onChange((_, isChecked) => {
         console.log(isChecked);
-        window.ui?.updateUI((val) => {
+        window.ui?.updateUI(val => {
             if (isChecked) {
                 val.isExpandable(true);
             } else {

@@ -49,7 +49,7 @@ class UIPageImageButton extends UIButton {
     protected _internalOnChange() {
         this._index = (this._index + 1) % this._images.length;
         const image = this._images[this._index];
-        this.updateUI((widget) => widget.image(image));
+        this.updateUI(widget => widget.image(image));
         this._onPage?.call(this, this, image);
     }
 

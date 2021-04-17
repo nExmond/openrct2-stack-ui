@@ -13,7 +13,7 @@ class UIToggleButton extends UIButton {
         const widget: ButtonWidget = this._widget;
         const isPressed = widget.isPressed ?? false
         const toggled = !isPressed;
-        this.updateUI((widget) => widget.isPressed(toggled));
+        this.updateUI(widget => widget.isPressed(toggled));
         this._onPress?.call(this, this, toggled);
     }
 
