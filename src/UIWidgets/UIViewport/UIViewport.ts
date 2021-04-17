@@ -87,6 +87,10 @@ class UIViewport extends UIWidget<ViewportWidget> {
         return this._position;
     }
 
+    /**
+     * Sets the angle of rotation of the viewport.
+     * ! Screen coordinates of viewports other than this viewport may be moved abnormally. It's a bug in openrct2.
+     */
     rotation(val: number): this {
         this._rotation = val;
         return this;
@@ -156,6 +160,9 @@ class UIViewport extends UIWidget<ViewportWidget> {
         this.scrollTo(ui.mainViewport.getCentrePosition());
     }
 
+    /**
+     * Moves the location of the map displayed by the current viewport to the location of the main viewport.
+     */
     moveToMainViewportCenter() {
         this.moveTo(ui.mainViewport.getCentrePosition());
     }
