@@ -182,30 +182,30 @@ var ViewportWindow = function (): UIWindowProxy {
         updateButton(w.getZoom());
     });
 
-    buttonZoomIn.ui?.onClick(button => {
+    buttonZoomIn.ui?.onClick(_ => {
         viewport.ui?.updateUI(w => {
             const nextScale = w.getZoom() - 1;
             w.zoom(nextScale);
             updateButton(nextScale);
         });
     });
-    buttonZoomOut.ui?.onClick(button => {
+    buttonZoomOut.ui?.onClick(_ => {
         viewport.ui?.updateUI(w => {
             const nextScale = w.getZoom() + 1;
             w.zoom(nextScale);
             updateButton(nextScale);
         });
     });
-    buttonRocateM2C.ui?.onClick(button => {
+    buttonRocateM2C.ui?.onClick(_ => {
         viewport.ui?.mainViewportScrollToThis();
     });
-    buttonRotate.ui?.onClick(button => {
+    buttonRotate.ui?.onClick(_ => {
         viewport.ui?.updateUI(w => {
             const nextRotation = (w.getRotation() + 1) % 4;
             w.rotation(nextRotation);
         });
     });
-    buttonRocateC2M.ui?.onClick(button => {
+    buttonRocateC2M.ui?.onClick(_ => {
         viewport.ui?.moveToMainViewportCenter();
     });
 
@@ -376,12 +376,12 @@ var TestWindow = (): UIWindowProxy => {
                         'fourth'
                     ]).isVisible(true),
                     UISpinner.$()
-                        .range(-1, 1)
-                        .step(0.1)
+                        .range(-10, 10)
+                        .step(1)
                         .fixed(4)
-                        .value(-0.1)
+                        .value(0)
                         .formatter((val): string => {
-                            return val.toFixed(2) + '%'
+                            return val.format(TextFormat.Currency2dp) + UIImageShopItemCookie.string();
                         }),
                     UIButton.$('6')
                         .height(15),

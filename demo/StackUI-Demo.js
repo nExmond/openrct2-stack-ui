@@ -126,7 +126,7 @@ var ViewportWindow = function () {
     (_l = viewport.ui) === null || _l === void 0 ? void 0 : _l.didLoad(function (w) {
         updateButton(w.getZoom());
     });
-    (_m = buttonZoomIn.ui) === null || _m === void 0 ? void 0 : _m.onClick(function (button) {
+    (_m = buttonZoomIn.ui) === null || _m === void 0 ? void 0 : _m.onClick(function (_) {
         var _a;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
             var nextScale = w.getZoom() - 1;
@@ -134,7 +134,7 @@ var ViewportWindow = function () {
             updateButton(nextScale);
         });
     });
-    (_o = buttonZoomOut.ui) === null || _o === void 0 ? void 0 : _o.onClick(function (button) {
+    (_o = buttonZoomOut.ui) === null || _o === void 0 ? void 0 : _o.onClick(function (_) {
         var _a;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
             var nextScale = w.getZoom() + 1;
@@ -142,19 +142,18 @@ var ViewportWindow = function () {
             updateButton(nextScale);
         });
     });
-    (_p = buttonRocateM2C.ui) === null || _p === void 0 ? void 0 : _p.onClick(function (button) {
+    (_p = buttonRocateM2C.ui) === null || _p === void 0 ? void 0 : _p.onClick(function (_) {
         var _a;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.mainViewportScrollToThis();
     });
-    (_q = buttonRotate.ui) === null || _q === void 0 ? void 0 : _q.onClick(function (button) {
+    (_q = buttonRotate.ui) === null || _q === void 0 ? void 0 : _q.onClick(function (_) {
         var _a;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
-            console.log(w.getRotation());
             var nextRotation = (w.getRotation() + 1) % 4;
             w.rotation(nextRotation);
         });
     });
-    (_r = buttonRocateC2M.ui) === null || _r === void 0 ? void 0 : _r.onClick(function (button) {
+    (_r = buttonRocateC2M.ui) === null || _r === void 0 ? void 0 : _r.onClick(function (_) {
         var _a;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.moveToMainViewportCenter();
     });
@@ -212,12 +211,12 @@ var TestWindow = function () {
         'third',
         'fourth'
     ]).isVisible(true), UISpinner.$()
-        .range(-1, 1)
-        .step(0.1)
+        .range(-10, 10)
+        .step(1)
         .fixed(4)
-        .value(-0.1)
+        .value(0)
         .formatter(function (val) {
-        return val.toFixed(2) + '%';
+        return val.format(TextFormat.Currency2dp) + UIImageShopItemCookie.string();
     }), UIButton.$('6')
         .height(15), UIButton.$I(UIImageG2ZoomIn).bind(buttonZoom), UIButton.$('8')
         .height(20)).spacing(4)
@@ -472,14 +471,15 @@ String.prototype.format = function (format) {
     for (var _i = 1; _i < arguments.length; _i++) {
         arg[_i - 1] = arguments[_i];
     }
-    return context.formatString.apply(context, __spreadArray(["{" + format + "}", this], arg));
+    return context.formatString.apply(context, __spreadArray(["{" + format + "}", this.toString()], arg));
 };
 Number.prototype.format = function (format) {
     var arg = [];
     for (var _i = 1; _i < arguments.length; _i++) {
         arg[_i - 1] = arguments[_i];
     }
-    return context.formatString.apply(context, __spreadArray(["{" + format + "}", this], arg));
+    console.log(this.valueOf());
+    return context.formatString.apply(context, __spreadArray(["{" + format + "}", this.valueOf()], arg));
 };
 String.prototype.color = function (color) {
     return TB.$(this.toString()).color(color).build();

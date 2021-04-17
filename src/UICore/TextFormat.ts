@@ -34,10 +34,12 @@ enum TextFormat {
 
     /**
      * Currency formatting by language.
+     * ! May be displayed differently depending on the exchange rate ratio of the base currency
      */
     Currency = "CURRENCY",
     /**
      * Currency two decimal places formatting by language.
+     * ! May be displayed differently depending on the exchange rate ratio of the base currency
      */
     Currency2dp = "CURRENCY2DP",
 

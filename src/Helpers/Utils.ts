@@ -139,7 +139,7 @@ interface String {
     format(format: TextFormat, ...arg: any[]): string;
 }
 String.prototype.format = function (format: TextFormat, ...arg: any[]): string {
-    return context.formatString(`{${format}}`, this, ...arg);
+    return context.formatString(`{${format}}`, this.toString(), ...arg);
 }
 
 
@@ -154,7 +154,7 @@ interface Number {
     format(format: TextFormat, ...arg: any[]): string;
 }
 Number.prototype.format = function (format: TextFormat, ...arg: any[]): string {
-    return context.formatString(`{${format}}`, this, ...arg);
+    return context.formatString(`{${format}}`, this.valueOf(), ...arg);
 }
 
 
