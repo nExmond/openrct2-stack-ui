@@ -156,3 +156,54 @@ interface Number {
 Number.prototype.format = function (format: TextFormat, ...arg: any[]): string {
     return context.formatString(`{${format}}`, this, ...arg);
 }
+
+
+interface String {
+
+    /**
+     * Set the color to the text.
+     * ! Results cannot be guaranteed with this method.
+     * ! If you want complex text style settings, use the text builder.
+     * @param color 
+     */
+    color(color: TextColor): string;
+
+    /**
+     * Set the outline to the text.
+     * ! Results cannot be guaranteed with this method.
+     * ! If you want complex text style settings, use the text builder.
+     */
+    outline(): string;
+    
+    /**
+     * Set the font to the text.
+     * ! Results cannot be guaranteed with this method.
+     * ! If you want complex text style settings, use the text builder.
+     * @param font 
+     */
+     font(font: TextFont): string;
+}
+String.prototype.color = function (color: TextColor): string {
+    return TB.$(this.toString()).color(color).build();
+}
+String.prototype.outline = function (): string {
+    return TB.$(this.toString()).outline().build();
+}
+String.prototype.font = function (font: TextFont): string {
+    return TB.$(this.toString()).font(font).build();
+}
+
+interface Number {
+    
+    /**
+     * Calculate the available strings in a string by sprite number.
+     */
+    imageString(): string;
+}
+Number.prototype.imageString = function (): string {
+    const imageId = Math.floor(this.valueOf());
+    const head = Math.floor(imageId / (256 * 256));
+    const section = Math.floor(imageId / 256);
+    const item = imageId % 256;
+    return `{INLINE_SPRITE}{${item}}{${section}}{${head}}{0}`;
+}

@@ -209,7 +209,7 @@ var TestWindow = function () {
         'first',
         'second',
         'third',
-        'fourth111111111222222222222222111'
+        'fourth'
     ]).isVisible(true), UISpinner.$()
         .range(-1, 1)
         .step(0.1)
@@ -222,7 +222,7 @@ var TestWindow = function () {
         .height(20)).spacing(4)
         .padding(containerPadding), UIButton.$('change color').bind(buttonchangeColor)).spacing(4)
         .padding(containerPadding), UIViewport.$().bind(viewport)
-        .size({ width: 200, height: 200 })
+        .size(200)
         .zoom(UIViewportScale.Quater)
         .flags(UIViewportFlag.InvisibleSupports)).spacing(4), UIStack.$H(UISpacer.$(), UIButton.$('dddd')
         .height(50).width(100)), UIStack.$H(UIButton.$('10')
@@ -265,7 +265,7 @@ var TestWindow = function () {
         var _a, _b;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.moveTo({ x: Math.random() * ui.width, y: Math.random() * ui.height });
         (_b = viewport.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) {
-            w.size(Math.random() * 200);
+            w.size(Math.random() * 400);
         });
     });
     return window;
@@ -480,6 +480,22 @@ Number.prototype.format = function (format) {
     }
     return context.formatString.apply(context, __spreadArray(["{" + format + "}", this], arg));
 };
+String.prototype.color = function (color) {
+    return TB.$(this.toString()).color(color).build();
+};
+String.prototype.outline = function () {
+    return TB.$(this.toString()).outline().build();
+};
+String.prototype.font = function (font) {
+    return TB.$(this.toString()).font(font).build();
+};
+Number.prototype.imageString = function () {
+    var imageId = Math.floor(this.valueOf());
+    var head = Math.floor(imageId / (256 * 256));
+    var section = Math.floor(imageId / 256);
+    var item = imageId % 256;
+    return "{INLINE_SPRITE}{" + item + "}{" + section + "}{" + head + "}{0}";
+};
 var ImageHelper = (function () {
     function ImageHelper() {
         this._open();
@@ -631,6 +647,9 @@ var UIImage = (function () {
     };
     UIImage.prototype.description = function () {
         return "Duration: " + this._duration + "\nFrames: " + this._frames.map(function (val) { return val.toString(); }).reduce(function (acc, val) { return acc + '-' + val; });
+    };
+    UIImage.prototype.text = function () {
+        return this.singleFrame().imageString();
     };
     return UIImage;
 }());
@@ -892,11 +911,8 @@ var ImageNode = (function (_super) {
     __extends(ImageNode, _super);
     function ImageNode(image) {
         var _this = this;
-        var imageId = image._frames[0];
-        var head = Math.floor(imageId / (256 * 256));
-        var section = Math.floor(imageId / 256);
-        var item = imageId % 256;
-        var string = "{INLINE_SPRITE}{" + item + "}{" + section + "}{" + head + "}{0}";
+        var imageId = image.singleFrame();
+        var string = imageId.imageString();
         _this = _super.call(this, string, false) || this;
         return _this;
     }

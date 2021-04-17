@@ -144,4 +144,11 @@ class UIImage {
     description(): string {
         return "Duration: " + this._duration + "\nFrames: " + this._frames.map(val => val.toString()).reduce((acc, val) => acc + '-' + val);
     }
+
+    /**
+     * A string converted to a form usable in string.
+     */
+    string(): string {
+        return this.singleFrame().imageString();
+    }
 }

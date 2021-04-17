@@ -373,7 +373,7 @@ var TestWindow = (): UIWindowProxy => {
                         'first',
                         'second',
                         'third',
-                        'fourth111111111222222222222222111'
+                        'fourth'
                     ]).isVisible(true),
                     UISpinner.$()
                         .range(-1, 1)
@@ -394,7 +394,7 @@ var TestWindow = (): UIWindowProxy => {
             ).spacing(4)
                 .padding(containerPadding),
             UIViewport.$().bind(viewport)
-                .size({ width: 200, height: 200 })
+                .size(200)
                 .zoom(UIViewportScale.Quater)
                 .flags(UIViewportFlag.InvisibleSupports)
         ).spacing(4),
@@ -447,7 +447,7 @@ var TestWindow = (): UIWindowProxy => {
     buttonClear.ui?.onClick(_ => {
         viewport.ui?.moveTo({ x: Math.random() * ui.width, y: Math.random() * ui.height });
         viewport.ui?.updateUI(w => {
-            w.size(Math.random() * 200);
+            w.size(Math.random() * 400);
         })
     })
 
