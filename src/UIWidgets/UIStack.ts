@@ -172,13 +172,10 @@ class UIStack extends UIWidget<GroupBoxWidget> {
             this._size = thisEstimatedSize;
         }
 
-        const exactSizeChilds = this._childs.filter((val) => !val._isUndefinedSize(this._axis));
         const undefinedSizeChilds = this._childs.filter((val) => val._isUndefinedSize(this._axis));
         const numberOfUndefinedSizeChilds = undefinedSizeChilds.length;
-        const undefinedSizeStacks = undefinedSizeChilds.filter((val) => val instanceof UIStack);
-        const sumOfSpacing = this._spacing * (this._childs.length - 1);
 
-        const correctEdgePadding = this._childs.filter((val) => val instanceof UIStack).length == 0 ? 1: 0;
+        const correctEdgePadding = this._childs.filter((val) => val instanceof UIStack).length == 0 ? 1 : 0;
 
         const childContainerSize: UISize = {
             width: thisEstimatedSize.width - (this._insets.left + this._insets.right + this._padding.left + this._padding.right),
@@ -190,38 +187,18 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         }
         var point = childOrigin;
 
-        const isUndefinedChildsCount = this._childs.filter(val => val._isUndefinedSize(this._axis)).length;
-
         switch (this._axis) {
             case UIAxis.Vertical: {
-                var sumOfExactChildHeights = 0;
-                if (exactSizeChilds.length > 0) {
-                    sumOfExactChildHeights = exactSizeChilds.map((val) => val._estimatedSize().height).reduce((acc, val) => acc + val);
-                }
 
-                var autoHeight: number = 0;
-                if (numberOfUndefinedSizeChilds > 0) {
-                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights) / numberOfUndefinedSizeChilds);
-                }
-
-                var stackMaxHeights = 0;
-                if (undefinedSizeStacks.length > 0) {
-                    stackMaxHeights = undefinedSizeStacks.map((val) => Math.max(autoHeight, val._estimatedSize().height)).reduce((acc, val) => acc + val);
-                }
-                var othersCount = numberOfUndefinedSizeChilds - undefinedSizeStacks.length;
-                if (othersCount > 0) {
-                    autoHeight = Math.floor((childContainerSize.height - sumOfSpacing - sumOfExactChildHeights - stackMaxHeights) / othersCount);
-                }
-
-                const stackSpacing = (thisEstimatedSize.height - storedEstimatedSize.height)/isUndefinedChildsCount;
+                const stackSpacing = (thisEstimatedSize.height - storedEstimatedSize.height) / numberOfUndefinedSizeChilds;
 
                 for (var child of this._childs) {
-                    const isStack = child instanceof UIStack;
                     const isHeightUndefined = child._isUndefinedSize(this._axis);
                     const childEstimatedHeight = child._estimatedSize().height;
+                    const correctIsUndefined = isHeightUndefined ? stackSpacing: 0;
                     const childEstimatedSize: UISize = {
                         width: childContainerSize.width,
-                        height: isHeightUndefined ? (isStack ? childEstimatedHeight + stackSpacing : autoHeight) : childEstimatedHeight
+                        height: childEstimatedHeight + correctIsUndefined
                     };
                     point = child._layout(
                         this._axis,
@@ -234,33 +211,15 @@ class UIStack extends UIWidget<GroupBoxWidget> {
                 break;
             }
             case UIAxis.Horizontal: {
-                var sumOfExactChildWidths = 0;
-                if (exactSizeChilds.length > 0) {
-                    sumOfExactChildWidths = exactSizeChilds.map((val) => val._estimatedSize().width).reduce((acc, val) => acc + val);
-                }
 
-                var autoWidth: number = 0;
-                if (numberOfUndefinedSizeChilds > 0) {
-                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths) / numberOfUndefinedSizeChilds);
-                }
-
-                var stackMaxWidths = 0;
-                if (undefinedSizeStacks.length > 0) {
-                    stackMaxWidths = undefinedSizeStacks.map((val) => Math.max(autoWidth, val._estimatedSize().width)).reduce((acc, val) => acc + val);
-                }
-                var othersCount = numberOfUndefinedSizeChilds - undefinedSizeStacks.length;
-                if (othersCount > 0) {
-                    autoWidth = Math.floor((childContainerSize.width - sumOfSpacing - sumOfExactChildWidths - stackMaxWidths) / othersCount);
-                }
-
-                const stackSpacing = (thisEstimatedSize.width - storedEstimatedSize.width)/isUndefinedChildsCount;
+                const stackSpacing = (thisEstimatedSize.width - storedEstimatedSize.width) / numberOfUndefinedSizeChilds;
 
                 for (var child of this._childs) {
-                    const isStack = child instanceof UIStack;
                     const isWidthUndefined = child._isUndefinedSize(this._axis);
                     const childEstimatedWidth = child._estimatedSize().width;
+                    const correctIsUndefined = isWidthUndefined ? stackSpacing: 0;
                     const childEstimatedSize: UISize = {
-                        width: isWidthUndefined ? (isStack ? childEstimatedWidth+stackSpacing : autoWidth) : childEstimatedWidth,
+                        width: childEstimatedWidth + correctIsUndefined,
                         height: childContainerSize.height
                     };
                     point = child._layout(
@@ -300,8 +259,8 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     _update(widget: any) {
-        super._update(widget);
-        if (this._isGrouped) {
+        if (this._isGrouped && widget) {
+            super._update(widget);
             widget.name = this._groupTitle ?? "";
         }
     }
