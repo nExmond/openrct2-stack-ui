@@ -373,11 +373,12 @@ var TestWindow = (): UIWindowProxy => {
                         'first',
                         'second',
                         'third',
-                        'fourth'
+                        'fourth111111111222222222222222111'
                     ]).isVisible(true),
                     UISpinner.$()
                         .range(-1, 1)
-                        .step(0.1, 2)
+                        .step(0.1)
+                        .fixed(4)
                         .value(-0.1)
                         .formatter((val): string => {
                             return val.toFixed(2) + '%'
@@ -459,8 +460,8 @@ var MainWindow = function (): UIWindowProxy {
     const window = UIWDP.$();
     const tab1 = UITP.$();
 
-    const labelButton = UIWP.$<UIButton>();
-    const labelWindow = LabelWindow();
+    const basicButton = UIWP.$<UIButton>();
+    const basicWindow = LabelWindow();
 
     const viewportButton = UIWP.$<UIButton>();
     const viewportWindow = ViewportWindow();
@@ -471,8 +472,8 @@ var MainWindow = function (): UIWindowProxy {
     //Construct
     UIWindow.$T("StackUI Demo",
         UITab.$(
-            UIButton.$("UILabel").bind(labelButton),
-            UIButton.$("UIViewport").bind(viewportButton),
+            UIButton.$("Basic").bind(basicButton),
+            UIButton.$("Viewport").bind(viewportButton),
             UIButton.$("Test").bind(testButton),
             UISpacer.$(10)
         ).bind(tab1)
@@ -481,8 +482,8 @@ var MainWindow = function (): UIWindowProxy {
         .spacing(2)
 
     //Bind
-    labelButton.ui?.onClick(_ => {
-        labelWindow.ui?.show();
+    basicButton.ui?.onClick(_ => {
+        basicWindow.ui?.show();
     });
     viewportButton.ui?.onClick(_ => {
         viewportWindow.ui?.show();

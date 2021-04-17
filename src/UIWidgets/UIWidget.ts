@@ -171,10 +171,38 @@ class UIWidget<T extends Widget> {
     }
 
     /**
+     * Set the minimum width.
+     */
+    minWidth(val: number): this {
+        this._minSize = {
+            width: val,
+            height: this._minSize.height
+        }
+        return this;
+    }
+
+    /**
+     * Set the minimum height.
+     */
+    minHeight(val: number): this {
+        this._minSize = {
+            width: this._minSize.width,
+            height: val
+        }
+        return this;
+    }
+
+    /**
      * Set the minimum size.
      */
-    minSize(val: UISize): this {
-        this._minSize = val;
+    minSize(val: UISize | number): this {
+        var size = UISizeZero;
+        if (typeof val === "number") {
+            size = { width: val, height: val };
+        } else {
+            size = val;
+        }
+        this._minSize = size;
         return this;
     }
 

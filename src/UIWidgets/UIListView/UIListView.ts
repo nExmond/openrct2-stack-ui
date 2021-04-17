@@ -37,8 +37,7 @@ class UIListView extends UIWidget<ListView> {
      */
     static $(columns: UIListViewColumn[] | undefined = undefined): UIListView {
         const listView = new UIListView(columns);
-        return listView
-            .minSize({ width: 165, height: 120 });
+        return listView.minSize(100);
     }
 
     //Private

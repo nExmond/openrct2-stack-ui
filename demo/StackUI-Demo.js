@@ -209,10 +209,11 @@ var TestWindow = function () {
         'first',
         'second',
         'third',
-        'fourth'
+        'fourth111111111222222222222222111'
     ]).isVisible(true), UISpinner.$()
         .range(-1, 1)
-        .step(0.1, 2)
+        .step(0.1)
+        .fixed(4)
         .value(-0.1)
         .formatter(function (val) {
         return val.toFixed(2) + '%';
@@ -273,18 +274,18 @@ var MainWindow = function () {
     var _a, _b, _c;
     var window = UIWDP.$();
     var tab1 = UITP.$();
-    var labelButton = UIWP.$();
-    var labelWindow = LabelWindow();
+    var basicButton = UIWP.$();
+    var basicWindow = LabelWindow();
     var viewportButton = UIWP.$();
     var viewportWindow = ViewportWindow();
     var testButton = UIWP.$();
     var testWindow = TestWindow();
-    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("UILabel").bind(labelButton), UIButton.$("UIViewport").bind(viewportButton), UIButton.$("Test").bind(testButton), UISpacer.$(10)).bind(tab1)
+    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("Test").bind(testButton), UISpacer.$(10)).bind(tab1)
         .isExpandable(true)).bind(window)
         .spacing(2);
-    (_a = labelButton.ui) === null || _a === void 0 ? void 0 : _a.onClick(function (_) {
+    (_a = basicButton.ui) === null || _a === void 0 ? void 0 : _a.onClick(function (_) {
         var _a;
-        (_a = labelWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
+        (_a = basicWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
     });
     (_b = viewportButton.ui) === null || _b === void 0 ? void 0 : _b.onClick(function (_) {
         var _a;
@@ -388,6 +389,12 @@ Array.prototype.compactMap = function () {
 };
 Array.prototype.sum = function () {
     return this.reduce(function (acc, val) { return acc + val; }, 0);
+};
+Array.prototype.min = function () {
+    return this.reduce(function (acc, val) { return Math.min(acc, val); }, 0);
+};
+Array.prototype.max = function () {
+    return this.reduce(function (acc, val) { return Math.max(acc, val); }, 0);
 };
 function uuid() {
     var uuidValue = '', k, randomValue;
@@ -1055,8 +1062,29 @@ var UIWidget = (function () {
     UIWidget.prototype.getOrigin = function () {
         return this._origin;
     };
+    UIWidget.prototype.minWidth = function (val) {
+        this._minSize = {
+            width: val,
+            height: this._minSize.height
+        };
+        return this;
+    };
+    UIWidget.prototype.minHeight = function (val) {
+        this._minSize = {
+            width: this._minSize.width,
+            height: val
+        };
+        return this;
+    };
     UIWidget.prototype.minSize = function (val) {
-        this._minSize = val;
+        var size = UISizeZero;
+        if (typeof val === "number") {
+            size = { width: val, height: val };
+        }
+        else {
+            size = val;
+        }
+        this._minSize = size;
         return this;
     };
     UIWidget.prototype.getMinSize = function () {
@@ -2624,8 +2652,9 @@ var UIDropdown = (function (_super) {
     }
     UIDropdown.$ = function (items) {
         var dropdown = new UIDropdown(items);
+        var itemsMinWidth = items.map(function (val) { return val.containerSize().width; }).max();
         return dropdown.height(15)
-            .minSize({ width: 50, height: 15 });
+            .minSize({ width: itemsMinWidth + 11, height: 15 });
     };
     UIDropdown.prototype._build = function () {
         var _this = this;
@@ -2772,7 +2801,6 @@ var UISpinner = (function (_super) {
         _this._max = 1;
         _this._value = 0.5;
         _this._step = 0.1;
-        _this._fixed = 1;
         _this._dialogueTitle = "Title";
         _this._dialogueMessage = "Message{NEWLINE}(Set it using function 'dialogueInfo')";
         _this._dialogueMaxLength = 256;
@@ -2785,12 +2813,11 @@ var UISpinner = (function (_super) {
     };
     UISpinner.prototype._build = function () {
         var _this = this;
-        var usingFormatter = typeof this._formatter !== "undefined";
-        if (usingFormatter) {
+        if (this._usingFormatter()) {
             this._text = this._formatter(this._value);
         }
         else {
-            this._text = this._value.toFixed(this._fixed);
+            this._text = this._value.toFixed(this.__fixed());
         }
         this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "spinner", text: this._applyFont(this._text), onDecrement: function () {
                 var prev = _this._value;
@@ -2820,13 +2847,13 @@ var UISpinner = (function (_super) {
     };
     UISpinner.prototype._signal = function (prev, current) {
         var _a;
-        var fixedCurrent = current.toFixed(this._fixed);
+        var fixedCurrent = current.toFixed(this.__fixed());
         var zero = +0.0;
-        var fixedZero = zero.toFixed(this._fixed);
+        var fixedZero = zero.toFixed(this.__fixed());
         var negativeFixedZero = '-' + fixedZero;
         var isNegativeZero = fixedCurrent === negativeFixedZero;
         var usingFormatter = typeof this._formatter !== "undefined";
-        var valueChanged = prev.toFixed(this._fixed) != fixedCurrent;
+        var valueChanged = prev.toFixed(this.__fixed()) != fixedCurrent;
         if (valueChanged) {
             if (usingFormatter) {
                 if (isNegativeZero) {
@@ -2852,6 +2879,26 @@ var UISpinner = (function (_super) {
         _super.prototype._update.call(this, widget);
         widget.text = this._applyFont(this._text);
     };
+    UISpinner.prototype.__fixed = function () {
+        var _a;
+        return (_a = this._fixed) !== null && _a !== void 0 ? _a : 1;
+    };
+    UISpinner.prototype._usingFormatter = function () {
+        return typeof this._formatter !== "undefined";
+    };
+    UISpinner.prototype._updateMinWidth = function () {
+        var text;
+        var correction = 0;
+        if (this._usingFormatter()) {
+            text = this._formatter(this._value);
+            correction = this._value < 0 ? 4 : 0;
+        }
+        else {
+            text = this._value.toFixed(this.__fixed());
+        }
+        var textMinWidth = text.containerSize().width + correction;
+        this.minWidth(textMinWidth + 11 * 2);
+    };
     UISpinner.prototype.range = function (min, max) {
         if (min > max) {
             console.log("'min' cannot be greater than 'max'.");
@@ -2862,28 +2909,31 @@ var UISpinner = (function (_super) {
         }
         return this;
     };
-    UISpinner.prototype.step = function (step, fixed) {
-        if (fixed === void 0) { fixed = undefined; }
-        this._step = step;
-        if (typeof fixed === "undefined") {
+    UISpinner.prototype.step = function (val) {
+        this._step = val;
+        if (typeof this._fixed === "undefined") {
             for (var i = 0; i < Infinity; i++) {
                 var mul = Math.pow(10, i);
-                if ((step * mul) % 1 == 0) {
+                if ((val * mul) % 1 == 0) {
                     this._fixed = i;
                     break;
                 }
             }
         }
-        else {
-            this._fixed = fixed;
-        }
+        this._updateMinWidth();
         return this;
     };
     UISpinner.prototype.getStep = function () {
         return this._step;
     };
+    UISpinner.prototype.fixed = function (val) {
+        this._fixed = val;
+        this._updateMinWidth();
+        return this;
+    };
     UISpinner.prototype.getFixed = function () {
-        return this._fixed;
+        var _a;
+        return (_a = this._fixed) !== null && _a !== void 0 ? _a : 1;
     };
     UISpinner.prototype.value = function (val) {
         this._value = Math.max(this._min, Math.min(this._max, val));
@@ -2894,6 +2944,7 @@ var UISpinner = (function (_super) {
     };
     UISpinner.prototype.formatter = function (black) {
         this._formatter = black;
+        this._updateMinWidth();
         return this;
     };
     UISpinner.prototype.getFormatter = function () {
@@ -3290,8 +3341,7 @@ var UIListView = (function (_super) {
     UIListView.$ = function (columns) {
         if (columns === void 0) { columns = undefined; }
         var listView = new UIListView(columns);
-        return listView
-            .minSize({ width: 165, height: 120 });
+        return listView.minSize(100);
     };
     UIListView.prototype._build = function () {
         var _this = this;
@@ -3441,8 +3491,7 @@ var UIViewport = (function (_super) {
     }
     UIViewport.$ = function () {
         var viewport = new UIViewport();
-        return viewport
-            .minSize({ width: 165, height: 120 });
+        return viewport.minSize(100);
     };
     UIViewport.prototype._build = function () {
         var _a, _b;

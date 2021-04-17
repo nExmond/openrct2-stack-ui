@@ -26,8 +26,9 @@ class UIDropdown extends UIWidget<DropdownWidget> {
      */
     static $(items: string[]): UIDropdown {
         const dropdown = new UIDropdown(items);
+        const itemsMinWidth = items.map(val => val.containerSize().width).max();
         return dropdown.height(15)
-            .minSize({ width: 50, height: 15 });
+            .minSize({ width: itemsMinWidth + 11, height: 15 });
     }
 
     //Private

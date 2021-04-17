@@ -8,6 +8,8 @@ interface Array<T> {
     flatMapFunc<T>(d: number): T[];
     compactMap<T>(): T[];
     sum(): number;
+    min(): number;
+    max(): number;
 }
 Array.prototype.flatMapFunc = function <T>(d = 1): T[] {
     return d > 0 ? this.reduce((acc, val) => acc.concat(Array.isArray(val) ? val.flatMapFunc(d - 1) : val), []) : this.slice();
@@ -20,6 +22,12 @@ Array.prototype.compactMap = function <T>(): T[] {
 }
 Array.prototype.sum = function (): number {
     return this.reduce((acc: number, val: number) => acc + val, 0);
+}
+Array.prototype.min = function (): number {
+    return this.reduce((acc: number, val: number) => Math.min(acc, val), 0);
+}
+Array.prototype.max = function (): number {
+    return this.reduce((acc: number, val: number) => Math.max(acc, val), 0);
 }
 
 //https://www.cloudhadoop.com/2018/10/guide-to-unique-identifiers-uuid-guid.html
@@ -43,6 +51,7 @@ interface String {
 
     /**
      * Calculate the actual size of the string.
+     * ! It is calculated based on the current default language font, so the size may not be correct in other languages.
      * @returns size 
      */
     size(): UISize;

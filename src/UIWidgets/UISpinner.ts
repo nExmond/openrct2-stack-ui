@@ -12,7 +12,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
     protected _max: number = 1;
     protected _value: number = 0.5;
     protected _step: number = 0.1;
-    protected _fixed: number = 1;
+    protected _fixed: number | undefined;
 
     protected _formatter: ((val: number) => string) | undefined;
 
@@ -38,11 +38,10 @@ class UISpinner extends UIWidget<SpinnerWidget> {
     //Private
 
     _build() {
-        const usingFormatter = typeof this._formatter !== "undefined";
-        if (usingFormatter) {
+        if (this._usingFormatter()) {
             this._text = this._formatter!(this._value);
         } else {
-            this._text = this._value.toFixed(this._fixed);
+            this._text = this._value.toFixed(this.__fixed());
         }
         this._widget = {
             ...this._buildBaseValues(),
@@ -79,13 +78,13 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     protected _signal(prev: number, current: number) {
         //https://stackoverflow.com/questions/7223359/are-0-and-0-the-same
-        const fixedCurrent = current.toFixed(this._fixed)
+        const fixedCurrent = current.toFixed(this.__fixed())
         const zero = +0.0;
-        const fixedZero = zero.toFixed(this._fixed);
+        const fixedZero = zero.toFixed(this.__fixed());
         const negativeFixedZero = '-' + fixedZero;
         const isNegativeZero = fixedCurrent === negativeFixedZero;
         const usingFormatter = typeof this._formatter !== "undefined";
-        const valueChanged = prev.toFixed(this._fixed) != fixedCurrent;
+        const valueChanged = prev.toFixed(this.__fixed()) != fixedCurrent;
         if (valueChanged) {
             if (usingFormatter) {
                 if (isNegativeZero) {
@@ -110,6 +109,27 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         widget.text = this._applyFont(this._text);
     }
 
+    protected __fixed(): number {
+        return this._fixed ?? 1;
+    }
+
+    protected _usingFormatter(): boolean {
+        return typeof this._formatter !== "undefined";
+    }
+
+    protected _updateMinWidth() {
+        var text: string;
+        var correction = 0;
+        if (this._usingFormatter()) {
+            text = this._formatter!(this._value);
+            correction = this._value < 0 ? 4: 0;
+        } else {
+            text = this._value.toFixed(this.__fixed());
+        }
+        const textMinWidth = text.containerSize().width + correction;
+        this.minWidth(textMinWidth + 11 * 2);
+    }
+
     //Public
 
     /**
@@ -127,23 +147,20 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     /**
      * Setting the step of increasing or decreasing the number.
-     * @param step 
-     * @param fixed Set the number of decimal places
      */
-    step(step: number, fixed: number | undefined = undefined): this {
-        this._step = step;
+    step(val: number): this {
+        this._step = val;
 
-        if (typeof fixed === "undefined") {
+        if (typeof this._fixed === "undefined") {
             for (var i = 0; i < Infinity; i++) {
                 let mul = Math.pow(10, i);
-                if ((step * mul) % 1 == 0) {
+                if ((val * mul) % 1 == 0) {
                     this._fixed = i;
                     break;
                 }
             }
-        } else {
-            this._fixed = fixed;
         }
+        this._updateMinWidth();
 
         return this;
     }
@@ -152,8 +169,18 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         return this._step;
     }
 
+    /**
+     * Set the number of decimal places
+     * ! Ignored when using a formatter.
+     */
+    fixed(val: number): this {
+        this._fixed = val;
+        this._updateMinWidth();
+        return this;
+    }
+
     getFixed(): number {
-        return this._fixed;
+        return this._fixed ?? 1;
     }
 
     /**
@@ -174,6 +201,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
      */
     formatter(black: (val: number) => string): this {
         this._formatter = black;
+        this._updateMinWidth();
         return this;
     }
 

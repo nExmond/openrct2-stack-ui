@@ -25,8 +25,7 @@ class UIViewport extends UIWidget<ViewportWidget> {
      */
     static $(): UIViewport {
         const viewport = new UIViewport();
-        return viewport
-            .minSize({ width: 165, height: 120 });
+        return viewport.minSize(100);
     }
 
     //Private
