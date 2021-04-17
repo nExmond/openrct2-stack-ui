@@ -18,7 +18,7 @@ class UIConstructor {
      * @param padding 
      * @returns construction result
      */
-    constructTabs(tabs: UITab[], selectedIndex: number, interactor: UIInteractor, spacing: number, padding: UIEdgeInsets): UIConstructResult {
+    constructTabs(tabs: UITab[], selectedIndex: number, interactor: UIInteractor, spacing: number, padding: UIEdgeInsets, usingBuild: boolean = true): UIConstructResult {
         if (selectedIndex >= tabs.length || selectedIndex < 0) {
             throw new Error("SelectedIndex is less than the count of tabs and must be at least 0.");
         }
@@ -29,7 +29,7 @@ class UIConstructor {
                 .spacing(tab._spacing ?? spacing)
                 .padding(tab._padding ?? padding);
 
-                const results = this.construct(stack, interactor, UIEdgeInsetsTabContainer);
+                const results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, usingBuild);
             tab._minSize = {
                 width: Math.max(minWidth, results.size.width),
                 height: results.size.height
@@ -60,10 +60,10 @@ Errors can occur when resizing windows.
      * @param insets 
      * @returns construction result
      */
-    construct(stack: UIStack, interactor: UIInteractor, insets: UIEdgeInsets = UIEdgeInsetsContainer): UIConstructResult {
+    construct(stack: UIStack, interactor: UIInteractor, insets: UIEdgeInsets = UIEdgeInsetsContainer, usingBuild: boolean = true): UIConstructResult {
         this._injectInteractor(stack, interactor);
         return {
-            size: this.calculateBounds(stack, insets),
+            size: this.calculateBounds(stack, insets, usingBuild),
             widgets: stack._getWidgets()
         };
     }
@@ -75,7 +75,7 @@ Errors can occur when resizing windows.
         flattedChilds.forEach((val) => val._interactor = interactor);
     }
 
-    protected calculateBounds(stack: UIStack, insets: UIEdgeInsets): UISize {
+    protected calculateBounds(stack: UIStack, insets: UIEdgeInsets, usingBuild: boolean = true): UISize {
 
         const origin: UIPoint = {
             x: insets.left,
@@ -85,7 +85,9 @@ Errors can occur when resizing windows.
         const estimatedSize = stack._estimatedSize();
 
         stack._layout(UIAxis.Vertical, origin, estimatedSize);
-        stack._build();
+        if (usingBuild) {
+            stack._build();
+        }
 
         return {
             width: estimatedSize.width + insets.left + insets.right,

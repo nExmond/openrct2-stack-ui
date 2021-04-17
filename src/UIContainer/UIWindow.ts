@@ -173,7 +173,6 @@ class UIWindow {
             width: Math.max(Math.min(this._size.width, tabMaxSize.width), tabMinSize.width),
             height: Math.max(Math.min(this._size.height, tabMaxSize.height), tabMinSize.height)
         }
-        currentTab._contentView._loadWidget();
         this._refresh(size);
         this.updateUI((window) => {
             window._minSize = tabMinSize;
@@ -204,7 +203,7 @@ class UIWindow {
 
             contentView._resetSize();
             
-            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
+            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, false);
 
             minSize = currentTab._minSize;
             maxSize = currentTab._maxSize;
@@ -214,7 +213,7 @@ class UIWindow {
 
             contentView._resetSize();
 
-            const construct = this._uiConstructor.construct(this._singleContentView, this._interactor);
+            const construct = this._uiConstructor.construct(this._singleContentView, this._interactor, UIEdgeInsetsContainer, false);
 
             minSize = construct.size;
             maxSize = this._maxSize;
@@ -224,7 +223,6 @@ class UIWindow {
             width: Math.max(Math.min(this._size.width, maxSize.width), minSize.width),
             height: Math.max(Math.min(this._size.height, maxSize.height), minSize.height)
         }
-        contentView?._loadWidget();
         this._refresh(size);
         this.updateUI((window) => {
             window._minSize = minSize;
