@@ -1,6 +1,7 @@
 /// <reference path="../UIWidget.ts" />
 /// <reference path="UIViewportFlag.ts" />
 /// <reference path="UIViewportScale.ts" />
+/// <reference path="UIViewportAngle.ts" />
 
 /**
  * Widget to display park elements.
@@ -8,7 +9,7 @@
 class UIViewport extends UIWidget<ViewportWidget> {
 
     protected _viewport!: Viewport;
-    protected _rotation: number = ui.mainViewport.rotation;
+    protected _rotation: UIViewportAngle = ui.mainViewport.rotation;
     protected _zoom: UIViewportScale = ui.mainViewport.zoom;
     protected _visibilityFlags: UIViewportFlag = UIViewportFlag.None;
 
@@ -90,12 +91,12 @@ class UIViewport extends UIWidget<ViewportWidget> {
      * Sets the angle of rotation of the viewport.
      * ! Screen coordinates of viewports other than this viewport may be moved abnormally. It's a bug in openrct2.
      */
-    rotation(val: number): this {
+    rotation(val: UIViewportAngle): this {
         this._rotation = val;
         return this;
     }
 
-    getRotation(): number {
+    getRotation(): UIViewportAngle {
         return this._rotation;
     }
 

@@ -149,6 +149,7 @@ var ViewportWindow = function () {
     (_q = buttonRotate.ui) === null || _q === void 0 ? void 0 : _q.onClick(function (button) {
         var _a;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+            console.log(w.getRotation());
             var nextRotation = (w.getRotation() + 1) % 4;
             w.rotation(nextRotation);
         });
@@ -3504,6 +3505,13 @@ var UIViewportScale;
     UIViewportScale[UIViewportScale["Quater"] = 2] = "Quater";
     UIViewportScale[UIViewportScale["Eighth"] = 3] = "Eighth";
 })(UIViewportScale || (UIViewportScale = {}));
+var UIViewportAngle;
+(function (UIViewportAngle) {
+    UIViewportAngle[UIViewportAngle["A0"] = 0] = "A0";
+    UIViewportAngle[UIViewportAngle["A90"] = 1] = "A90";
+    UIViewportAngle[UIViewportAngle["A180"] = 2] = "A180";
+    UIViewportAngle[UIViewportAngle["A270"] = 3] = "A270";
+})(UIViewportAngle || (UIViewportAngle = {}));
 var UIViewport = (function (_super) {
     __extends(UIViewport, _super);
     function UIViewport() {
