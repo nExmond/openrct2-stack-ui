@@ -1425,7 +1425,7 @@ var UIStack = (function (_super) {
         var point = childOrigin;
         switch (this._axis) {
             case UIAxis.Vertical: {
-                var stackSpacing = (thisEstimatedSize.height - storedEstimatedSize.height) / numberOfUndefinedSizeChilds;
+                var stackSpacing = Math.floor((thisEstimatedSize.height - storedEstimatedSize.height) / numberOfUndefinedSizeChilds);
                 for (var _i = 0, _a = this._childs; _i < _a.length; _i++) {
                     var child = _a[_i];
                     var isHeightUndefined = child._isUndefinedSize(this._axis);
@@ -1441,7 +1441,7 @@ var UIStack = (function (_super) {
                 break;
             }
             case UIAxis.Horizontal: {
-                var stackSpacing = (thisEstimatedSize.width - storedEstimatedSize.width) / numberOfUndefinedSizeChilds;
+                var stackSpacing = Math.floor((thisEstimatedSize.width - storedEstimatedSize.width) / numberOfUndefinedSizeChilds);
                 for (var _b = 0, _c = this._childs; _b < _c.length; _b++) {
                     var child = _c[_b];
                     var isWidthUndefined = child._isUndefinedSize(this._axis);

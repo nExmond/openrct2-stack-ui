@@ -190,7 +190,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         switch (this._axis) {
             case UIAxis.Vertical: {
 
-                const stackSpacing = (thisEstimatedSize.height - storedEstimatedSize.height) / numberOfUndefinedSizeChilds;
+                const stackSpacing = Math.floor((thisEstimatedSize.height - storedEstimatedSize.height) / numberOfUndefinedSizeChilds);
 
                 for (var child of this._childs) {
                     const isHeightUndefined = child._isUndefinedSize(this._axis);
@@ -212,7 +212,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
             }
             case UIAxis.Horizontal: {
 
-                const stackSpacing = (thisEstimatedSize.width - storedEstimatedSize.width) / numberOfUndefinedSizeChilds;
+                const stackSpacing = Math.floor((thisEstimatedSize.width - storedEstimatedSize.width) / numberOfUndefinedSizeChilds);
 
                 for (var child of this._childs) {
                     const isWidthUndefined = child._isUndefinedSize(this._axis);
