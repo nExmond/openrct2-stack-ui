@@ -212,7 +212,7 @@ var ViewportWindow = function (): UIWindowProxy {
     return window;
 }
 
-var LabelWindow = function (): UIWindowProxy {
+var BasicWindow = function (): UIWindowProxy {
 
     //Proxy
     const window = UIWDP.$();
@@ -222,17 +222,22 @@ var LabelWindow = function (): UIWindowProxy {
 
 
     //Data
-    //TODO: TextFormat 모두 반영
     const formatted = TB.$(
         TN.$(
             TN.$I(UIImageShopItemChips),
-            TN.$S("Chips\n...").color(TextColor.PaleGold),
-            TN.$S((1432).format(TextFormat.StringId, 53)).outline(),
-            TN.$NL(),
-            TN.$S((1432).format(TextFormat.StringId, 53))
-        )
+            TN.$(
+                TN.$S("Chips\n..."),
+                TN.$(
+                    TN.$S((1432).format(TextFormat.StringId, 53))
+                        .color(TextColor.BabyBlue),
+                    TN.$NL()
+                ).outline()
+            ).color(TextColor.Celadon),
+            TN.$S((767).format(TextFormat.StringId, 77)),
+            TN.$I(UIImageShopItemDoughnut),
+            TN.$I(UIImageShopItemIceCream)
+        ).color(TextColor.Topaz)
     ).build();
-
 
     //Construct
     UIWindow.$("StackUI Demo - Basic",
@@ -461,7 +466,7 @@ var MainWindow = function (): UIWindowProxy {
     const tab1 = UITP.$();
 
     const basicButton = UIWP.$<UIButton>();
-    const basicWindow = LabelWindow();
+    const basicWindow = BasicWindow();
 
     const viewportButton = UIWP.$<UIButton>();
     const viewportWindow = ViewportWindow();

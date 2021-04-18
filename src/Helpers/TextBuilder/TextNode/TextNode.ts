@@ -10,7 +10,7 @@ class TextNode {
     protected _childs: TextNode[] = [];
 
     protected _outline: boolean = false;
-    protected _color: TextColor = TextColor.WindowSecondary;
+    protected _color: TextColor | undefined;
 
     /**
      * Creates an instance of *TextNode*.
@@ -148,7 +148,7 @@ class TextNode {
     }
 
     _unifyColor(parentColor: TextColor | undefined = undefined) {
-        const color = this._color ?? parentColor;
+        const color = this._color ?? parentColor ?? TextColor.WindowSecondary;
         if (this._isLeaf() && this._isPureString() && this instanceof StringNode) {
             this._string = `{${color}}${this._string}`;
         } else if (this._isStopover()) {

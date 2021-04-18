@@ -159,12 +159,13 @@ var ViewportWindow = function () {
     });
     return window;
 };
-var LabelWindow = function () {
+var BasicWindow = function () {
     var _a;
     var window = UIWDP.$();
     var buttonToggleTitle = UIWP.$();
     var buttonToggleImage = UIWP.$();
-    var formatted = TB.$(TN.$(TN.$I(UIImageShopItemChips), TN.$S("Chips\n...").color(TextColor.PaleGold), TN.$S((1432).format(TextFormat.StringId, 53)).outline(), TN.$NL(), TN.$S((1432).format(TextFormat.StringId, 53)))).build();
+    var formatted = TB.$(TN.$(TN.$I(UIImageShopItemChips), TN.$(TN.$S("Chips\n..."), TN.$(TN.$S((1432).format(TextFormat.StringId, 53))
+        .color(TextColor.BabyBlue), TN.$NL()).outline()).color(TextColor.Celadon), TN.$S((767).format(TextFormat.StringId, 77)), TN.$I(UIImageShopItemDoughnut), TN.$I(UIImageShopItemIceCream)).color(TextColor.Topaz)).build();
     UIWindow.$("StackUI Demo - Basic", UIStack.$VG(UILabel.$(formatted, true)).title("Label"), UIStack.$HG(UIStack.$HG(UICheckbox.$("checkbox")).title("Basic"), UIStack.$HG(UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN()).title("Unnamed")).title("Checkbox"), UIStack.$HG(UIColorPicker.$(UIColor.BrightRed), UIColorPicker.$(UIColor.LightOrange), UIColorPicker.$(UIColor.BrightYellow), UIColorPicker.$(UIColor.BrightGreen), UIColorPicker.$(UIColor.LightBlue), UIColorPicker.$(UIColor.DarkBlue), UIColorPicker.$(UIColor.LightPurple)).title("ColorPicker"), UIStack.$VG(UIDropdown.$(["Item1", "Item2", "Item3"]).selected(1)).title("Dropdown"), UIStack.$VG(UISpinner.$()).title("Spinner"), UIStack.$VG(UITextBox.$()).title("TextBox"), UIStack.$HG(UIStack.$HG(UIButton.$("button", true), UIButton.$I(UIImageGuests)).title("Basic"), UIStack.$HG(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage)).title("Toggle"), UIStack.$HG(UIPageImageButton.$IP.apply(UIPageImageButton, [
         UIImageAwardBestValue,
         UIImageAwardMostBeautiful,
@@ -275,7 +276,7 @@ var MainWindow = function () {
     var window = UIWDP.$();
     var tab1 = UITP.$();
     var basicButton = UIWP.$();
-    var basicWindow = LabelWindow();
+    var basicWindow = BasicWindow();
     var viewportButton = UIWP.$();
     var viewportWindow = ViewportWindow();
     var testButton = UIWP.$();
@@ -657,7 +658,6 @@ var TextNode = (function () {
     function TextNode(childs) {
         this._childs = [];
         this._outline = false;
-        this._color = TextColor.WindowSecondary;
         this._childs = childs;
     }
     TextNode.$ = function () {
@@ -777,15 +777,15 @@ var TextNode = (function () {
         }
     };
     TextNode.prototype._unifyColor = function (parentColor) {
-        var _a;
+        var _a, _b;
         if (parentColor === void 0) { parentColor = undefined; }
-        var color = (_a = this._color) !== null && _a !== void 0 ? _a : parentColor;
+        var color = (_b = (_a = this._color) !== null && _a !== void 0 ? _a : parentColor) !== null && _b !== void 0 ? _b : TextColor.WindowSecondary;
         if (this._isLeaf() && this._isPureString() && this instanceof StringNode) {
             this._string = "{" + color + "}" + this._string;
         }
         else if (this._isStopover()) {
-            for (var _i = 0, _b = this._childs; _i < _b.length; _i++) {
-                var child = _b[_i];
+            for (var _i = 0, _c = this._childs; _i < _c.length; _i++) {
+                var child = _c[_i];
                 child._unifyColor(color);
             }
         }
