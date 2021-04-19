@@ -51,6 +51,7 @@ var ListWindow = function () {
         .offset({ x: 0, y: -6 })["extends"]({ top: 0, left: 0, bottom: 6, right: 0 }), UILabel.$((0 + " " + (1863).stringId()).color(TextColor.Black))).image(UIImageTabStaffHandymen)).bind(window)
         .padding({ top: 0, left: 1, bottom: -3, right: 0 })
         .themeSecondaryColor(UIColor.LightPurple)
+        .isExpandable(true)
         .spacing(2);
     return window;
 };
