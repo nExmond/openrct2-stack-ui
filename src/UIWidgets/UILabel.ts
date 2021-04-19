@@ -29,7 +29,7 @@ class UILabel extends UIWidget<LabelWidget> {
         const minSize = text.containerSize();
         if (isFit) {
             return label
-                .height(minSize.height)
+                .size(minSize)
                 .minSize(minSize);
         } else {
             return label
