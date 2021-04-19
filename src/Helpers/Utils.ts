@@ -152,9 +152,19 @@ interface Number {
      * @returns formatted string 
      */
     format(format: TextFormat, ...arg: any[]): string;
+    
+    /**
+     * Format this number by string id.
+     * @param arg
+     * @returns formatted string 
+     */
+    stringId(...arg: any[]): string;
 }
 Number.prototype.format = function (format: TextFormat, ...arg: any[]): string {
     return context.formatString(`{${format}}`, this.valueOf(), ...arg);
+}
+Number.prototype.stringId = function (...arg: any[]): string {
+    return this.format(TextFormat.StringId, ...arg);
 }
 
 
