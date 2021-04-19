@@ -37,6 +37,23 @@ var Window = function () {
         .spacing(2);
     return window;
 };
+var ListWindow = function () {
+    var window = UIWDP.$();
+    UIWindow.$T("StackUI Demo - List", UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(10), UIStack.$H(UILabel.$((1791).stringId()), UIColorPicker.$(UIColor.BrightRed))), UISpacer.$(), UIStack.$V(UIButton.$((1700).stringId(), true)
+        .width(145)
+        .tooltip((1948).stringId()), UILabel.$((1858).stringId(500))).offset({ x: 75, y: -29 }), UIStack.$H(UIButton.$I(UIImageDemolish)
+        .size(25)
+        .tooltip((5300).stringId()), UIButton.$I(UIImagePatrol)
+        .size(25)
+        .tooltip((1947).stringId()), UIButton.$I(UIImageMap)
+        .size(25)
+        .tooltip((2804).stringId()))), UIListView.$()
+        .offset({ x: 0, y: -6 })["extends"]({ top: 0, left: 0, bottom: 6, right: 0 }), UILabel.$((0 + " " + (1863).stringId()).color(TextColor.Black))).image(UIImageTabStaffHandymen)).bind(window)
+        .padding({ top: 0, left: 1, bottom: -3, right: 0 })
+        .themeSecondaryColor(UIColor.LightPurple)
+        .spacing(2);
+    return window;
+};
 var ViewportWindow = function () {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
     var window = UIWDP.$();
@@ -272,16 +289,18 @@ var TestWindow = function () {
     return window;
 };
 var MainWindow = function () {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     var window = UIWDP.$();
     var tab1 = UITP.$();
     var basicButton = UIWP.$();
     var basicWindow = BasicWindow();
     var viewportButton = UIWP.$();
     var viewportWindow = ViewportWindow();
+    var listButton = UIWP.$();
+    var listWindow = ListWindow();
     var testButton = UIWP.$();
     var testWindow = TestWindow();
-    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("Test").bind(testButton), UISpacer.$(10)).bind(tab1)
+    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("List").bind(listButton), UIButton.$("Test").bind(testButton), UISpacer.$(10)).bind(tab1)
         .isExpandable(true)).bind(window)
         .spacing(2);
     (_a = basicButton.ui) === null || _a === void 0 ? void 0 : _a.onClick(function (_) {
@@ -292,7 +311,11 @@ var MainWindow = function () {
         var _a;
         (_a = viewportWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
     });
-    (_c = testButton.ui) === null || _c === void 0 ? void 0 : _c.onClick(function (_) {
+    (_c = listButton.ui) === null || _c === void 0 ? void 0 : _c.onClick(function (_) {
+        var _a;
+        (_a = listWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
+    });
+    (_d = testButton.ui) === null || _d === void 0 ? void 0 : _d.onClick(function (_) {
         var _a;
         (_a = testWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
     });
@@ -480,6 +503,13 @@ Number.prototype.format = function (format) {
         arg[_i - 1] = arguments[_i];
     }
     return context.formatString.apply(context, __spreadArray(["{" + format + "}", this.valueOf()], arg));
+};
+Number.prototype.stringId = function () {
+    var arg = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        arg[_i] = arguments[_i];
+    }
+    return this.format.apply(this, __spreadArray([TextFormat.StringId], arg));
 };
 String.prototype.color = function (color) {
     return TB.$(this.toString()).color(color).build();
@@ -955,6 +985,7 @@ var UIWidget = (function () {
         this._isVisible = true;
         this._minSize = UISizeZero;
         this._offset = UIPointZero;
+        this._extends = UIEdgeInsetsZero;
         this._name = this.constructor.name + '-' + uuid();
     }
     UIWidget.prototype._getUIWidgets = function () {
@@ -987,16 +1018,16 @@ var UIWidget = (function () {
             this._initialSize = this._size;
         }
         this._origin = {
-            x: origin.x + this._offset.x,
-            y: origin.y + this._offset.y
+            x: origin.x + this._extends.left + this._offset.x,
+            y: origin.y + this._extends.top + this._offset.y
         };
         var size = {
             width: (_a = this._size.width) !== null && _a !== void 0 ? _a : estimatedSize.width,
             height: (_b = this._size.height) !== null && _b !== void 0 ? _b : estimatedSize.height
         };
         this._size = {
-            width: size.width - 1,
-            height: size.height
+            width: size.width + this._extends.left + this._extends.right - 1,
+            height: size.height + this._extends.top + this._extends.bottom
         };
         switch (axis) {
             case UIAxis.Vertical: {
@@ -1169,6 +1200,13 @@ var UIWidget = (function () {
     };
     UIWidget.prototype.getOffset = function () {
         return this._offset;
+    };
+    UIWidget.prototype["extends"] = function (val) {
+        this._extends = val;
+        return this;
+    };
+    UIWidget.prototype.getExtends = function () {
+        return this._extends;
     };
     UIWidget.prototype.font = function (val) {
         this._font = val;
@@ -2233,6 +2271,7 @@ var UIImageStaffCostumeAstronaut = UIImage.$(5125);
 var UIImageStaffCostumeBandit = UIImage.$(5126);
 var UIImageStaffCostumeSheriff = UIImage.$(5127);
 var UIImageStaffCostumePirate = UIImage.$(5128);
+var UIImageTabStaffHandymen = UIImage.$(11262).offset({ x: 15, y: 21 });
 var UIImageInformationSmall = UIImage.$(5129);
 var UIImageRatingIncrease = UIImage.$(5130);
 var UIImageRatingDecrease = UIImage.$(5131);
@@ -2732,7 +2771,7 @@ var UILabel = (function (_super) {
         var minSize = text.containerSize();
         if (isFit) {
             return label
-                .height(minSize.height)
+                .size(minSize)
                 .minSize(minSize);
         }
         else {

@@ -17,6 +17,57 @@ var Window = function (): UIWindowProxy {
     return window;
 }
 
+var ListWindow = function (): UIWindowProxy {
+
+    //Proxy
+    const window = UIWDP.$();
+
+    //Construct
+    UIWindow.$T("StackUI Demo - List",
+        UITab.$(
+            UIStack.$H(
+                UIStack.$V(
+                    UISpacer.$(10),
+                    UIStack.$H(
+                        UILabel.$((1791).stringId()),
+                        UIColorPicker.$(UIColor.BrightRed)
+                    )
+                ),
+                UISpacer.$(),
+                UIStack.$V(
+                    UIButton.$((1700).stringId(), true)
+                        .width(145)
+                        .tooltip((1948).stringId()),
+                    UILabel.$((1858).stringId(500))
+                ).offset({ x: 75, y: -29 }),
+                UIStack.$H(
+                    UIButton.$I(UIImageDemolish)
+                        .size(25)
+                        .tooltip((5300).stringId()),
+                    UIButton.$I(UIImagePatrol)
+                        .size(25)
+                        .tooltip((1947).stringId()),
+                    UIButton.$I(UIImageMap)
+                        .size(25)
+                        .tooltip((2804).stringId())
+                )
+            ),
+            UIListView.$()
+                .offset({ x: 0, y: -6 })
+                .extends({ top: 0, left: 0, bottom: 6, right: 0 }),
+            UILabel.$(`${0} ${(1863).stringId()}`.color(TextColor.Black))
+        ).image(UIImageTabStaffHandymen)
+    ).bind(window)
+        .padding({ top: 0, left: 1, bottom: -3, right: 0 })
+        .themeSecondaryColor(UIColor.LightPurple)
+        .isExpandable(true)
+        .spacing(2)
+
+    //Bind
+
+    return window;
+}
+
 var ViewportWindow = function (): UIWindowProxy {
 
     //Proxy
@@ -471,6 +522,9 @@ var MainWindow = function (): UIWindowProxy {
     const viewportButton = UIWP.$<UIButton>();
     const viewportWindow = ViewportWindow();
 
+    const listButton = UIWP.$<UIButton>();
+    const listWindow = ListWindow();
+
     const testButton = UIWP.$<UIButton>();
     const testWindow = TestWindow();
 
@@ -479,6 +533,7 @@ var MainWindow = function (): UIWindowProxy {
         UITab.$(
             UIButton.$("Basic").bind(basicButton),
             UIButton.$("Viewport").bind(viewportButton),
+            UIButton.$("List").bind(listButton),
             UIButton.$("Test").bind(testButton),
             UISpacer.$(10)
         ).bind(tab1)
@@ -492,6 +547,9 @@ var MainWindow = function (): UIWindowProxy {
     });
     viewportButton.ui?.onClick(_ => {
         viewportWindow.ui?.show();
+    });
+    listButton.ui?.onClick(_ => {
+        listWindow.ui?.show();
     });
     testButton.ui?.onClick(_ => {
         testWindow.ui?.show();

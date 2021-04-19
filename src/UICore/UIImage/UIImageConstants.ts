@@ -80,6 +80,8 @@ const UIImageStaffCostumeBandit = UIImage.$(5126);
 const UIImageStaffCostumeSheriff = UIImage.$(5127);
 const UIImageStaffCostumePirate = UIImage.$(5128);
 
+const UIImageTabStaffHandymen = UIImage.$(11262).offset({ x: 15, y: 21 });
+
 const UIImageInformationSmall = UIImage.$(5129);
 const UIImageRatingIncrease = UIImage.$(5130);
 const UIImageRatingDecrease = UIImage.$(5131);
