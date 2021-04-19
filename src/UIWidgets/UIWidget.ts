@@ -23,6 +23,7 @@ class UIWidget<T extends Widget> {
     protected _initialSize: UIOptionalSize | undefined;
 
     protected _offset: UIPoint = UIPointZero;
+    protected _extends: UIEdgeInsets = UIEdgeInsetsZero;
 
     protected _font: TextFont | undefined;
 
@@ -68,16 +69,16 @@ class UIWidget<T extends Widget> {
         }
 
         this._origin = {
-            x: origin.x + this._offset.x,
-            y: origin.y + this._offset.y
+            x: origin.x + this._extends.left + this._offset.x,
+            y: origin.y + this._extends.top + this._offset.y
         };
         var size = {
             width: this._size.width ?? estimatedSize.width,
             height: this._size.height ?? estimatedSize.height
         }
         this._size = {
-            width: size.width - 1,
-            height: size.height
+            width: size.width + this._extends.left + this._extends.right - 1,
+            height: size.height + this._extends.top + this._extends.bottom
         }
         switch (axis) {
             case UIAxis.Vertical: {
@@ -303,6 +304,18 @@ class UIWidget<T extends Widget> {
 
     getOffset(): UIPoint {
         return this._offset;
+    }
+
+    /**
+     * Extend the edge.
+     */
+    extends(val: UIEdgeInsets): this {
+        this._extends = val;
+        return this;
+    }
+
+    getExtends(): UIEdgeInsets {
+        return this._extends;
     }
 
     /**
