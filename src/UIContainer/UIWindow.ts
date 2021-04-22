@@ -40,6 +40,8 @@ class UIWindow {
     protected _onClose: ((window: this) => void) | undefined;
     protected _onTabChange: ((window: this, selectedIndex: number) => void) | undefined;
 
+    protected _didLoad: ((window: this) => void) | undefined;
+
     /**
      * Creates an instance of *UIWindow*.
      * @param title 
@@ -338,6 +340,8 @@ class UIWindow {
             this._uiConstructor.didLoadTabs(this._tabs);
         }
         this._reflectResizingFromChild();
+        
+        this._didLoad?.call(this, this);
 
         return this;
     }
@@ -536,6 +540,14 @@ class UIWindow {
      */
     bind(proxy: UIWindowProxy): this {
         proxy._bind(this);
+        return this;
+    }
+    
+    /**
+     * This function is called immediately after the window is displayed.
+     */
+     didLoad(block: (window: this) => void): this {
+        this._didLoad = block;
         return this;
     }
 }

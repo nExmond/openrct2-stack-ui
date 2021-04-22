@@ -102,6 +102,7 @@ Errors can occur when resizing windows.
     didLoadTabs(tabs: UITab[]) {
         const flattedChilds: UIWidget<any>[] = tabs.map(val => val._contentView._getUIWidgets()).flatMap();
         flattedChilds.forEach(val => val._loadWidget());
+        tabs.forEach(val => val._didLoad?.call(val, val));
     }
 
     /**

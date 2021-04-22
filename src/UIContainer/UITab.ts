@@ -18,6 +18,8 @@ class UITab {
     protected _image: UIImage;
     _contentView: UIStack;
 
+    _didLoad: ((tab: this) => void) | undefined;
+
     /**
      * Creates an instance of uitab.
      * Initialize with a single stack.
@@ -188,6 +190,14 @@ class UITab {
      */
     bind(proxy: UITabProxy): this {
         proxy._bind(this);
+        return this;
+    }
+    
+    /**
+     * This function is called immediately after the window is displayed.
+     */
+     didLoad(block: (tab: this) => void): this {
+        this._didLoad = block;
         return this;
     }
 }
