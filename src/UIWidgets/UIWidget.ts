@@ -10,7 +10,7 @@ class UIWidget<T extends Widget> {
 
     protected _origin: UIPoint = UIPointZero;
     protected _size: UIOptionalSize = UIOptionalSizeDefulat;
-    _name: string;
+    protected _name: string;
     protected _tooltip: string | undefined;
     protected _isDisabled: boolean = false;
     protected _isVisible: boolean = true;
@@ -100,6 +100,10 @@ class UIWidget<T extends Widget> {
         throw new Error("Method not implemented.");
     }
 
+    /**
+     * ! If you get an error like the one below, you may have attempted to update the widget before the window opens.
+     * ! 'TypeError: cannot write property 'x' of undefined'
+     */
     _update(widget: T) {
         widget.x = this._origin.x;
         widget.y = this._origin.y;
@@ -256,6 +260,10 @@ class UIWidget<T extends Widget> {
             width: size.width ?? 0,
             height: size.height ?? 0
         };
+    }
+
+    getName(): string {
+        return this._name;
     }
 
     /**
