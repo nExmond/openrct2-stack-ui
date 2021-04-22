@@ -17,6 +17,61 @@ var Window = function (): UIWindowProxy {
     return window;
 }
 
+var ImageWindow = function (): UIWindowProxy {
+
+    //Proxy
+    const window = UIWDP.$();
+
+    const imageView1 = UIWP.$<UIImageView>();
+    const imageView2 = UIWP.$<UIImageView>();
+    const imageView3 = UIWP.$<UIImageView>();
+
+    const primaryColorpicker = UIWP.$<UIColorPicker>();
+    const secondaryColorpicker = UIWP.$<UIColorPicker>();
+    const tertiaryColorpicker = UIWP.$<UIColorPicker>();
+    
+    //Construct
+    UIWindow.$("StackUI Demo - Image",
+        UIStack.$H(
+            UIImageView.$(UIImageG2Logo).bind(imageView1),
+            UIImageView.$(UIImageG2Title).bind(imageView2)
+        ),
+        UIImageView.$(UIImageTabStaffHandymen).bind(imageView3),
+        UIStack.$HG(
+            UIColorPicker.$().bind(primaryColorpicker),
+            UIColorPicker.$().bind(secondaryColorpicker),
+            UIColorPicker.$().bind(tertiaryColorpicker)
+        ).title("Colors")
+    ).bind(window)
+        .spacing(2)
+
+    //Bind
+    window.ui?.didLoad(w => {
+        const theme = w.getTheme();
+        primaryColorpicker.ui?.updateUI(w => w.color(theme.primary!));
+        secondaryColorpicker.ui?.updateUI(w => w.color(theme.secondary!));
+        tertiaryColorpicker.ui?.updateUI(w => w.color(theme.tertiary!));
+    });
+
+    primaryColorpicker.ui?.onChange((_, color) => {
+        imageView1.ui?.updateUI(w => w.themePrimaryColor(color));
+        imageView2.ui?.updateUI(w => w.themePrimaryColor(color));
+        imageView3.ui?.updateUI(w => w.themePrimaryColor(color));
+    });
+    secondaryColorpicker.ui?.onChange((_, color) => {
+        imageView1.ui?.updateUI(w => w.themeSecondaryColor(color));
+        imageView2.ui?.updateUI(w => w.themeSecondaryColor(color));
+        imageView3.ui?.updateUI(w => w.themeSecondaryColor(color));
+    });
+    tertiaryColorpicker.ui?.onChange((_, color) => {
+        imageView1.ui?.updateUI(w => w.themeTertiaryColor(color));
+        imageView2.ui?.updateUI(w => w.themeTertiaryColor(color));
+        imageView3.ui?.updateUI(w => w.themeTertiaryColor(color));
+    });
+
+    return window;
+}
+
 var ListWindow = function (): UIWindowProxy {
 
     //Proxy
@@ -528,6 +583,9 @@ var MainWindow = function (): UIWindowProxy {
     const testButton = UIWP.$<UIButton>();
     const testWindow = TestWindow();
 
+    const imageButton = UIWP.$<UIButton>();
+    const imageWindow = ImageWindow();
+
     //Construct
     UIWindow.$T("StackUI Demo",
         UITab.$(
@@ -535,6 +593,7 @@ var MainWindow = function (): UIWindowProxy {
             UIButton.$("Viewport").bind(viewportButton),
             UIButton.$("List").bind(listButton),
             UIButton.$("Test").bind(testButton),
+            UIButton.$("Image").bind(imageButton),
             UISpacer.$(10)
         ).bind(tab1)
             .isExpandable(true)
@@ -553,6 +612,9 @@ var MainWindow = function (): UIWindowProxy {
     });
     testButton.ui?.onClick(_ => {
         testWindow.ui?.show();
+    });
+    imageButton.ui?.onClick(_ => {
+        imageWindow.ui?.show();
     });
 
     return window;
