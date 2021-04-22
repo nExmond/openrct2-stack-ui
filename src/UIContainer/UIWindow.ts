@@ -18,6 +18,8 @@ class UIWindow {
 
     protected _singleContentView: UIStack | undefined;
     protected _tabs: UITab[] | undefined;
+
+    protected _prevSelectedTabIndex: number = 0;
     protected _selectedTabIndex: number = 0;
 
     protected _origin!: UIPoint;
@@ -313,9 +315,13 @@ class UIWindow {
                 this._onUpdate();
             },
             onTabChange: () => {
-                this._selectedTabIndex = this._window?.tabIndex ?? 0;
-                this._internalOnTabChange();
-                this._onTabChange?.call(this, this, this._selectedTabIndex);
+                const changedTabIndex = this._window?.tabIndex ?? 0;
+                if (changedTabIndex !== this._prevSelectedTabIndex) {
+                    this._selectedTabIndex = changedTabIndex
+                    this._internalOnTabChange();
+                    this._onTabChange?.call(this, this, this._selectedTabIndex);
+                    this._prevSelectedTabIndex = changedTabIndex;
+                }
             }
         }
 
