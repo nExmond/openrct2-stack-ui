@@ -314,14 +314,16 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     /**
      * Title when used as *GroupBox*
      */
-    title(val: string): this {
-        if (this._isGrouped) {
+    title(val: string | undefined): this {
+        if (typeof val === "string" && this._isGrouped) {
             this._insets = {
                 top: 16,
                 left: 2,
                 bottom: 2,
                 right: 2
             };
+        } else {
+            this._insets = UIEdgeInsetsZero;
         }
         this._groupTitle = val;
         return this;
