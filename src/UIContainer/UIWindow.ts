@@ -237,6 +237,15 @@ class UIWindow {
         })
     }
 
+    _activeInterval(flag: boolean) {
+        
+        const singleWidgets =  this._singleContentView?._getUIWidgets();
+        singleWidgets?.forEach(val => intervalHelper.enabled(val.getName(), flag));
+
+        const tabsWidgets: UIWidget<any>[] | undefined =  this._tabs?.map(val => val._contentView._getUIWidgets()).flatMap();
+        tabsWidgets?.forEach(val => intervalHelper.enabled(val.getName(), flag));
+    }
+
     //Public
 
     /**
@@ -278,6 +287,8 @@ class UIWindow {
             colors = this._convertColors(this._selectedTabIndex);
         }
 
+        this._activeInterval(true);
+
         const windowDesc: WindowDesc = {
             classification: this._title,
             width: this._minSize.width,
@@ -293,6 +304,7 @@ class UIWindow {
             tabIndex: this._selectedTabIndex,
             onClose: () => {
                 this._onClose?.call(this, this);
+                this._activeInterval(false);
                 this._window = undefined;
             },
             onUpdate: () => {
