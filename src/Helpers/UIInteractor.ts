@@ -6,6 +6,7 @@ class UIInteractor {
 
     protected __findWidget!: <T extends Widget>(name: string) => T | undefined;
     protected _refreshWindow!: () => void;
+    protected __windowTheme!: () => UIWindowTheme;
 
     constructor() { }
 
@@ -25,6 +26,10 @@ class UIInteractor {
     _refresh(block: () => void) {
         this._refreshWindow = block;
     }
+    
+    _windowTheme(block: () => UIWindowTheme) {
+        this.__windowTheme = block;
+    }
 
     //Public
     
@@ -33,5 +38,9 @@ class UIInteractor {
      */
     refreshWindow() {
         this._refreshWindow();
+    }
+
+    getWindowTheme(): UIWindowTheme {
+        return this.__windowTheme();
     }
 }

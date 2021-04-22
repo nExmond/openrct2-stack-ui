@@ -338,6 +338,9 @@ class UIWindow {
         this._interactor._refresh(() => {
             this._reflectResizingFromChild();
         });
+        this._interactor._windowTheme(() => {
+            return this._theme;
+        });
 
         if (typeof singlecontentView !== "undefined") {
             this._uiConstructor.didLoad(singlecontentView);
