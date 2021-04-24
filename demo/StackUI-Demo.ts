@@ -25,49 +25,111 @@ var ImageWindow = function (): UIWindowProxy {
     const imageView1 = UIWP.$<UIImageView>();
     const imageView2 = UIWP.$<UIImageView>();
     const imageView3 = UIWP.$<UIImageView>();
+    const imageView4 = UIWP.$<UIImageView>();
 
     const primaryColorpicker = UIWP.$<UIColorPicker>();
     const secondaryColorpicker = UIWP.$<UIColorPicker>();
     const tertiaryColorpicker = UIWP.$<UIColorPicker>();
-    
+
+    const primaryTranslucent = UIWP.$<UICheckbox>();
+    const secondaryTranslucent = UIWP.$<UICheckbox>();
+
     //Construct
     UIWindow.$("StackUI Demo - Image",
         UIStack.$H(
             UIImageView.$(UIImageG2Logo).bind(imageView1),
             UIImageView.$(UIImageG2Title).bind(imageView2)
-        ),
-        UIImageView.$(UIImageTabStaffHandymen).bind(imageView3),
-        UIStack.$HG(
-            UIColorPicker.$().bind(primaryColorpicker),
-            UIColorPicker.$().bind(secondaryColorpicker),
-            UIColorPicker.$().bind(tertiaryColorpicker)
+        ).spacing(4),
+        UIStack.$H(
+            UIImageView.$(UIImage.$(5627)).bind(imageView3),
+            UIImageView.$(UIImageTesting).bind(imageView4)
+        ).spacing(4),
+        UIStack.$VG(
+            UIStack.$H(
+                UILabel.$("Primary:"),
+                UIColorPicker.$().bind(primaryColorpicker)
+                    .color(Math.round(Math.random() * 32)),
+                UISpacer.$(),
+                UICheckbox.$("Translucent", true).bind(primaryTranslucent)
+            ).spacing(2),
+            UIStack.$H(
+                UILabel.$("Secondary:"),
+                UIColorPicker.$().bind(secondaryColorpicker)
+                    .color(Math.round(Math.random() * 32)),
+                UISpacer.$(),
+                UICheckbox.$("Translucent", true).bind(secondaryTranslucent)
+            ).spacing(2),
+            UIStack.$H(
+                UILabel.$("Tertiary:"),
+                UIColorPicker.$().bind(tertiaryColorpicker)
+                    .color(Math.round(Math.random() * 32))
+            ).spacing(2)
         ).title("Colors")
+            .spacing(2)
+            .padding({ top: 0, left: 4, bottom: 0, right: 4 })
     ).bind(window)
         .spacing(2)
 
     //Bind
+    function updateImageViews(block: (widget: UIImageView) => void) {
+        imageView1.ui?.updateUI(block);
+        imageView2.ui?.updateUI(block);
+        imageView3.ui?.updateUI(block);
+        imageView4.ui?.updateUI(block);
+    }
+
+    function updateWindow(theme: UIWindowTheme) {
+        window.ui?.updateUI(w => {
+            const windowTheme = w.getTheme();
+            w.theme({
+                primary: theme.primary ?? windowTheme.primary,
+                secondary: theme.secondary ?? windowTheme.secondary,
+                tertiary: theme.tertiary ?? windowTheme.tertiary
+            })
+        });
+    }
+
     window.ui?.didLoad(w => {
-        const theme = w.getTheme();
-        primaryColorpicker.ui?.updateUI(w => w.color(theme.primary!));
-        secondaryColorpicker.ui?.updateUI(w => w.color(theme.secondary!));
-        tertiaryColorpicker.ui?.updateUI(w => w.color(theme.tertiary!));
+        const primary = primaryColorpicker.ui?.getColor();
+        const secondary = secondaryColorpicker.ui?.getColor();
+        const tertiary = tertiaryColorpicker.ui?.getColor();
+
+        updateImageViews(w => w.themePrimaryColor(primary));
+        updateImageViews(w => w.themeSecondaryColor(secondary));
+        updateImageViews(w => w.themeTertiaryColor(tertiary));
+
+        updateWindow({
+            primary: primary,
+            secondary: secondary,
+            tertiary: tertiary
+        });
     });
 
-    primaryColorpicker.ui?.onChange((_, color) => {
-        imageView1.ui?.updateUI(w => w.themePrimaryColor(color));
-        imageView2.ui?.updateUI(w => w.themePrimaryColor(color));
-        imageView3.ui?.updateUI(w => w.themePrimaryColor(color));
-    });
-    secondaryColorpicker.ui?.onChange((_, color) => {
-        imageView1.ui?.updateUI(w => w.themeSecondaryColor(color));
-        imageView2.ui?.updateUI(w => w.themeSecondaryColor(color));
-        imageView3.ui?.updateUI(w => w.themeSecondaryColor(color));
-    });
-    tertiaryColorpicker.ui?.onChange((_, color) => {
-        imageView1.ui?.updateUI(w => w.themeTertiaryColor(color));
-        imageView2.ui?.updateUI(w => w.themeTertiaryColor(color));
-        imageView3.ui?.updateUI(w => w.themeTertiaryColor(color));
-    });
+    function primaryColorpickerOnChange() {
+        const color = (primaryColorpicker.ui?.getColor() ?? 0) | ((primaryTranslucent.ui?.getIsChecked() ?? false) ? UIColorFlag.Translucent : 0);
+        console.log(color, primaryTranslucent.ui?.getIsChecked());
+        updateImageViews(w => w.themePrimaryColor(color));
+        updateWindow({ primary: color });
+    }
+
+    function secondaryColorpickerOnChange() {
+        const color = (secondaryColorpicker.ui?.getColor() ?? 0) | ((secondaryTranslucent.ui?.getIsChecked() ?? false) ? UIColorFlag.Translucent : 0);
+        updateImageViews(w => w.themeSecondaryColor(color));
+        updateWindow({ secondary: color });
+    }
+
+    function tertiaryColorpickerOnChange() {
+        const color = tertiaryColorpicker.ui?.getColor();
+        updateImageViews(w => w.themeTertiaryColor(color));
+        updateWindow({ tertiary: color });
+    }
+
+    primaryColorpicker.ui?.onChange(_ => primaryColorpickerOnChange());
+    secondaryColorpicker.ui?.onChange(_ => secondaryColorpickerOnChange());
+    tertiaryColorpicker.ui?.onChange(_ => tertiaryColorpickerOnChange());
+
+    primaryTranslucent.ui?.onChange(_ => primaryColorpickerOnChange());
+    secondaryTranslucent.ui?.onChange(_ => secondaryColorpickerOnChange());
 
     return window;
 }

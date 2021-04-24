@@ -38,41 +38,81 @@ var Window = function () {
     return window;
 };
 var ImageWindow = function () {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e, _f;
     var window = UIWDP.$();
     var imageView1 = UIWP.$();
     var imageView2 = UIWP.$();
     var imageView3 = UIWP.$();
+    var imageView4 = UIWP.$();
     var primaryColorpicker = UIWP.$();
     var secondaryColorpicker = UIWP.$();
     var tertiaryColorpicker = UIWP.$();
-    UIWindow.$("StackUI Demo - Image", UIStack.$H(UIImageView.$(UIImageG2Logo).bind(imageView1), UIImageView.$(UIImageG2Title).bind(imageView2)), UIImageView.$(UIImageTabStaffHandymen).bind(imageView3), UIStack.$HG(UIColorPicker.$().bind(primaryColorpicker), UIColorPicker.$().bind(secondaryColorpicker), UIColorPicker.$().bind(tertiaryColorpicker)).title("Colors")).bind(window)
+    var primaryTranslucent = UIWP.$();
+    var secondaryTranslucent = UIWP.$();
+    UIWindow.$("StackUI Demo - Image", UIStack.$H(UIImageView.$(UIImageG2Logo).bind(imageView1), UIImageView.$(UIImageG2Title).bind(imageView2)).spacing(4), UIStack.$H(UIImageView.$(UIImage.$(5627)).bind(imageView3), UIImageView.$(UIImageTesting).bind(imageView4)).spacing(4), UIStack.$VG(UIStack.$H(UILabel.$("Primary:"), UIColorPicker.$().bind(primaryColorpicker)
+        .color(Math.round(Math.random() * 32)), UISpacer.$(), UICheckbox.$("Translucent", true).bind(primaryTranslucent)).spacing(2), UIStack.$H(UILabel.$("Secondary:"), UIColorPicker.$().bind(secondaryColorpicker)
+        .color(Math.round(Math.random() * 32)), UISpacer.$(), UICheckbox.$("Translucent", true).bind(secondaryTranslucent)).spacing(2), UIStack.$H(UILabel.$("Tertiary:"), UIColorPicker.$().bind(tertiaryColorpicker)
+        .color(Math.round(Math.random() * 32))).spacing(2)).title("Colors")
+        .spacing(2)
+        .padding({ top: 0, left: 4, bottom: 0, right: 4 })).bind(window)
         .spacing(2);
+    function updateImageViews(block) {
+        var _a, _b, _c, _d;
+        (_a = imageView1.ui) === null || _a === void 0 ? void 0 : _a.updateUI(block);
+        (_b = imageView2.ui) === null || _b === void 0 ? void 0 : _b.updateUI(block);
+        (_c = imageView3.ui) === null || _c === void 0 ? void 0 : _c.updateUI(block);
+        (_d = imageView4.ui) === null || _d === void 0 ? void 0 : _d.updateUI(block);
+    }
+    function updateWindow(theme) {
+        var _a;
+        (_a = window.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+            var _a, _b, _c;
+            var windowTheme = w.getTheme();
+            w.theme({
+                primary: (_a = theme.primary) !== null && _a !== void 0 ? _a : windowTheme.primary,
+                secondary: (_b = theme.secondary) !== null && _b !== void 0 ? _b : windowTheme.secondary,
+                tertiary: (_c = theme.tertiary) !== null && _c !== void 0 ? _c : windowTheme.tertiary
+            });
+        });
+    }
     (_a = window.ui) === null || _a === void 0 ? void 0 : _a.didLoad(function (w) {
         var _a, _b, _c;
-        var theme = w.getTheme();
-        (_a = primaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) { return w.color(theme.primary); });
-        (_b = secondaryColorpicker.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) { return w.color(theme.secondary); });
-        (_c = tertiaryColorpicker.ui) === null || _c === void 0 ? void 0 : _c.updateUI(function (w) { return w.color(theme.tertiary); });
+        var primary = (_a = primaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.getColor();
+        var secondary = (_b = secondaryColorpicker.ui) === null || _b === void 0 ? void 0 : _b.getColor();
+        var tertiary = (_c = tertiaryColorpicker.ui) === null || _c === void 0 ? void 0 : _c.getColor();
+        updateImageViews(function (w) { return w.themePrimaryColor(primary); });
+        updateImageViews(function (w) { return w.themeSecondaryColor(secondary); });
+        updateImageViews(function (w) { return w.themeTertiaryColor(tertiary); });
+        updateWindow({
+            primary: primary,
+            secondary: secondary,
+            tertiary: tertiary
+        });
     });
-    (_b = primaryColorpicker.ui) === null || _b === void 0 ? void 0 : _b.onChange(function (_, color) {
-        var _a, _b, _c;
-        (_a = imageView1.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) { return w.themePrimaryColor(color); });
-        (_b = imageView2.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) { return w.themePrimaryColor(color); });
-        (_c = imageView3.ui) === null || _c === void 0 ? void 0 : _c.updateUI(function (w) { return w.themePrimaryColor(color); });
-    });
-    (_c = secondaryColorpicker.ui) === null || _c === void 0 ? void 0 : _c.onChange(function (_, color) {
-        var _a, _b, _c;
-        (_a = imageView1.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) { return w.themeSecondaryColor(color); });
-        (_b = imageView2.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) { return w.themeSecondaryColor(color); });
-        (_c = imageView3.ui) === null || _c === void 0 ? void 0 : _c.updateUI(function (w) { return w.themeSecondaryColor(color); });
-    });
-    (_d = tertiaryColorpicker.ui) === null || _d === void 0 ? void 0 : _d.onChange(function (_, color) {
-        var _a, _b, _c;
-        (_a = imageView1.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) { return w.themeTertiaryColor(color); });
-        (_b = imageView2.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) { return w.themeTertiaryColor(color); });
-        (_c = imageView3.ui) === null || _c === void 0 ? void 0 : _c.updateUI(function (w) { return w.themeTertiaryColor(color); });
-    });
+    function primaryColorpickerOnChange() {
+        var _a, _b, _c, _d, _e;
+        var color = ((_b = (_a = primaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.getColor()) !== null && _b !== void 0 ? _b : 0) | (((_d = (_c = primaryTranslucent.ui) === null || _c === void 0 ? void 0 : _c.getIsChecked()) !== null && _d !== void 0 ? _d : false) ? UIColorFlag.Translucent | UIColorFlag.Inset | UIColorFlag.Outline : 0);
+        console.log(color, (_e = primaryTranslucent.ui) === null || _e === void 0 ? void 0 : _e.getIsChecked());
+        updateImageViews(function (w) { return w.themePrimaryColor(color); });
+        updateWindow({ primary: color });
+    }
+    function secondaryColorpickerOnChange() {
+        var _a, _b, _c, _d;
+        var color = ((_b = (_a = secondaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.getColor()) !== null && _b !== void 0 ? _b : 0) | (((_d = (_c = secondaryTranslucent.ui) === null || _c === void 0 ? void 0 : _c.getIsChecked()) !== null && _d !== void 0 ? _d : false) ? UIColorFlag.Translucent : 0);
+        updateImageViews(function (w) { return w.themeSecondaryColor(color); });
+        updateWindow({ secondary: color });
+    }
+    function tertiaryColorpickerOnChange() {
+        var _a;
+        var color = (_a = tertiaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.getColor();
+        updateImageViews(function (w) { return w.themeTertiaryColor(color); });
+        updateWindow({ tertiary: color });
+    }
+    (_b = primaryColorpicker.ui) === null || _b === void 0 ? void 0 : _b.onChange(function (_) { return primaryColorpickerOnChange(); });
+    (_c = secondaryColorpicker.ui) === null || _c === void 0 ? void 0 : _c.onChange(function (_) { return secondaryColorpickerOnChange(); });
+    (_d = tertiaryColorpicker.ui) === null || _d === void 0 ? void 0 : _d.onChange(function (_) { return tertiaryColorpickerOnChange(); });
+    (_e = primaryTranslucent.ui) === null || _e === void 0 ? void 0 : _e.onChange(function (_) { return primaryColorpickerOnChange(); });
+    (_f = secondaryTranslucent.ui) === null || _f === void 0 ? void 0 : _f.onChange(function (_) { return secondaryColorpickerOnChange(); });
     return window;
 };
 var ListWindow = function () {
@@ -591,6 +631,7 @@ Number.prototype.imageString = function () {
     var item = imageId % 256;
     return "{INLINE_SPRITE}{" + item + "}{" + section + "}{" + head + "}{0}";
 };
+var UIPointZero = { x: 0, y: 0 };
 var ImageHelper = (function () {
     function ImageHelper() {
         this._open();
@@ -657,7 +698,6 @@ var TextFont;
     TextFont["Medium"] = "MEDIUMFONT";
     TextFont["Big"] = "BIGFONT";
 })(TextFont || (TextFont = {}));
-var UIPointZero = { x: 0, y: 0 };
 var UIImage = (function () {
     function UIImage(frames) {
         this._frames = [];
@@ -727,12 +767,16 @@ var UIImage = (function () {
     UIImage.prototype.size = function () {
         var graphicsContext = imageHelper.graphicsContext();
         return this._frames.map(function (val) {
-            var _a, _b;
             var info = graphicsContext === null || graphicsContext === void 0 ? void 0 : graphicsContext.getImage(val);
-            return {
-                width: (_a = info === null || info === void 0 ? void 0 : info.width) !== null && _a !== void 0 ? _a : 0,
-                height: (_b = info === null || info === void 0 ? void 0 : info.height) !== null && _b !== void 0 ? _b : 0
-            };
+            if (typeof info !== "undefined") {
+                return {
+                    width: info.width + info.offset.x,
+                    height: info.height + info.offset.y
+                };
+            }
+            else {
+                return UISizeZero;
+            }
         }).reduce(function (acc, val) {
             return {
                 width: Math.max(acc.width, val.width),
@@ -2368,7 +2412,7 @@ var UIImageStaffCostumeAstronaut = UIImage.$(5125);
 var UIImageStaffCostumeBandit = UIImage.$(5126);
 var UIImageStaffCostumeSheriff = UIImage.$(5127);
 var UIImageStaffCostumePirate = UIImage.$(5128);
-var UIImageTabStaffHandymen = UIImage.$F(__spreadArray([], Array(7)).map(function (_, idx) { return (11262 + 4 * idx); }), 4);
+var UIImageTabStaffHandymen = UIImage.$(11262).offset({ x: 15, y: 21 });
 var UIImageInformationSmall = UIImage.$(5129);
 var UIImageRatingIncrease = UIImage.$(5130);
 var UIImageRatingDecrease = UIImage.$(5131);
@@ -2860,7 +2904,7 @@ var UIImageView = (function (_super) {
         if (image === void 0) { image = undefined; }
         var _this = _super.call(this) || this;
         _this._image = UIImageNone;
-        _this._theme = {};
+        _this._theme = { tertiary: UIColor.Yellow };
         _this.image(image);
         return _this;
     }
