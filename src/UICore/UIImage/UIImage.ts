@@ -125,9 +125,13 @@ class UIImage {
         const graphicsContext = imageHelper.graphicsContext();
         return this._frames.map(val => {
             const info = graphicsContext?.getImage(val);
-            return <UISize>{
-                width: info?.width ?? 0,
-                height: info?.height ?? 0
+            if (typeof info !== "undefined") {
+                return <UISize>{
+                    width: info.width + info.offset.x,
+                    height: info.height + info.offset.y
+                }
+            } else {
+                return UISizeZero;
             }
         }).reduce((acc, val) => {
             return {
