@@ -148,7 +148,7 @@ class UITab {
     /**
      * Set the primary theme color.
      */
-    themePrimaryColor(val: UIColor): this {
+    themePrimaryColor(val: UIColor | undefined): this {
         this._theme = {
             primary: val,
             secondary: this._theme?.secondary,
@@ -160,7 +160,7 @@ class UITab {
     /**
      * Set the secondary theme color.
      */
-    themeSecondaryColor(val: UIColor): this {
+    themeSecondaryColor(val: UIColor | undefined): this {
         this._theme = {
             primary: this._theme?.primary,
             secondary: val,
@@ -172,7 +172,7 @@ class UITab {
     /**
      * Set the terriary theme color.
      */
-    themeTertiaryColor(val: UIColor): this {
+    themeTertiaryColor(val: UIColor | undefined): this {
         this._theme = {
             primary: this._theme?.primary,
             secondary: this._theme?.secondary,
