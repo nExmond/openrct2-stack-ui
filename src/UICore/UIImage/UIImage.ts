@@ -7,6 +7,7 @@ class UIImage {
 
     _frames: number[] = [];
     _duration: number = 2;
+    _baseOffset: UIPoint = UIPointZero;
     protected _offset: UIPoint = UIPointZero;
 
     /**
@@ -24,6 +25,7 @@ class UIImage {
      */
     static $(single: number): UIImage {
         const image = new UIImage([single]);
+        image._baseOffset = imageHelper.graphicsContext()?.getImage(single)?.offset ?? UIPointZero;
         return image;
     }
 
@@ -36,6 +38,7 @@ class UIImage {
     static $A(base: number, count: number, duration: number): UIImage {
         const frames = [...Array(count)].map((_, i) => base + i);
         const image = new UIImage(frames);
+        image._baseOffset = imageHelper.graphicsContext()?.getImage(base)?.offset ?? UIPointZero;
         return image.duration(duration);
     }
 
@@ -46,6 +49,7 @@ class UIImage {
      */
     static $F(frames: number[], duration: number): UIImage {
         const image = new UIImage(frames);
+        image._baseOffset = imageHelper.graphicsContext()?.getImage(frames[0])?.offset ?? UIPointZero;
         return image.duration(duration);
     }
 
@@ -54,12 +58,16 @@ class UIImage {
     _data(usingTab: boolean = false): number | ImageAnimation {
         const frameCount = this._frames.length;
         if (usingTab) {
+            //연속된 프레임으로 이루어진 이미지인지 확인
             const isContiguous = this._frames.reduce((acc, val) => val === acc + 1 ? val : acc) == this._frames[this._frames.length - 1];
             return {
                 frameBase: this._frames[0],
                 frameCount: this._frames.length,
                 frameDuration: this._duration,
-                offset: this._offset
+                offset: {
+                    x: this._baseOffset.x + this._offset.x,
+                    y: this._baseOffset.y + this._offset.y
+                }
             }
         } else {
             if (frameCount > 0) {
@@ -127,8 +135,8 @@ class UIImage {
             const info = graphicsContext?.getImage(val);
             if (typeof info !== "undefined") {
                 return <UISize>{
-                    width: info.width + info.offset.x,
-                    height: info.height + info.offset.y
+                    width: info.width + Math.max(info.offset.x, 0),
+                    height: info.height + Math.max(info.offset.y, 0)
                 }
             } else {
                 return UISizeZero;
