@@ -559,4 +559,20 @@ class UIWindow {
         this._didLoad = block;
         return this;
     }
+    
+    /**
+     * Find the widget contained in window by its unique name.
+     */
+    getUIWidget<T extends UIWidget<any>>(name: string): T | undefined {
+        var finded: T | undefined = this._singleContentView?._getUIWidgets().first(val => val.getName() === name);
+        if (typeof finded === "undefined" && typeof this._tabs !== "undefined") {
+            for (var index=0; index < this._tabs.length; index ++) {
+                finded = this._tabs[index].getUIWidget(name);
+                if (typeof finded !== "undefined") {
+                    break;
+                }
+            }
+        }
+        return finded;
+    }
 }

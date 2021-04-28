@@ -200,4 +200,11 @@ class UITab {
         this._didLoad = block;
         return this;
     }
+
+    /**
+     * Find the widget contained in tab by its unique name.
+     */
+    getUIWidget<T extends UIWidget<any>>(name: string): T | undefined {
+        return this._contentView._getUIWidgets().first(val => val.getName() === name);
+    }
 }
