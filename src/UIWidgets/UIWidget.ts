@@ -17,7 +17,7 @@ class UIWidget<T extends Widget> {
 
     _interactor!: UIInteractor;
 
-    protected _widget!: T | any;
+    _widget!: T | any;
 
     protected _minSize: UISize = UISizeZero;
     protected _initialSize: UIOptionalSize | undefined;
@@ -260,6 +260,14 @@ class UIWidget<T extends Widget> {
             width: size.width ?? 0,
             height: size.height ?? 0
         };
+    }
+
+    /**
+     * Set the name.
+     */
+    name(val: string): this {
+        this._name = val;
+        return this;
     }
 
     getName(): string {
