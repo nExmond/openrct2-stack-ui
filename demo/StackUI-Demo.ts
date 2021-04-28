@@ -34,39 +34,49 @@ var ImageWindow = function (): UIWindowProxy {
     const primaryTranslucent = UIWP.$<UICheckbox>();
     const secondaryTranslucent = UIWP.$<UICheckbox>();
 
+    const isExpandable = UIWP.$<UICheckbox>();
+
     //Construct
     UIWindow.$("StackUI Demo - Image",
         UIStack.$H(
             UIImageView.$(UIImageG2Logo).bind(imageView1),
+            UISpacer.$(),
             UIImageView.$(UIImageG2Title).bind(imageView2)
         ).spacing(4),
+        UISpacer.$(),
         UIStack.$H(
             UIImageView.$(UIImage.$(5627)).bind(imageView3),
+            UISpacer.$(),
             UIImageView.$(UIImageTesting).bind(imageView4)
+            // UIImageView.$(UIImageTabStaffHandymen).bind(imageView4)
         ).spacing(4),
-        UIStack.$VG(
-            UIStack.$H(
-                UILabel.$("Primary:"),
-                UIColorPicker.$().bind(primaryColorpicker)
-                    .color(Math.round(Math.random() * 32)),
-                UISpacer.$(),
-                UICheckbox.$("Translucent", true).bind(primaryTranslucent)
-            ).spacing(2),
-            UIStack.$H(
-                UILabel.$("Secondary:"),
-                UIColorPicker.$().bind(secondaryColorpicker)
-                    .color(Math.round(Math.random() * 32)),
-                UISpacer.$(),
-                UICheckbox.$("Translucent", true).bind(secondaryTranslucent)
-            ).spacing(2),
-            UIStack.$H(
-                UILabel.$("Tertiary:"),
-                UIColorPicker.$().bind(tertiaryColorpicker)
-                    .color(Math.round(Math.random() * 32))
-            ).spacing(2)
-        ).title("Colors")
-            .spacing(2)
-            .padding({ top: 0, left: 4, bottom: 0, right: 4 })
+        UIStack.$H(
+            UIStack.$VG(
+                UIStack.$H(
+                    UILabel.$("Primary:"),
+                    UIColorPicker.$().bind(primaryColorpicker)
+                        .color(Math.round(Math.random() * 32))
+                        .name("primaryColorPicker"),
+                    UISpacer.$(),
+                    UICheckbox.$("Translucent", true).bind(primaryTranslucent)
+                ).spacing(2),
+                UIStack.$H(
+                    UILabel.$("Secondary:"),
+                    UIColorPicker.$().bind(secondaryColorpicker)
+                        .color(Math.round(Math.random() * 32)),
+                    UISpacer.$(),
+                    UICheckbox.$("Translucent", true).bind(secondaryTranslucent)
+                ).spacing(2),
+                UIStack.$H(
+                    UILabel.$("Tertiary:"),
+                    UIColorPicker.$().bind(tertiaryColorpicker)
+                        .color(Math.round(Math.random() * 32))
+                ).spacing(2)
+            ).title("Colors")
+                .spacing(2)
+                .padding({ top: 0, left: 4, bottom: 0, right: 4 })
+        ),
+        UICheckbox.$("isExpandable", true).bind(isExpandable)
     ).bind(window)
         .spacing(2)
 
@@ -90,7 +100,7 @@ var ImageWindow = function (): UIWindowProxy {
     }
 
     window.ui?.didLoad(w => {
-        const primary = primaryColorpicker.ui?.getColor();
+        const primary = w.getUIWidget<UIColorPicker>("primaryColorPicker")?.getColor();
         const secondary = secondaryColorpicker.ui?.getColor();
         const tertiary = tertiaryColorpicker.ui?.getColor();
 
@@ -107,7 +117,6 @@ var ImageWindow = function (): UIWindowProxy {
 
     function primaryColorpickerOnChange() {
         const color = (primaryColorpicker.ui?.getColor() ?? 0) | ((primaryTranslucent.ui?.getIsChecked() ?? false) ? UIColorFlag.Translucent : 0);
-        console.log(color, primaryTranslucent.ui?.getIsChecked());
         updateImageViews(w => w.themePrimaryColor(color));
         updateWindow({ primary: color });
     }
@@ -130,6 +139,11 @@ var ImageWindow = function (): UIWindowProxy {
 
     primaryTranslucent.ui?.onChange(_ => primaryColorpickerOnChange());
     secondaryTranslucent.ui?.onChange(_ => secondaryColorpickerOnChange());
+
+    isExpandable.ui?.onChange((_, isChecked) => {
+        window.ui?.updateUI(w => w.isExpandable(isChecked));
+    });
+
 
     return window;
 }

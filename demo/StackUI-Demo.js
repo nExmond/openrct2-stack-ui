@@ -38,7 +38,7 @@ var Window = function () {
     return window;
 };
 var ImageWindow = function () {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g;
     var window = UIWDP.$();
     var imageView1 = UIWP.$();
     var imageView2 = UIWP.$();
@@ -49,12 +49,14 @@ var ImageWindow = function () {
     var tertiaryColorpicker = UIWP.$();
     var primaryTranslucent = UIWP.$();
     var secondaryTranslucent = UIWP.$();
-    UIWindow.$("StackUI Demo - Image", UIStack.$H(UIImageView.$(UIImageG2Logo).bind(imageView1), UIImageView.$(UIImageG2Title).bind(imageView2)).spacing(4), UIStack.$H(UIImageView.$(UIImage.$(5627)).bind(imageView3), UIImageView.$(UIImageTesting).bind(imageView4)).spacing(4), UIStack.$VG(UIStack.$H(UILabel.$("Primary:"), UIColorPicker.$().bind(primaryColorpicker)
-        .color(Math.round(Math.random() * 32)), UISpacer.$(), UICheckbox.$("Translucent", true).bind(primaryTranslucent)).spacing(2), UIStack.$H(UILabel.$("Secondary:"), UIColorPicker.$().bind(secondaryColorpicker)
+    var isExpandable = UIWP.$();
+    UIWindow.$("StackUI Demo - Image", UIStack.$H(UIImageView.$(UIImageG2Logo).bind(imageView1), UISpacer.$(), UIImageView.$(UIImageG2Title).bind(imageView2)).spacing(4), UISpacer.$(), UIStack.$H(UIImageView.$(UIImage.$(5627)).bind(imageView3), UISpacer.$(), UIImageView.$(UIImageTesting).bind(imageView4)).spacing(4), UIStack.$H(UIStack.$VG(UIStack.$H(UILabel.$("Primary:"), UIColorPicker.$().bind(primaryColorpicker)
+        .color(Math.round(Math.random() * 32))
+        .name("primaryColorPicker"), UISpacer.$(), UICheckbox.$("Translucent", true).bind(primaryTranslucent)).spacing(2), UIStack.$H(UILabel.$("Secondary:"), UIColorPicker.$().bind(secondaryColorpicker)
         .color(Math.round(Math.random() * 32)), UISpacer.$(), UICheckbox.$("Translucent", true).bind(secondaryTranslucent)).spacing(2), UIStack.$H(UILabel.$("Tertiary:"), UIColorPicker.$().bind(tertiaryColorpicker)
         .color(Math.round(Math.random() * 32))).spacing(2)).title("Colors")
         .spacing(2)
-        .padding({ top: 0, left: 4, bottom: 0, right: 4 })).bind(window)
+        .padding({ top: 0, left: 4, bottom: 0, right: 4 })), UICheckbox.$("isExpandable", true).bind(isExpandable)).bind(window)
         .spacing(2);
     function updateImageViews(block) {
         var _a, _b, _c, _d;
@@ -77,7 +79,7 @@ var ImageWindow = function () {
     }
     (_a = window.ui) === null || _a === void 0 ? void 0 : _a.didLoad(function (w) {
         var _a, _b, _c;
-        var primary = (_a = primaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.getColor();
+        var primary = (_a = w.getUIWidget("primaryColorPicker")) === null || _a === void 0 ? void 0 : _a.getColor();
         var secondary = (_b = secondaryColorpicker.ui) === null || _b === void 0 ? void 0 : _b.getColor();
         var tertiary = (_c = tertiaryColorpicker.ui) === null || _c === void 0 ? void 0 : _c.getColor();
         updateImageViews(function (w) { return w.themePrimaryColor(primary); });
@@ -90,9 +92,8 @@ var ImageWindow = function () {
         });
     });
     function primaryColorpickerOnChange() {
-        var _a, _b, _c, _d, _e;
-        var color = ((_b = (_a = primaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.getColor()) !== null && _b !== void 0 ? _b : 0) | (((_d = (_c = primaryTranslucent.ui) === null || _c === void 0 ? void 0 : _c.getIsChecked()) !== null && _d !== void 0 ? _d : false) ? UIColorFlag.Translucent | UIColorFlag.Inset | UIColorFlag.Outline : 0);
-        console.log(color, (_e = primaryTranslucent.ui) === null || _e === void 0 ? void 0 : _e.getIsChecked());
+        var _a, _b, _c, _d;
+        var color = ((_b = (_a = primaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.getColor()) !== null && _b !== void 0 ? _b : 0) | (((_d = (_c = primaryTranslucent.ui) === null || _c === void 0 ? void 0 : _c.getIsChecked()) !== null && _d !== void 0 ? _d : false) ? UIColorFlag.Translucent : 0);
         updateImageViews(function (w) { return w.themePrimaryColor(color); });
         updateWindow({ primary: color });
     }
@@ -113,6 +114,10 @@ var ImageWindow = function () {
     (_d = tertiaryColorpicker.ui) === null || _d === void 0 ? void 0 : _d.onChange(function (_) { return tertiaryColorpickerOnChange(); });
     (_e = primaryTranslucent.ui) === null || _e === void 0 ? void 0 : _e.onChange(function (_) { return primaryColorpickerOnChange(); });
     (_f = secondaryTranslucent.ui) === null || _f === void 0 ? void 0 : _f.onChange(function (_) { return secondaryColorpickerOnChange(); });
+    (_g = isExpandable.ui) === null || _g === void 0 ? void 0 : _g.onChange(function (_, isChecked) {
+        var _a;
+        (_a = window.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) { return w.isExpandable(isChecked); });
+    });
     return window;
 };
 var ListWindow = function () {
@@ -524,6 +529,13 @@ Array.prototype.min = function () {
 Array.prototype.max = function () {
     return this.reduce(function (acc, val) { return Math.max(acc, val); }, 0);
 };
+Array.prototype.first = function (predicate) {
+    var filtered = this.filter(predicate);
+    if (filtered.length > 0) {
+        return filtered[0];
+    }
+    return undefined;
+};
 function uuid() {
     var uuidValue = '', k, randomValue;
     for (k = 0; k < 32; k++) {
@@ -702,20 +714,27 @@ var UIImage = (function () {
     function UIImage(frames) {
         this._frames = [];
         this._duration = 2;
+        this._baseOffset = UIPointZero;
         this._offset = UIPointZero;
         this._frames = frames;
     }
     UIImage.$ = function (single) {
+        var _a, _b, _c;
         var image = new UIImage([single]);
+        image._baseOffset = (_c = (_b = (_a = imageHelper.graphicsContext()) === null || _a === void 0 ? void 0 : _a.getImage(single)) === null || _b === void 0 ? void 0 : _b.offset) !== null && _c !== void 0 ? _c : UIPointZero;
         return image;
     };
     UIImage.$A = function (base, count, duration) {
+        var _a, _b, _c;
         var frames = __spreadArray([], Array(count)).map(function (_, i) { return base + i; });
         var image = new UIImage(frames);
+        image._baseOffset = (_c = (_b = (_a = imageHelper.graphicsContext()) === null || _a === void 0 ? void 0 : _a.getImage(base)) === null || _b === void 0 ? void 0 : _b.offset) !== null && _c !== void 0 ? _c : UIPointZero;
         return image.duration(duration);
     };
     UIImage.$F = function (frames, duration) {
+        var _a, _b, _c;
         var image = new UIImage(frames);
+        image._baseOffset = (_c = (_b = (_a = imageHelper.graphicsContext()) === null || _a === void 0 ? void 0 : _a.getImage(frames[0])) === null || _b === void 0 ? void 0 : _b.offset) !== null && _c !== void 0 ? _c : UIPointZero;
         return image.duration(duration);
     };
     UIImage.prototype._data = function (usingTab) {
@@ -727,7 +746,10 @@ var UIImage = (function () {
                 frameBase: this._frames[0],
                 frameCount: this._frames.length,
                 frameDuration: this._duration,
-                offset: this._offset
+                offset: {
+                    x: this._baseOffset.x + this._offset.x,
+                    y: this._baseOffset.y + this._offset.y
+                }
             };
         }
         else {
@@ -770,8 +792,8 @@ var UIImage = (function () {
             var info = graphicsContext === null || graphicsContext === void 0 ? void 0 : graphicsContext.getImage(val);
             if (typeof info !== "undefined") {
                 return {
-                    width: info.width + info.offset.x,
-                    height: info.height + info.offset.y
+                    width: info.width + Math.max(info.offset.x, 0),
+                    height: info.height + Math.max(info.offset.y, 0)
                 };
             }
             else {
@@ -1281,6 +1303,10 @@ var UIWidget = (function () {
             height: (_b = size.height) !== null && _b !== void 0 ? _b : 0
         };
     };
+    UIWidget.prototype.name = function (val) {
+        this._name = val;
+        return this;
+    };
     UIWidget.prototype.getName = function () {
         return this._name;
     };
@@ -1457,6 +1483,9 @@ var UITab = (function () {
     UITab.prototype.didLoad = function (block) {
         this._didLoad = block;
         return this;
+    };
+    UITab.prototype.getUIWidget = function (name) {
+        return this._contentView._getUIWidgets().first(function (val) { return val.getName() === name; });
     };
     return UITab;
 }());
@@ -2303,6 +2332,19 @@ var UIWindow = (function () {
     UIWindow.prototype.didLoad = function (block) {
         this._didLoad = block;
         return this;
+    };
+    UIWindow.prototype.getUIWidget = function (name) {
+        var _a;
+        var finded = (_a = this._singleContentView) === null || _a === void 0 ? void 0 : _a._getUIWidgets().first(function (val) { return val.getName() === name; });
+        if (typeof finded === "undefined" && typeof this._tabs !== "undefined") {
+            for (var index = 0; index < this._tabs.length; index++) {
+                finded = this._tabs[index].getUIWidget(name);
+                if (typeof finded !== "undefined") {
+                    break;
+                }
+            }
+        }
+        return finded;
     };
     return UIWindow;
 }());
