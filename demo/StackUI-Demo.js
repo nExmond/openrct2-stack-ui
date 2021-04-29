@@ -79,34 +79,30 @@ var ImageWindow = function () {
     }
     (_a = window.ui) === null || _a === void 0 ? void 0 : _a.didLoad(function (w) {
         var _a, _b, _c;
-        var primary = (_a = w.getUIWidget("primaryColorPicker")) === null || _a === void 0 ? void 0 : _a.getColor();
-        var secondary = (_b = secondaryColorpicker.ui) === null || _b === void 0 ? void 0 : _b.getColor();
-        var tertiary = (_c = tertiaryColorpicker.ui) === null || _c === void 0 ? void 0 : _c.getColor();
-        updateImageViews(function (w) { return w.themePrimaryColor(primary); });
-        updateImageViews(function (w) { return w.themeSecondaryColor(secondary); });
-        updateImageViews(function (w) { return w.themeTertiaryColor(tertiary); });
-        updateWindow({
-            primary: primary,
-            secondary: secondary,
-            tertiary: tertiary
-        });
+        var theme = {
+            primary: (_a = w.getUIWidget("primaryColorPicker")) === null || _a === void 0 ? void 0 : _a.getColor(),
+            secondary: (_b = secondaryColorpicker.ui) === null || _b === void 0 ? void 0 : _b.getColor(),
+            tertiary: (_c = tertiaryColorpicker.ui) === null || _c === void 0 ? void 0 : _c.getColor()
+        };
+        updateImageViews(function (w) { return w.theme(theme); });
+        updateWindow(theme);
     });
     function primaryColorpickerOnChange() {
         var _a, _b, _c, _d;
         var color = ((_b = (_a = primaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.getColor()) !== null && _b !== void 0 ? _b : 0) | (((_d = (_c = primaryTranslucent.ui) === null || _c === void 0 ? void 0 : _c.getIsChecked()) !== null && _d !== void 0 ? _d : false) ? UIColorFlag.Translucent : 0);
-        updateImageViews(function (w) { return w.themePrimaryColor(color); });
+        updateImageViews(function (w) { return w.theme({ primary: color }); });
         updateWindow({ primary: color });
     }
     function secondaryColorpickerOnChange() {
         var _a, _b, _c, _d;
         var color = ((_b = (_a = secondaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.getColor()) !== null && _b !== void 0 ? _b : 0) | (((_d = (_c = secondaryTranslucent.ui) === null || _c === void 0 ? void 0 : _c.getIsChecked()) !== null && _d !== void 0 ? _d : false) ? UIColorFlag.Translucent : 0);
-        updateImageViews(function (w) { return w.themeSecondaryColor(color); });
+        updateImageViews(function (w) { return w.theme({ secondary: color }); });
         updateWindow({ secondary: color });
     }
     function tertiaryColorpickerOnChange() {
         var _a;
         var color = (_a = tertiaryColorpicker.ui) === null || _a === void 0 ? void 0 : _a.getColor();
-        updateImageViews(function (w) { return w.themeTertiaryColor(color); });
+        updateImageViews(function (w) { return w.theme({ tertiary: color }); });
         updateWindow({ tertiary: color });
     }
     (_b = primaryColorpicker.ui) === null || _b === void 0 ? void 0 : _b.onChange(function (_) { return primaryColorpickerOnChange(); });
@@ -122,18 +118,23 @@ var ImageWindow = function () {
 };
 var ListWindow = function () {
     var window = UIWDP.$();
-    UIWindow.$T("StackUI Demo - List", UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(10), UIStack.$H(UILabel.$((1791).stringId()), UIColorPicker.$(UIColor.BrightRed))), UISpacer.$(), UIStack.$V(UIButton.$((1700).stringId(), true)
-        .width(145)
-        .tooltip((1948).stringId()), UILabel.$((1858).stringId(500))).offset({ x: 75, y: -29 }), UIStack.$H(UIButton.$I(UIImageDemolish)
+    UIWindow.$T("StackUI Demo - List", UITab.$(UIStack.$H(UIImageView.$(UIImageTabStaffHandymen)
+        .theme({ primary: UIColor.BrightRed })
+        .occupiedSize(UISizeZero)
+        .offset({ x: 10, y: -22 }), UIStack.$V(UISpacer.$(10), UIStack.$H(UILabel.$((1791).stringId()), UIColorPicker.$(UIColor.BrightRed))), UISpacer.$(), UIStack.$V(UIButton.$((1700).stringId(), true)
+        .occupiedSize({ width: 0 })
+        .size({ width: 145 })
+        .tooltip((1948).stringId()), UILabel.$((1858).stringId(500))
+        .occupiedSize({ width: 0 })).offset({ y: -29 }), UIStack.$H(UIButton.$I(UIImageDemolish)
         .size(25)
         .tooltip((5300).stringId()), UIButton.$I(UIImagePatrol)
         .size(25)
         .tooltip((1947).stringId()), UIButton.$I(UIImageMap)
         .size(25)
         .tooltip((2804).stringId()))), UIListView.$()
-        .offset({ x: 0, y: -6 })["extends"]({ top: 0, left: 0, bottom: 6, right: 0 }), UILabel.$((0 + " " + (1863).stringId()).color(TextColor.Black))).image(UIImageTabStaffHandymen)).bind(window)
+        .offset({ x: 0, y: -6 })["extends"]({ top: 0, left: 0, bottom: 6, right: 0 }), UILabel.$((0 + " " + (1863).stringId()).color(TextColor.Black)))).bind(window)
         .padding({ top: 0, left: 1, bottom: -3, right: 0 })
-        .themeSecondaryColor(UIColor.LightPurple)
+        .theme({ secondary: UIColor.LightPurple })
         .isExpandable(true)
         .spacing(2);
     return window;
@@ -281,99 +282,8 @@ var BasicWindow = function () {
     });
     return window;
 };
-var TestWindow = function () {
-    var _a, _b, _c, _d;
-    var window = UIWindowProxy.$();
-    var checkboxIsExpandable = UIWidgetProxy.$();
-    var buttonZoom = UIWidgetProxy.$();
-    var buttonchangeColor = UIWidgetProxy.$();
-    var viewport = UIWidgetProxy.$();
-    var buttonClear = UIWidgetProxy.$();
-    var containerPadding = { top: 2, left: 2, bottom: 2, right: 2 };
-    UIWindow.$('Window title', UIButton.$('1')
-        .tooltip('Tooltip'), UIStack.$H(UIStack.$VG(UIStack.$HG(UIColorPicker.$(), UIColorPicker.$()
-        .isDisabled(true)
-        .color(UIColor.BrightRed), UIColorPicker.$()
-        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
-        .isDisabled(true)
-        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
-        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
-        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
-        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
-        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
-        .color(Math.floor(Math.random() * 32)), UIColorPicker.$()
-        .color(Math.floor(Math.random() * 32))).title('ColorSet')
-        .isDisabled(true)
-        .padding(containerPadding), UIStack.$VG(UIButton.$('2')
-        .isDisabled(true), UIButton.$('2'), UIButton.$('2'), UIButton.$('2')).padding(containerPadding), UIButton.$('2'), UIStack.$H(UIButton.$('3'), UISpacer.$(10), UIButton.$('4'), UICheckbox.$UN().bind(checkboxIsExpandable)).spacing(4), UIButton.$('A')).title('GroupBox')
-        .spacing(4)
-        .padding(containerPadding), UISpacer.$(10), UIStack.$HG(UIButton.$('5'), UIStack.$VG(UIDropdown.$([
-        'first',
-        'second',
-        'third',
-        'fourth'
-    ]).isVisible(true), UISpinner.$()
-        .range(-10000, 10000)
-        .step(1000)
-        .fixed(4)
-        .value(0)
-        .formatter(function (val) {
-        return val.format(TextFormat.Currency) + UIImageShopItemCookie.string();
-    }), UIButton.$('6')
-        .height(15), UIButton.$I(UIImageG2ZoomIn).bind(buttonZoom), UIButton.$('8')
-        .height(20)).spacing(4)
-        .padding(containerPadding), UIButton.$('change color').bind(buttonchangeColor)).spacing(4)
-        .padding(containerPadding), UIViewport.$().bind(viewport)
-        .size(200)
-        .zoom(UIViewportScale.Quater)
-        .flags(UIViewportFlag.InvisibleSupports)).spacing(4), UIStack.$H(UISpacer.$(), UIButton.$('dddd')
-        .height(50).width(100)), UIStack.$H(UIButton.$('10')
-        .width(100), UIButton.$('Clear!').bind(buttonClear)
-        .height(100), UITextBox.$()
-        .maxLength(20)).spacing(4), UILabel.$('Label----------------------!')
-        .align(UITextAlignment.Center)).bind(window)
-        .spacing(4)
-        .padding(containerPadding);
-    (_a = checkboxIsExpandable.ui) === null || _a === void 0 ? void 0 : _a.onChange(function (_, isChecked) {
-        var _a;
-        console.log(isChecked);
-        (_a = window.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (val) {
-            if (isChecked) {
-                val.isExpandable(true);
-            }
-            else {
-                val.isExpandable(false);
-            }
-        });
-    });
-    (_b = buttonZoom.ui) === null || _b === void 0 ? void 0 : _b.onClick(function (_) {
-        var _a, _b;
-        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.mainViewportScrollToThis();
-        (_b = window.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) {
-            w.title('Moving........');
-        });
-    });
-    (_c = buttonchangeColor.ui) === null || _c === void 0 ? void 0 : _c.onClick(function (_) {
-        var _a;
-        (_a = window.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
-            w.theme({
-                primary: UIColor.DarkGreen | UIColorFlag.Translucent,
-                secondary: UIColor.SalmonPink | UIColorFlag.Outline,
-                tertiary: UIColor.SaturatedRed | UIColorFlag.Inset
-            });
-        });
-    });
-    (_d = buttonClear.ui) === null || _d === void 0 ? void 0 : _d.onClick(function (_) {
-        var _a, _b;
-        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.moveTo({ x: Math.random() * ui.width, y: Math.random() * ui.height });
-        (_b = viewport.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) {
-            w.size(Math.random() * 400);
-        });
-    });
-    return window;
-};
 var MainWindow = function () {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d;
     var window = UIWDP.$();
     var tab1 = UITP.$();
     var basicButton = UIWP.$();
@@ -382,11 +292,9 @@ var MainWindow = function () {
     var viewportWindow = ViewportWindow();
     var listButton = UIWP.$();
     var listWindow = ListWindow();
-    var testButton = UIWP.$();
-    var testWindow = TestWindow();
     var imageButton = UIWP.$();
     var imageWindow = ImageWindow();
-    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("List").bind(listButton), UIButton.$("Test").bind(testButton), UIButton.$("Image").bind(imageButton), UISpacer.$(10)).bind(tab1)
+    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("List").bind(listButton), UIButton.$("Image").bind(imageButton), UISpacer.$(10)).bind(tab1)
         .isExpandable(true)).bind(window)
         .spacing(2);
     (_a = basicButton.ui) === null || _a === void 0 ? void 0 : _a.onClick(function (_) {
@@ -401,11 +309,7 @@ var MainWindow = function () {
         var _a;
         (_a = listWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
     });
-    (_d = testButton.ui) === null || _d === void 0 ? void 0 : _d.onClick(function (_) {
-        var _a;
-        (_a = testWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
-    });
-    (_e = imageButton.ui) === null || _e === void 0 ? void 0 : _e.onClick(function (_) {
+    (_d = imageButton.ui) === null || _d === void 0 ? void 0 : _d.onClick(function (_) {
         var _a;
         (_a = imageWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
     });
@@ -490,7 +394,7 @@ var UIInteractor = (function () {
     };
     return UIInteractor;
 }());
-var UIOptionalSizeDefulat = { width: undefined, height: undefined };
+var UIOptionalSizeDefault = {};
 var UISizeZero = { width: 0, height: 0 };
 var TextFormat;
 (function (TextFormat) {
@@ -643,6 +547,7 @@ Number.prototype.imageString = function () {
     var item = imageId % 256;
     return "{INLINE_SPRITE}{" + item + "}{" + section + "}{" + head + "}{0}";
 };
+var UIOptionalPointDefault = {};
 var UIPointZero = { x: 0, y: 0 };
 var ImageHelper = (function () {
     function ImageHelper() {
@@ -761,7 +666,10 @@ var UIImage = (function () {
             }
         }
     };
-    UIImage.prototype._isAnimatable = function () {
+    UIImage.prototype._getFrames = function () {
+        return this._frames;
+    };
+    UIImage.prototype.isAnimatable = function () {
         return this._frames.length > 1;
     };
     UIImage.prototype.duration = function (val) {
@@ -862,7 +770,7 @@ var TextNode = (function () {
             var _loop_1 = function () {
                 var child = this_1._childs[i];
                 if (child._isLeaf() && child instanceof StringNode) {
-                    var splitted = child._string.split("\\n");
+                    var splitted = child._getString().split("\\n");
                     if (splitted.length > 1) {
                         var newChilds = splitted
                             .map(function (val, index, array) {
@@ -896,10 +804,10 @@ var TextNode = (function () {
         if (parentExist === void 0) { parentExist = false; }
         if (this._isLeaf() && this instanceof StringNode) {
             if (parentExist) {
-                this._string = this._string.remove("{OUTLINE}").remove("{OUTLINE_OFF}");
+                this._setString(this._getString().remove("{OUTLINE}").remove("{OUTLINE_OFF}"));
             }
             else if (this._outline && this._isPureString()) {
-                this._string = "{OUTLINE}" + this._string + "{OUTLINE_OFF}";
+                this._setString("{OUTLINE}" + this._getString() + "{OUTLINE_OFF}");
             }
         }
         else if (this._isStopover()) {
@@ -916,19 +824,19 @@ var TextNode = (function () {
                     for (var i = 0; i < childs.length; i++) {
                         var child_1 = this._childs[i];
                         if (isBegin && child_1 instanceof StringNode) {
-                            child_1._string = "{OUTLINE}" + child_1._string;
+                            child_1._setString("{OUTLINE}" + child_1._getString());
                             isBegin = false;
                         }
                         if (child_1 instanceof _NewlineNode) {
                             if (typeof prevChild !== "undefined") {
-                                prevChild._string = prevChild._string + "{OUTLINE_OFF}";
+                                prevChild._setString(prevChild._getString() + "{OUTLINE_OFF}");
                             }
                             isBegin = true;
                         }
                         if (child_1 instanceof StringNode) {
                             prevChild = child_1;
                             if (i >= this._childs.length - 1) {
-                                child_1._string = child_1._string + "{OUTLINE_OFF}";
+                                child_1._setString(child_1._getString() + "{OUTLINE_OFF}");
                             }
                         }
                     }
@@ -941,7 +849,7 @@ var TextNode = (function () {
         if (parentColor === void 0) { parentColor = undefined; }
         var color = (_b = (_a = this._color) !== null && _a !== void 0 ? _a : parentColor) !== null && _b !== void 0 ? _b : TextColor.WindowSecondary;
         if (this._isLeaf() && this._isPureString() && this instanceof StringNode) {
-            this._string = "{" + color + "}" + this._string;
+            this._setString("{" + color + "}" + this._getString());
         }
         else if (this._isStopover()) {
             for (var _i = 0, _c = this._childs; _i < _c.length; _i++) {
@@ -969,7 +877,7 @@ var TextNode = (function () {
         if (typeof this._childs !== "undefined" && this._childs.length > 0) {
             childs = "[" + this._childs.map(function (val, index) { return val._description(depth + 1, index); }).join(",") + "]";
         }
-        return (typeof index !== "undefined" ? '[' + index + ']' : "") + "{\n" + childTabs + "type: " + this.constructor.name + "," + (this instanceof StringNode ? "\n" + childTabs + "string: " + this._string + "," : "") + "\n" + childTabs + "outline: " + this._outline + ",\n" + childTabs + "color: " + this._color + ",\n" + childTabs + "childs: " + childs + "\n" + tabs + "}";
+        return (typeof index !== "undefined" ? '[' + index + ']' : "") + "{\n" + childTabs + "type: " + this.constructor.name + "," + (this instanceof StringNode ? "\n" + childTabs + "string: " + this._getString() + "," : "") + "\n" + childTabs + "outline: " + this._outline + ",\n" + childTabs + "color: " + this._color + ",\n" + childTabs + "childs: " + childs + "\n" + tabs + "}";
     };
     TextNode.prototype._isPureString = function () {
         return this instanceof ImageNode === false && !this._isPrivate();
@@ -1063,7 +971,13 @@ var StringNode = (function (_super) {
         return this._isLeaf();
     };
     StringNode.prototype._text = function () {
+        return this._getString();
+    };
+    StringNode.prototype._getString = function () {
         return this._string;
+    };
+    StringNode.prototype._setString = function (val) {
+        this._string = val;
     };
     return StringNode;
 }(TextNode));
@@ -1099,6 +1013,7 @@ var _FontNode = (function (_super) {
     }
     return _FontNode;
 }(StringNode));
+var UIOptionalEdgeInsetsDefault = {};
 var UIEdgeInsetsZero = { top: 0, left: 0, bottom: 0, right: 0 };
 var UIEdgeInsetsContainer = { top: 16, left: 2, bottom: 2, right: 2 };
 var UIEdgeInsetsTabContainer = { top: 45, left: 2, bottom: 2, right: 2 };
@@ -1110,7 +1025,7 @@ var UIAxis;
 var UIWidget = (function () {
     function UIWidget() {
         this._origin = UIPointZero;
-        this._size = UIOptionalSizeDefulat;
+        this._size = UIOptionalSizeDefault;
         this._isDisabled = false;
         this._isVisible = true;
         this._minSize = UISizeZero;
@@ -1125,11 +1040,11 @@ var UIWidget = (function () {
         return [this._widget];
     };
     UIWidget.prototype._estimatedSize = function () {
-        var _a, _b;
+        var _a, _b, _c, _d, _e, _f;
         var minSize = this._minSize;
         return {
-            width: (_a = this._size.width) !== null && _a !== void 0 ? _a : minSize.width,
-            height: (_b = this._size.height) !== null && _b !== void 0 ? _b : minSize.height
+            width: (_c = (_b = (_a = this._occupiedSize) === null || _a === void 0 ? void 0 : _a.width) !== null && _b !== void 0 ? _b : this._size.width) !== null && _c !== void 0 ? _c : minSize.width,
+            height: (_f = (_e = (_d = this._occupiedSize) === null || _d === void 0 ? void 0 : _d.height) !== null && _e !== void 0 ? _e : this._size.height) !== null && _f !== void 0 ? _f : minSize.height
         };
     };
     UIWidget.prototype._isUndefinedSize = function (axis) {
@@ -1143,7 +1058,7 @@ var UIWidget = (function () {
         }
     };
     UIWidget.prototype._layout = function (axis, origin, estimatedSize) {
-        var _a, _b;
+        var _a, _b, _c, _d, _e, _f;
         if (typeof this._initialSize === "undefined") {
             this._initialSize = this._size;
         }
@@ -1159,16 +1074,20 @@ var UIWidget = (function () {
             width: size.width + this._extends.left + this._extends.right - 1,
             height: size.height + this._extends.top + this._extends.bottom
         };
+        var layoutSize = {
+            width: (_d = (_c = this._occupiedSize) === null || _c === void 0 ? void 0 : _c.width) !== null && _d !== void 0 ? _d : size.width,
+            height: (_f = (_e = this._occupiedSize) === null || _e === void 0 ? void 0 : _e.height) !== null && _f !== void 0 ? _f : size.height
+        };
         switch (axis) {
             case UIAxis.Vertical: {
                 return {
                     x: origin.x,
-                    y: origin.y + size.height
+                    y: origin.y + layoutSize.height
                 };
             }
             case UIAxis.Horizontal: {
                 return {
-                    x: origin.x + size.width,
+                    x: origin.x + layoutSize.width,
                     y: origin.y
                 };
             }
@@ -1224,6 +1143,12 @@ var UIWidget = (function () {
             return text;
         }
     };
+    UIWidget.prototype._setInteractor = function (val) {
+        this._interactor = val;
+    };
+    UIWidget.prototype._getInteractor = function () {
+        return this._interactor;
+    };
     UIWidget.prototype.updateUI = function (block) {
         if (block === void 0) { block = undefined; }
         var prevSize = this._size;
@@ -1239,27 +1164,20 @@ var UIWidget = (function () {
     UIWidget.prototype.getOrigin = function () {
         return this._origin;
     };
-    UIWidget.prototype.minWidth = function (val) {
-        this._minSize = {
-            width: val,
-            height: this._minSize.height
-        };
-        return this;
-    };
-    UIWidget.prototype.minHeight = function (val) {
-        this._minSize = {
-            width: this._minSize.width,
-            height: val
-        };
-        return this;
-    };
     UIWidget.prototype.minSize = function (val) {
+        var _a, _b;
         var size = UISizeZero;
         if (typeof val === "number") {
-            size = { width: val, height: val };
+            size = {
+                width: val,
+                height: val
+            };
         }
         else {
-            size = val;
+            size = {
+                width: (_a = val.width) !== null && _a !== void 0 ? _a : this._minSize.width,
+                height: (_b = val.height) !== null && _b !== void 0 ? _b : this._minSize.height
+            };
         }
         this._minSize = size;
         return this;
@@ -1267,29 +1185,20 @@ var UIWidget = (function () {
     UIWidget.prototype.getMinSize = function () {
         return this._minSize;
     };
-    UIWidget.prototype.width = function (val) {
-        this._size = {
-            width: val,
-            height: this._size.height
-        };
-        this._initialSize = this._size;
-        return this;
-    };
-    UIWidget.prototype.height = function (val) {
-        this._size = {
-            width: this._size.width,
-            height: val
-        };
-        this._initialSize = this._size;
-        return this;
-    };
     UIWidget.prototype.size = function (val) {
-        var size = UISizeZero;
+        var _a, _b;
+        var size = UIOptionalSizeDefault;
         if (typeof val === "number") {
-            size = { width: val, height: val };
+            size = {
+                width: val,
+                height: val
+            };
         }
         else {
-            size = val;
+            size = {
+                width: (_a = val.width) !== null && _a !== void 0 ? _a : this._size.width,
+                height: (_b = val.height) !== null && _b !== void 0 ? _b : this._size.height
+            };
         }
         this._size = size;
         this._initialSize = size;
@@ -1301,6 +1210,31 @@ var UIWidget = (function () {
         return {
             width: (_a = size.width) !== null && _a !== void 0 ? _a : 0,
             height: (_b = size.height) !== null && _b !== void 0 ? _b : 0
+        };
+    };
+    UIWidget.prototype.occupiedSize = function (val) {
+        var _a, _b, _c, _d;
+        var size = UIOptionalSizeDefault;
+        if (typeof val === "number") {
+            size = {
+                width: val,
+                height: val
+            };
+        }
+        else {
+            size = {
+                width: (_a = val.width) !== null && _a !== void 0 ? _a : (_b = this._occupiedSize) === null || _b === void 0 ? void 0 : _b.width,
+                height: (_c = val.height) !== null && _c !== void 0 ? _c : (_d = this._occupiedSize) === null || _d === void 0 ? void 0 : _d.height
+            };
+        }
+        this._occupiedSize = size;
+        return this;
+    };
+    UIWidget.prototype.getOccupiedSize = function () {
+        var _a, _b, _c, _d, _e, _f;
+        return {
+            width: (_c = (_b = (_a = this._occupiedSize) === null || _a === void 0 ? void 0 : _a.width) !== null && _b !== void 0 ? _b : this._size.width) !== null && _c !== void 0 ? _c : 0,
+            height: (_f = (_e = (_d = this._occupiedSize) === null || _d === void 0 ? void 0 : _d.height) !== null && _e !== void 0 ? _e : this._size.height) !== null && _f !== void 0 ? _f : 0
         };
     };
     UIWidget.prototype.name = function (val) {
@@ -1332,14 +1266,24 @@ var UIWidget = (function () {
         return this._isVisible;
     };
     UIWidget.prototype.offset = function (val) {
-        this._offset = val;
+        var _a, _b;
+        this._offset = {
+            x: (_a = val.x) !== null && _a !== void 0 ? _a : this._offset.x,
+            y: (_b = val.y) !== null && _b !== void 0 ? _b : this._offset.y
+        };
         return this;
     };
     UIWidget.prototype.getOffset = function () {
         return this._offset;
     };
     UIWidget.prototype["extends"] = function (val) {
-        this._extends = val;
+        var _a, _b, _c, _d;
+        this._extends = {
+            top: (_a = val.top) !== null && _a !== void 0 ? _a : this._extends.top,
+            left: (_b = val.left) !== null && _b !== void 0 ? _b : this._extends.left,
+            bottom: (_c = val.bottom) !== null && _c !== void 0 ? _c : this._extends.bottom,
+            right: (_d = val.right) !== null && _d !== void 0 ? _d : this._extends.right
+        };
         return this;
     };
     UIWidget.prototype.getExtends = function () {
@@ -1374,6 +1318,7 @@ var UITab = (function () {
         this._minSize = UISizeZero;
         this._maxSize = { width: ui.width, height: ui.height };
         this._isExpandable = false;
+        this._name = this.constructor.name + '-' + uuid();
         this._image = image !== null && image !== void 0 ? image : UIImageNone;
         this._contentView = contentView;
     }
@@ -1397,6 +1342,22 @@ var UITab = (function () {
         this._contentView._layout(UIAxis.Vertical, UIPointZero, estimatedSize);
         this._contentView._build();
     };
+    UITab.prototype._getContentView = function () {
+        return this._contentView;
+    };
+    UITab.prototype._setMinSize = function (val) {
+        this._minSize = val;
+    };
+    UITab.prototype._getDidLoad = function () {
+        return this._didLoad;
+    };
+    UITab.prototype.name = function (val) {
+        this._name = val;
+        return this;
+    };
+    UITab.prototype.getName = function () {
+        return this._name;
+    };
     UITab.prototype.spacing = function (val) {
         this._spacing = val;
         return this;
@@ -1405,7 +1366,13 @@ var UITab = (function () {
         return this._spacing;
     };
     UITab.prototype.padding = function (val) {
-        this._padding = val;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+        this._padding = {
+            top: (_c = (_a = val.top) !== null && _a !== void 0 ? _a : (_b = this._padding) === null || _b === void 0 ? void 0 : _b.top) !== null && _c !== void 0 ? _c : 0,
+            left: (_f = (_d = val.left) !== null && _d !== void 0 ? _d : (_e = this._padding) === null || _e === void 0 ? void 0 : _e.left) !== null && _f !== void 0 ? _f : 0,
+            bottom: (_j = (_g = val.bottom) !== null && _g !== void 0 ? _g : (_h = this._padding) === null || _h === void 0 ? void 0 : _h.bottom) !== null && _j !== void 0 ? _j : 0,
+            right: (_m = (_k = val.right) !== null && _k !== void 0 ? _k : (_l = this._padding) === null || _l === void 0 ? void 0 : _l.right) !== null && _m !== void 0 ? _m : 0
+        };
         return this;
     };
     UITab.prototype.getPadding = function () {
@@ -1422,7 +1389,11 @@ var UITab = (function () {
         return this._minSize;
     };
     UITab.prototype.maxSize = function (val) {
-        this._maxSize = val;
+        var _a, _b;
+        this._maxSize = {
+            width: (_a = val.width) !== null && _a !== void 0 ? _a : this._maxSize.width,
+            height: (_b = val.height) !== null && _b !== void 0 ? _b : this._maxSize.height
+        };
         return this;
     };
     UITab.prototype.getMaxSize = function () {
@@ -1444,33 +1415,6 @@ var UITab = (function () {
     };
     UITab.prototype.theme = function (val) {
         this._theme = val;
-        return this;
-    };
-    UITab.prototype.themePrimaryColor = function (val) {
-        var _a, _b;
-        this._theme = {
-            primary: val,
-            secondary: (_a = this._theme) === null || _a === void 0 ? void 0 : _a.secondary,
-            tertiary: (_b = this._theme) === null || _b === void 0 ? void 0 : _b.tertiary
-        };
-        return this;
-    };
-    UITab.prototype.themeSecondaryColor = function (val) {
-        var _a, _b;
-        this._theme = {
-            primary: (_a = this._theme) === null || _a === void 0 ? void 0 : _a.primary,
-            secondary: val,
-            tertiary: (_b = this._theme) === null || _b === void 0 ? void 0 : _b.tertiary
-        };
-        return this;
-    };
-    UITab.prototype.themeTertiaryColor = function (val) {
-        var _a, _b;
-        this._theme = {
-            primary: (_a = this._theme) === null || _a === void 0 ? void 0 : _a.primary,
-            secondary: (_b = this._theme) === null || _b === void 0 ? void 0 : _b.secondary,
-            tertiary: val
-        };
         return this;
     };
     UITab.prototype.getTheme = function () {
@@ -1729,7 +1673,13 @@ var UIStack = (function (_super) {
         return this._spacing;
     };
     UIStack.prototype.padding = function (val) {
-        this._padding = val;
+        var _a, _b, _c, _d;
+        this._padding = {
+            top: (_a = val.top) !== null && _a !== void 0 ? _a : this._padding.top,
+            left: (_b = val.left) !== null && _b !== void 0 ? _b : this._padding.left,
+            bottom: (_c = val.bottom) !== null && _c !== void 0 ? _c : this._padding.bottom,
+            right: (_d = val.right) !== null && _d !== void 0 ? _d : this._padding.right
+        };
         return this;
     };
     UIStack.prototype.getPadding = function () {
@@ -1773,22 +1723,24 @@ var UIConstructor = (function () {
         var minWidth = 31 * tabs.length + 6;
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
-            var stack = tab._contentView
-                .spacing((_a = tab._spacing) !== null && _a !== void 0 ? _a : spacing)
-                .padding((_b = tab._padding) !== null && _b !== void 0 ? _b : padding);
+            var stack = tab._getContentView()
+                .spacing((_a = tab.getSpacing()) !== null && _a !== void 0 ? _a : spacing)
+                .padding((_b = tab.getPadding()) !== null && _b !== void 0 ? _b : padding);
             var results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, usingBuild);
-            tab._minSize = {
+            tab._setMinSize({
                 width: Math.max(minWidth, results.size.width),
                 height: results.size.height
-            };
-            if (tab._maxSize.width < tab._minSize.width || tab._maxSize.height < tab._minSize.height) {
-                console.log("\nWARNING: UITab[" + i + "] maximum size is less than its minimum size!\nminSize: { width: " + tab._minSize.width + ", height: " + tab._minSize.height + " }\nmaxSize: { width: " + tab._maxSize.width + ", height: " + tab._maxSize.height + " }\nErrors can occur when resizing windows.\n");
+            });
+            var tabMinSize = tab.getMinSize();
+            var tabMaxSize = tab.getMaxSize();
+            if (tabMaxSize.width < tabMinSize.width || tabMaxSize.height < tabMinSize.height) {
+                console.log("\nWARNING: UITab[" + i + "] maximum size is less than its minimum size!\nminSize: { width: " + tabMinSize.width + ", height: " + tabMinSize.height + " }\nmaxSize: { width: " + tabMaxSize.width + ", height: " + tabMaxSize.height + " }\nErrors can occur when resizing windows.\n");
             }
         }
         var selectedTab = tabs[selectedIndex];
-        this.refreshTab(selectedTab, selectedTab._minSize);
+        this.refreshTab(selectedTab, selectedTab.getMinSize());
         return {
-            size: selectedTab._minSize,
+            size: selectedTab.getMinSize(),
             widgets: [],
             tabs: tabs.map(function (val) { return val._data(); })
         };
@@ -1804,8 +1756,8 @@ var UIConstructor = (function () {
     };
     UIConstructor.prototype._injectInteractor = function (stack, interactor) {
         var flattedChilds = stack._getUIWidgets();
-        stack._interactor = interactor;
-        flattedChilds.forEach(function (val) { return val._interactor = interactor; });
+        stack._setInteractor(interactor);
+        flattedChilds.forEach(function (val) { return val._setInteractor(interactor); });
     };
     UIConstructor.prototype.calculateBounds = function (stack, insets, usingBuild) {
         if (usingBuild === void 0) { usingBuild = true; }
@@ -1824,16 +1776,16 @@ var UIConstructor = (function () {
         };
     };
     UIConstructor.prototype.didLoadTabs = function (tabs) {
-        var flattedChilds = tabs.map(function (val) { return val._contentView._getUIWidgets(); }).flatMap();
+        var flattedChilds = tabs.map(function (val) { return val._getContentView()._getUIWidgets(); }).flatMap();
         flattedChilds.forEach(function (val) { return val._loadWidget(); });
-        tabs.forEach(function (val) { var _a; return (_a = val._didLoad) === null || _a === void 0 ? void 0 : _a.call(val, val); });
+        tabs.forEach(function (val) { var _a; return (_a = val._getDidLoad()) === null || _a === void 0 ? void 0 : _a.call(val, val); });
     };
     UIConstructor.prototype.didLoad = function (stack) {
         var flattedChilds = stack._getUIWidgets();
         flattedChilds.forEach(function (val) { return val._loadWidget(); });
     };
     UIConstructor.prototype.refreshTab = function (tab, windowSize) {
-        this.refresh(tab._contentView, windowSize, UIEdgeInsetsTabContainer);
+        this.refresh(tab._getContentView(), windowSize, UIEdgeInsetsTabContainer);
     };
     UIConstructor.prototype.refresh = function (stack, windowSize, insets) {
         if (insets === void 0) { insets = UIEdgeInsetsContainer; }
@@ -2063,8 +2015,8 @@ var UIWindow = (function () {
     UIWindow.prototype._internalOnTabChange = function () {
         var _this = this;
         var currentTab = this._tabs[this._selectedTabIndex];
-        var tabMinSize = currentTab._minSize;
-        var tabMaxSize = currentTab._maxSize;
+        var tabMinSize = currentTab.getMinSize();
+        var tabMaxSize = currentTab.getMaxSize();
         var size = {
             width: Math.max(Math.min(this._size.width, tabMaxSize.width), tabMinSize.width),
             height: Math.max(Math.min(this._size.height, tabMaxSize.height), tabMinSize.height)
@@ -2074,7 +2026,7 @@ var UIWindow = (function () {
             var _a;
             window._minSize = tabMinSize;
             window._maxSize = tabMaxSize;
-            window._isExpandable = window._initialExpandableState || currentTab._isExpandable;
+            window._isExpandable = window._initialExpandableState || currentTab.getIsExpandable();
             window._title = (_a = currentTab.getTitle()) !== null && _a !== void 0 ? _a : _this._originalTitle;
         });
     };
@@ -2093,11 +2045,11 @@ var UIWindow = (function () {
         var contentView = this._singleContentView;
         if (typeof this._tabs !== "undefined") {
             var currentTab = this._tabs[this._selectedTabIndex];
-            contentView = currentTab._contentView;
+            contentView = currentTab._getContentView();
             contentView._resetSize();
             this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, false);
-            minSize = currentTab._minSize;
-            maxSize = currentTab._maxSize;
+            minSize = currentTab.getMinSize();
+            maxSize = currentTab.getMaxSize();
         }
         else if (typeof this._singleContentView !== "undefined") {
             contentView = this._singleContentView;
@@ -2120,12 +2072,12 @@ var UIWindow = (function () {
         var _a, _b;
         var singleWidgets = (_a = this._singleContentView) === null || _a === void 0 ? void 0 : _a._getUIWidgets();
         singleWidgets === null || singleWidgets === void 0 ? void 0 : singleWidgets.forEach(function (val) { return intervalHelper.enabled(val.getName(), flag); });
-        var tabsWidgets = (_b = this._tabs) === null || _b === void 0 ? void 0 : _b.map(function (val) { return val._contentView._getUIWidgets(); }).flatMap();
+        var tabsWidgets = (_b = this._tabs) === null || _b === void 0 ? void 0 : _b.map(function (val) { return val._getContentView()._getUIWidgets(); }).flatMap();
         tabsWidgets === null || tabsWidgets === void 0 ? void 0 : tabsWidgets.forEach(function (val) { return intervalHelper.enabled(val.getName(), flag); });
     };
     UIWindow.prototype.show = function () {
         var _this = this;
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         if (this._isOpened()) {
             this.bringToFront();
             return this;
@@ -2148,14 +2100,16 @@ var UIWindow = (function () {
             var constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
             tabDescriptions = constructed.tabs;
             this._minSize = constructed.size;
-            this._maxSize = this._tabs[this._selectedTabIndex]._maxSize;
-            this._isExpandable || (this._isExpandable = (_c = (_b = this._tabs) === null || _b === void 0 ? void 0 : _b[this._selectedTabIndex]._isExpandable) !== null && _c !== void 0 ? _c : false);
+            this._maxSize = this._tabs[this._selectedTabIndex].getMaxSize();
+            this._isExpandable || (this._isExpandable = (_c = (_b = this._tabs) === null || _b === void 0 ? void 0 : _b[this._selectedTabIndex].getIsExpandable()) !== null && _c !== void 0 ? _c : false);
             title = (_e = (_d = this._tabs) === null || _d === void 0 ? void 0 : _d[this._selectedTabIndex].getTitle()) !== null && _e !== void 0 ? _e : this._originalTitle;
             colors = this._convertColors(this._selectedTabIndex);
         }
         this._activeInterval(true);
         var windowDesc = {
             classification: this._title,
+            x: (_f = this._origin) === null || _f === void 0 ? void 0 : _f.x,
+            y: (_g = this._origin) === null || _g === void 0 ? void 0 : _g.y,
             width: this._minSize.width,
             height: this._minSize.height,
             title: title,
@@ -2209,7 +2163,7 @@ var UIWindow = (function () {
             this._uiConstructor.didLoadTabs(this._tabs);
         }
         this._reflectResizingFromChild();
-        (_f = this._didLoad) === null || _f === void 0 ? void 0 : _f.call(this, this);
+        (_h = this._didLoad) === null || _h === void 0 ? void 0 : _h.call(this, this);
         return this;
     };
     UIWindow.prototype.updateUI = function (block) {
@@ -2238,7 +2192,13 @@ var UIWindow = (function () {
         return this._spacing;
     };
     UIWindow.prototype.padding = function (val) {
-        this._padding = val;
+        var _a, _b, _c, _d;
+        this._padding = {
+            top: (_a = val.top) !== null && _a !== void 0 ? _a : this._padding.top,
+            left: (_b = val.left) !== null && _b !== void 0 ? _b : this._padding.left,
+            bottom: (_c = val.bottom) !== null && _c !== void 0 ? _c : this._padding.bottom,
+            right: (_d = val.right) !== null && _d !== void 0 ? _d : this._padding.right
+        };
         return this;
     };
     UIWindow.prototype.getPadding = function () {
@@ -2290,30 +2250,6 @@ var UIWindow = (function () {
         this._theme = val;
         return this;
     };
-    UIWindow.prototype.themePrimaryColor = function (val) {
-        this._theme = {
-            primary: val,
-            secondary: this._theme.secondary,
-            tertiary: this._theme.tertiary
-        };
-        return this;
-    };
-    UIWindow.prototype.themeSecondaryColor = function (val) {
-        this._theme = {
-            primary: this._theme.primary,
-            secondary: val,
-            tertiary: this._theme.tertiary
-        };
-        return this;
-    };
-    UIWindow.prototype.themeTertiaryColor = function (val) {
-        this._theme = {
-            primary: this._theme.primary,
-            secondary: this._theme.secondary,
-            tertiary: val
-        };
-        return this;
-    };
     UIWindow.prototype.getTheme = function () {
         return this._theme;
     };
@@ -2332,6 +2268,10 @@ var UIWindow = (function () {
     UIWindow.prototype.didLoad = function (block) {
         this._didLoad = block;
         return this;
+    };
+    UIWindow.prototype.getUITab = function (name) {
+        var _a;
+        return (_a = this._tabs) === null || _a === void 0 ? void 0 : _a.first(function (val) { return val.getName() === name; });
     };
     UIWindow.prototype.getUIWidget = function (name) {
         var _a;
@@ -2798,10 +2738,12 @@ var UICheckbox = (function (_super) {
             width: containerSize.width + 11,
             height: containerSize.height
         };
-        var minSizeCheckbox = checkbox.height(11).minSize(minSize);
+        var minSizeCheckbox = checkbox
+            .size({ height: 11 })
+            .minSize(minSize);
         if (isFit) {
             return minSizeCheckbox
-                .width(minSize.width);
+                .size({ width: minSize.width });
         }
         else {
             return minSizeCheckbox;
@@ -2900,7 +2842,8 @@ var UIDropdown = (function (_super) {
     UIDropdown.$ = function (items) {
         var dropdown = new UIDropdown(items);
         var itemsMinWidth = items.map(function (val) { return val.containerSize().width; }).max();
-        return dropdown.height(15)
+        return dropdown
+            .size({ height: 15 })
             .minSize({ width: itemsMinWidth + 11, height: 15 });
     };
     UIDropdown.prototype._build = function () {
@@ -2993,30 +2936,6 @@ var UIImageView = (function (_super) {
     };
     UIImageView.prototype.theme = function (val) {
         this._theme = val;
-        return this;
-    };
-    UIImageView.prototype.themePrimaryColor = function (val) {
-        this._theme = {
-            primary: val,
-            secondary: this._theme.secondary,
-            tertiary: this._theme.tertiary
-        };
-        return this;
-    };
-    UIImageView.prototype.themeSecondaryColor = function (val) {
-        this._theme = {
-            primary: this._theme.primary,
-            secondary: val,
-            tertiary: this._theme.tertiary
-        };
-        return this;
-    };
-    UIImageView.prototype.themeTertiaryColor = function (val) {
-        this._theme = {
-            primary: this._theme.primary,
-            secondary: this._theme.secondary,
-            tertiary: val
-        };
         return this;
     };
     UIImageView.prototype.getTheme = function () {
@@ -3139,7 +3058,8 @@ var UISpinner = (function (_super) {
     }
     UISpinner.$ = function () {
         var spinner = new UISpinner();
-        return spinner.height(15)
+        return spinner
+            .size({ height: 15 })
             .minSize({ width: 50, height: 15 });
     };
     UISpinner.prototype._build = function () {
@@ -3227,9 +3147,12 @@ var UISpinner = (function (_super) {
             text = this._max.toFixed(this.__fixed());
         }
         var textMinWidth = text.containerSize().width + correction;
-        this.minWidth(textMinWidth + 11 * 2);
+        this.minSize({ width: textMinWidth + 11 * 2 });
     };
-    UISpinner.prototype.range = function (min, max) {
+    UISpinner.prototype.range = function (val) {
+        var _a, _b;
+        var min = (_a = val.min) !== null && _a !== void 0 ? _a : Number.MIN_SAFE_INTEGER;
+        var max = (_b = val.min) !== null && _b !== void 0 ? _b : Number.MAX_SAFE_INTEGER;
         if (min > max) {
             console.log("'min' cannot be greater than 'max'.");
         }
@@ -3307,7 +3230,8 @@ var UITextBox = (function (_super) {
     UITextBox.$ = function (text) {
         if (text === void 0) { text = undefined; }
         var textBox = new UITextBox(text);
-        return textBox.height(15)
+        return textBox
+            .size({ height: 15 })
             .minSize({ width: 50, height: 15 });
     };
     UITextBox.prototype._build = function () {
@@ -3414,18 +3338,18 @@ var UIButton = (function (_super) {
         var _this = this;
         this._uiImage = val;
         intervalHelper.end(this._name);
-        if (val._isAnimatable()) {
+        if (val.isAnimatable()) {
             var count = 0;
-            intervalHelper.start(this._name, val._duration * 20, function () {
-                var index = count % val._frames.length;
-                var frame = val._frames[index];
+            intervalHelper.start(this._name, val.getDuration() * 20, function () {
+                var index = count % val._getFrames().length;
+                var frame = val._getFrames()[index];
                 _this.updateUI(function (widget) {
                     widget._image = frame;
                 });
                 count += 1;
             });
         }
-        this._image = val._frames[0];
+        this._image = val._getFrames()[0];
         this._border = false;
         return this;
     };

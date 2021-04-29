@@ -7,7 +7,7 @@
 class UIColorPicker extends UIWidget<ColourPickerWidget> {
 
     protected _color: UIColor;
-    protected _onChange: ((picker: this, color: UIColor) => void) | undefined;
+    protected _onChange?: (picker: this, color: UIColor) => void;
 
     /**
      * Creates an instance of color picker.
@@ -43,7 +43,7 @@ class UIColorPicker extends UIWidget<ColourPickerWidget> {
         }
     }
 
-    _update(widget: ColourPickerWidget) {
+    protected _update(widget: ColourPickerWidget) {
         super._update(widget);
         widget.colour = this._color;
     }

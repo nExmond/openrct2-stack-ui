@@ -5,7 +5,7 @@
  */
 class UIToggleButton extends UIButton {
 
-    protected _onPress: ((button: this, isPressed: boolean) => void) | undefined;
+    protected _onPress?: (button: this, isPressed: boolean) => void;
 
     //Private
     

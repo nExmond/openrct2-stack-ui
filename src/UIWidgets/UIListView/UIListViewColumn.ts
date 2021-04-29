@@ -10,12 +10,12 @@ class UIListViewColumn {
     protected _sortOrder: UISortOrder = UISortOrder.None;
 
     protected _header: string;
-    protected _headerTooltip: string | undefined;
+    protected _headerTooltip?: string;
 
-    protected _width: number | undefined;
-    protected _weight: number | undefined;
-    protected _minWidth: number | undefined;
-    protected _maxWidth: number | undefined;
+    protected _width?: number;
+    protected _weight?: number;
+    protected _minWidth?: number;
+    protected _maxWidth?: number;
 
     /**
      * Creates an instance of list view column.

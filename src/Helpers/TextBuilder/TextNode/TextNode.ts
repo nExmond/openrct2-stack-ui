@@ -10,7 +10,7 @@ class TextNode {
     protected _childs: TextNode[] = [];
 
     protected _outline: boolean = false;
-    protected _color: TextColor | undefined;
+    protected _color?: TextColor;
 
     /**
      * Creates an instance of *TextNode*.
@@ -56,15 +56,15 @@ class TextNode {
 
     //Private
 
-    _isLeaf(): boolean {
+    protected _isLeaf(): boolean {
         return this._childs.length === 0;
     }
 
-    _isStopover(): boolean {
+    protected _isStopover(): boolean {
         return this._childs.length > 0;
     }
 
-    _isValid(): boolean {
+    protected _isValid(): boolean {
         return true;
     }
 
@@ -80,7 +80,7 @@ class TextNode {
             for (var i = 0; i < numberOfChilds; i++) {
                 const child = this._childs[i];
                 if (child._isLeaf() && child instanceof StringNode) {
-                    const splitted = child._string.split("\\n");
+                    const splitted = child._getString().split("\\n");
                     if (splitted.length > 1) {
                         const newChilds = splitted
                             .map((val, index, array) => {
@@ -109,9 +109,9 @@ class TextNode {
     _unifyOutline(parentExist: boolean = false) {
         if (this._isLeaf() && this instanceof StringNode) {
             if (parentExist) {
-                this._string = this._string.remove("{OUTLINE}").remove("{OUTLINE_OFF}")
+                this._setString(this._getString().remove("{OUTLINE}").remove("{OUTLINE_OFF}"));
             } else if (this._outline && this._isPureString()) {
-                this._string = `{OUTLINE}${this._string}{OUTLINE_OFF}`;
+                this._setString(`{OUTLINE}${this._getString()}{OUTLINE_OFF}`);
             }
         } else if (this._isStopover()) {
             const childs = this._childs!;
@@ -126,19 +126,19 @@ class TextNode {
                     for (var i = 0; i < childs.length; i++) {
                         const child = this._childs[i];
                         if (isBegin && child instanceof StringNode) {
-                            child._string = `{OUTLINE}${child._string}`;
+                            child._setString(`{OUTLINE}${child._getString()}`);
                             isBegin = false;
                         }
                         if (child instanceof _NewlineNode) {
                             if (typeof prevChild !== "undefined") {
-                                prevChild._string = `${prevChild._string}{OUTLINE_OFF}`;
+                                prevChild._setString(`${prevChild._getString()}{OUTLINE_OFF}`);
                             }
                             isBegin = true;
                         }
                         if (child instanceof StringNode) {
                             prevChild = child;
                             if (i >= this._childs.length - 1) {
-                                child._string = `${child._string}{OUTLINE_OFF}`;
+                                child._setString(`${child._getString()}{OUTLINE_OFF}`);
                             }
                         }
                     }
@@ -150,7 +150,7 @@ class TextNode {
     _unifyColor(parentColor: TextColor | undefined = undefined) {
         const color = this._color ?? parentColor ?? TextColor.WindowSecondary;
         if (this._isLeaf() && this._isPureString() && this instanceof StringNode) {
-            this._string = `{${color}}${this._string}`;
+            this._setString(`{${color}}${this._getString()}`);
         } else if (this._isStopover()) {
             for (var child of this._childs!) {
                 child._unifyColor(color);
@@ -158,7 +158,7 @@ class TextNode {
         }
     }
 
-    __leafs(): StringNode[] {
+    protected __leafs(): StringNode[] {
         if (this._isLeaf()) {
             const string = this as unknown as StringNode;
             return [string];
@@ -176,18 +176,18 @@ class TextNode {
             childs = `[${this._childs.map((val, index) => val._description(depth + 1, index)).join(",")}]`
         }
         return `${typeof index !== "undefined" ? '[' + index + ']' : ""}{
-${childTabs}type: ${this.constructor.name},${this instanceof StringNode ? "\n" + childTabs + "string: " + this._string + "," : ""}
+${childTabs}type: ${this.constructor.name},${this instanceof StringNode ? "\n" + childTabs + "string: " + this._getString() + "," : ""}
 ${childTabs}outline: ${this._outline},
 ${childTabs}color: ${this._color},
 ${childTabs}childs: ${childs}
 ${tabs}}`;
     }
 
-    _isPureString(): boolean {
+    protected _isPureString(): boolean {
         return this instanceof ImageNode === false && !this._isPrivate();
     }
 
-    _isPrivate(): boolean {
+    protected _isPrivate(): boolean {
         return this instanceof _NewlineNode || this instanceof _FontNode;
     }
 

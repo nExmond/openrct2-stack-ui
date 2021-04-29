@@ -7,7 +7,7 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
 
     protected _text: string;
     protected _isChecked: boolean = false;
-    protected _onChange: ((checkbox: this, isChecked: boolean) => void) | undefined;
+    protected _onChange?: (checkbox: this, isChecked: boolean) => void;
 
     /**
      * Creates an instance of checkbox.
@@ -30,10 +30,12 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
             width: containerSize.width + 11,
             height: containerSize.height
         }
-        const minSizeCheckbox = checkbox.height(11).minSize(minSize);
+        const minSizeCheckbox = checkbox
+            .size({ height: 11 })
+            .minSize(minSize);
         if (isFit) {
             return minSizeCheckbox
-                .width(minSize.width);
+                .size({ width: minSize.width });
         } else {
             return minSizeCheckbox;
         }
@@ -63,13 +65,13 @@ class UICheckbox extends UIWidget<CheckboxWidget> {
         }
     }
 
-    _update(widget: CheckboxWidget) {
+    protected _update(widget: CheckboxWidget) {
         super._update(widget);
         widget.text = this._applyFont(this._text);
         widget.isChecked = this._isChecked;
     }
 
-    _isUnnamed(): boolean {
+    protected _isUnnamed(): boolean {
         return typeof this._text === "undefined";
     }
 

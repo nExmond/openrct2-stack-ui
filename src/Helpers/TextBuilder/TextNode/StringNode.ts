@@ -6,7 +6,7 @@
  */
 class StringNode extends TextNode {
 
-    _string: string;
+    protected _string: string;
 
     /**
      * Creates an instance of string node.
@@ -24,11 +24,19 @@ class StringNode extends TextNode {
 
     //Private
 
-    _isValid(): boolean {
+    protected _isValid(): boolean {
         return this._isLeaf();
     }
 
     _text(): string {
+        return this._getString();
+    }
+
+    _getString(): string {
         return this._string;
+    }
+
+    _setString(val: string) {
+        this._string = val;
     }
 }

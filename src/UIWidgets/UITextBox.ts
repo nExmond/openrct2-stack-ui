@@ -8,7 +8,7 @@ class UITextBox extends UIWidget<TextBoxWidget> {
 
     protected _text: string;
     protected _maxLength: number = 256;
-    protected _onChange: ((textBox: this, text: string) => void) | undefined;
+    protected _onChange?: (textBox: this, text: string) => void;
 
     constructor(text: string | undefined = undefined) {
         super();
@@ -23,7 +23,8 @@ class UITextBox extends UIWidget<TextBoxWidget> {
      */
     static $(text: string | undefined = undefined): UITextBox {
         const textBox = new UITextBox(text);
-        return textBox.height(15)
+        return textBox
+            .size({ height: 15 })
             .minSize({ width: 50, height: 15 });
     }
 
@@ -42,7 +43,7 @@ class UITextBox extends UIWidget<TextBoxWidget> {
         }
     }
 
-    _update(widget: TextBoxWidget) {
+    protected _update(widget: TextBoxWidget) {
         super._update(widget);
         widget.text = this._text;
         widget.maxLength = this._maxLength;

@@ -1,9 +1,8 @@
-
-const UIOptionalSizeDefulat: UIOptionalSize = { width: undefined, height: undefined };
+const UIOptionalSizeDefault: UIOptionalSize = {};
 
 interface UIOptionalSize {
-    width: number | undefined;
-    height: number | undefined;
+    width?: number;
+    height?: number;
 }
 
 

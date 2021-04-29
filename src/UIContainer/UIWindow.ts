@@ -14,10 +14,10 @@ class UIWindow {
     protected _uiConstructor = new UIConstructor();
     protected _interactor = new UIInteractor();
 
-    protected _window: Window | undefined;
+    protected _window?: Window;
 
-    protected _singleContentView: UIStack | undefined;
-    protected _tabs: UITab[] | undefined;
+    protected _singleContentView?: UIStack;
+    protected _tabs?: UITab[];
 
     protected _prevSelectedTabIndex: number = 0;
     protected _selectedTabIndex: number = 0;
@@ -39,10 +39,10 @@ class UIWindow {
     protected _minSize: UISize = UISizeZero;
     protected _maxSize: UISize = { width: ui.width, height: ui.height };
 
-    protected _onClose: ((window: this) => void) | undefined;
-    protected _onTabChange: ((window: this, selectedIndex: number) => void) | undefined;
+    protected _onClose?: (window: this) => void;
+    protected _onTabChange?: (window: this, selectedIndex: number) => void;
 
-    protected _didLoad: ((window: this) => void) | undefined;
+    protected _didLoad?: (window: this) => void;
 
     /**
      * Creates an instance of *UIWindow*.
@@ -84,11 +84,11 @@ class UIWindow {
 
     //Private
 
-    _usingTab(): boolean {
+    protected _usingTab(): boolean {
         return typeof this._tabs !== "undefined";
     }
 
-    _convertColors(tabIndex: number | undefined = undefined): UIColor[] {
+    protected _convertColors(tabIndex: number | undefined = undefined): UIColor[] {
         if (typeof tabIndex !== "undefined") {
             const tab = this._tabs?.[tabIndex];
             const theme = tab?.getTheme()
@@ -106,11 +106,11 @@ class UIWindow {
         }
     }
 
-    _isOpened(): boolean {
+    protected _isOpened(): boolean {
         return typeof this._window !== "undefined";
     }
 
-    _sync() {
+    protected _sync() {
         if (this._isOpened()) {
             const window = this._window!;
             this._origin = {
@@ -124,7 +124,7 @@ class UIWindow {
         }
     }
 
-    _update() {
+    protected _update() {
 
         const window = this._window;
         if (typeof window === "undefined") {
@@ -159,7 +159,7 @@ class UIWindow {
         window.y = this._origin.y;
     }
 
-    _onUpdate() {
+    protected _onUpdate() {
 
         const window = this._window;
         if (typeof window === "undefined") {
@@ -176,10 +176,10 @@ class UIWindow {
         }
     }
 
-    _internalOnTabChange() {
+    protected _internalOnTabChange() {
         const currentTab = this._tabs![this._selectedTabIndex];
-        const tabMinSize = currentTab._minSize;
-        const tabMaxSize = currentTab._maxSize;
+        const tabMinSize = currentTab.getMinSize();
+        const tabMaxSize = currentTab.getMaxSize();
         const size: UISize = {
             width: Math.max(Math.min(this._size.width, tabMaxSize.width), tabMinSize.width),
             height: Math.max(Math.min(this._size.height, tabMaxSize.height), tabMinSize.height)
@@ -188,12 +188,12 @@ class UIWindow {
         this.updateUI(window => {
             window._minSize = tabMinSize;
             window._maxSize = tabMaxSize;
-            window._isExpandable = window._initialExpandableState || currentTab._isExpandable;
+            window._isExpandable = window._initialExpandableState || currentTab.getIsExpandable();
             window._title = currentTab.getTitle() ?? this._originalTitle;
         })
     }
 
-    _refresh(size: UISize) {
+    protected _refresh(size: UISize) {
         if (this._usingTab()) {
             const tab = this._tabs![this._selectedTabIndex];
             this._uiConstructor.refreshTab(tab, size);
@@ -202,7 +202,7 @@ class UIWindow {
         }
     }
 
-    _reflectResizingFromChild() {
+    protected _reflectResizingFromChild() {
 
         var minSize = this._minSize;
         var maxSize = this._maxSize;
@@ -210,14 +210,14 @@ class UIWindow {
 
         if (typeof this._tabs !== "undefined") {
             const currentTab = this._tabs![this._selectedTabIndex];
-            contentView = currentTab._contentView;
+            contentView = currentTab._getContentView();
 
             contentView._resetSize();
             
             this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, false);
 
-            minSize = currentTab._minSize;
-            maxSize = currentTab._maxSize;
+            minSize = currentTab.getMinSize();
+            maxSize = currentTab.getMaxSize();
 
         } else if (typeof this._singleContentView !== "undefined") {
             contentView = this._singleContentView;
@@ -241,12 +241,12 @@ class UIWindow {
         })
     }
 
-    _activeInterval(flag: boolean) {
+    protected _activeInterval(flag: boolean) {
         
         const singleWidgets =  this._singleContentView?._getUIWidgets();
         singleWidgets?.forEach(val => intervalHelper.enabled(val.getName(), flag));
 
-        const tabsWidgets: UIWidget<any>[] | undefined =  this._tabs?.map(val => val._contentView._getUIWidgets()).flatMap();
+        const tabsWidgets: UIWidget<any>[] | undefined =  this._tabs?.map(val => val._getContentView()._getUIWidgets()).flatMap();
         tabsWidgets?.forEach(val => intervalHelper.enabled(val.getName(), flag));
     }
 
@@ -284,8 +284,8 @@ class UIWindow {
             const constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding);
             tabDescriptions = constructed.tabs;
             this._minSize = constructed.size;
-            this._maxSize = this._tabs[this._selectedTabIndex]._maxSize;
-            this._isExpandable ||= this._tabs?.[this._selectedTabIndex]._isExpandable ?? false;
+            this._maxSize = this._tabs[this._selectedTabIndex].getMaxSize();
+            this._isExpandable ||= this._tabs?.[this._selectedTabIndex].getIsExpandable() ?? false;
             
             title = this._tabs?.[this._selectedTabIndex].getTitle() ?? this._originalTitle;
             colors = this._convertColors(this._selectedTabIndex);
@@ -295,6 +295,8 @@ class UIWindow {
 
         const windowDesc: WindowDesc = {
             classification: this._title,
+            x: this._origin?.x,
+            y: this._origin?.y,
             width: this._minSize.width,
             height: this._minSize.height,
             title: title,
@@ -406,8 +408,13 @@ class UIWindow {
     /**
      * Top stack padding.
      */
-    padding(val: UIEdgeInsets): this {
-        this._padding = val;
+    padding(val: UIOptionalEdgeInsets): this {
+        this._padding = {
+            top: val.top ?? this._padding.top,
+            left: val.left ?? this._padding.left,
+            bottom: val.bottom ?? this._padding.bottom,
+            right: val.right ?? this._padding.right
+        };
         return this;
     }
 
@@ -488,42 +495,6 @@ class UIWindow {
         return this;
     }
 
-    /**
-     * Set the primary theme color.
-     */
-    themePrimaryColor(val: UIColor | undefined): this {
-        this._theme = {
-            primary: val,
-            secondary: this._theme.secondary,
-            tertiary: this._theme.tertiary
-        }
-        return this;
-    }
-
-    /**
-     * Set the secondary theme color.
-     */
-    themeSecondaryColor(val: UIColor | undefined): this {
-        this._theme = {
-            primary: this._theme.primary,
-            secondary: val,
-            tertiary: this._theme.tertiary
-        }
-        return this;
-    }
-
-    /**
-     * Set the terriary theme color.
-     */
-    themeTertiaryColor(val: UIColor | undefined): this {
-        this._theme = {
-            primary: this._theme.primary,
-            secondary: this._theme.secondary,
-            tertiary: val
-        }
-        return this;
-    }
-
     getTheme(): UIWindowTheme {
         return this._theme;
     }
@@ -560,6 +531,13 @@ class UIWindow {
         return this;
     }
     
+    /**
+     * Find the tab contained in window by its unique name.
+     */
+     getUITab(name: string): UITab | undefined {
+         return this._tabs?.first(val => val.getName() === name);
+    }
+
     /**
      * Find the widget contained in window by its unique name.
      */

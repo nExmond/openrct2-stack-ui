@@ -5,9 +5,9 @@
  */
 class UIImage {
 
-    _frames: number[] = [];
-    _duration: number = 2;
-    _baseOffset: UIPoint = UIPointZero;
+    protected _frames: number[] = [];
+    protected _duration: number = 2;
+    protected _baseOffset: UIPoint = UIPointZero;
     protected _offset: UIPoint = UIPointZero;
 
     /**
@@ -78,11 +78,15 @@ class UIImage {
         }
     }
 
-    _isAnimatable(): boolean {
-        return this._frames.length > 1;
+    _getFrames(): number[] {
+        return this._frames;
     }
 
     //Public
+
+    isAnimatable(): boolean {
+        return this._frames.length > 1;
+    }
 
     /**
      * Set the duration of the animation. Use seconds unit.

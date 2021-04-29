@@ -5,8 +5,8 @@
  */
 class ImageHelper {
 
-    protected _graphicsContext: GraphicsContext | undefined;
-    protected _timeoutId: number | undefined;
+    protected _graphicsContext?: GraphicsContext;
+    protected _timeoutId?: number;
 
     constructor() {
         this._open();

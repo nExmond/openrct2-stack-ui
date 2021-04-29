@@ -9,25 +9,26 @@
 class UIWidget<T extends Widget> {
 
     protected _origin: UIPoint = UIPointZero;
-    protected _size: UIOptionalSize = UIOptionalSizeDefulat;
+    protected _size: UIOptionalSize = UIOptionalSizeDefault;
+    protected _occupiedSize?: UIOptionalSize;
     protected _name: string;
-    protected _tooltip: string | undefined;
+    protected _tooltip?: string;
     protected _isDisabled: boolean = false;
     protected _isVisible: boolean = true;
 
-    _interactor!: UIInteractor;
+    protected _interactor!: UIInteractor;
 
-    _widget!: T | any;
+    protected _widget!: T | any;
 
     protected _minSize: UISize = UISizeZero;
-    protected _initialSize: UIOptionalSize | undefined;
+    protected _initialSize?: UIOptionalSize;
 
     protected _offset: UIPoint = UIPointZero;
     protected _extends: UIEdgeInsets = UIEdgeInsetsZero;
 
-    protected _font: TextFont | undefined;
+    protected _font?: TextFont;
 
-    protected _didLoad: ((widget: UIWidget<T>) => void) | undefined;
+    protected _didLoad?: (widget: UIWidget<T>) => void;
 
     constructor() {
         //https://stackoverflow.com/questions/13613524/get-an-objects-class-name-at-runtime
@@ -47,8 +48,8 @@ class UIWidget<T extends Widget> {
     _estimatedSize(): UISize {
         const minSize = this._minSize;
         return {
-            width: this._size.width ?? minSize.width,
-            height: this._size.height ?? minSize.height
+            width: this._occupiedSize?.width ?? this._size.width ?? minSize.width,
+            height: this._occupiedSize?.height ?? this._size.height ?? minSize.height
         }
     }
 
@@ -80,16 +81,20 @@ class UIWidget<T extends Widget> {
             width: size.width + this._extends.left + this._extends.right - 1,
             height: size.height + this._extends.top + this._extends.bottom
         }
+        const layoutSize = {
+            width: this._occupiedSize?.width ?? size.width,
+            height: this._occupiedSize?.height ?? size.height
+        }
         switch (axis) {
             case UIAxis.Vertical: {
                 return {
                     x: origin.x,
-                    y: origin.y + size.height!
+                    y: origin.y + layoutSize.height
                 }
             }
             case UIAxis.Horizontal: {
                 return {
-                    x: origin.x + size.width!,
+                    x: origin.x + layoutSize.width,
                     y: origin.y
                 }
             }
@@ -104,7 +109,7 @@ class UIWidget<T extends Widget> {
      * ! If you get an error like the one below, you may have attempted to update the widget before the window opens.
      * ! 'TypeError: cannot write property 'x' of undefined'
      */
-    _update(widget: T) {
+     protected _update(widget: T) {
         widget.x = this._origin.x;
         widget.y = this._origin.y;
         widget.width = (this._size.width ?? 0) - 1;
@@ -152,6 +157,14 @@ class UIWidget<T extends Widget> {
         }
     }
 
+    _setInteractor(val: UIInteractor) {
+        this._interactor = val;
+    }
+
+    _getInteractor(): UIInteractor {
+        return this._interactor;
+    }
+
     //Public
 
     /**
@@ -176,36 +189,20 @@ class UIWidget<T extends Widget> {
     }
 
     /**
-     * Set the minimum width.
-     */
-    minWidth(val: number): this {
-        this._minSize = {
-            width: val,
-            height: this._minSize.height
-        }
-        return this;
-    }
-
-    /**
-     * Set the minimum height.
-     */
-    minHeight(val: number): this {
-        this._minSize = {
-            width: this._minSize.width,
-            height: val
-        }
-        return this;
-    }
-
-    /**
      * Set the minimum size.
      */
-    minSize(val: UISize | number): this {
+    minSize(val: UIOptionalSize | number): this {
         var size = UISizeZero;
         if (typeof val === "number") {
-            size = { width: val, height: val };
+            size = {
+                width: val,
+                height: val
+            };
         } else {
-            size = val;
+            size = {
+                width: val.width ?? this._minSize.width,
+                height: val.height ?? this._minSize.height
+            };
         }
         this._minSize = size;
         return this;
@@ -216,38 +213,20 @@ class UIWidget<T extends Widget> {
     }
 
     /**
-     * Set the width.
-     */
-    width(val: number): this {
-        this._size = {
-            width: val,
-            height: this._size.height
-        }
-        this._initialSize = this._size;
-        return this;
-    }
-
-    /**
-     * Set the height.
-     */
-    height(val: number): this {
-        this._size = {
-            width: this._size.width,
-            height: val
-        }
-        this._initialSize = this._size;
-        return this;
-    }
-
-    /**
      * Set the size.
      */
-    size(val: UISize | number): this {
-        var size = UISizeZero;
+    size(val: UIOptionalSize | number): this {
+        var size = UIOptionalSizeDefault;
         if (typeof val === "number") {
-            size = { width: val, height: val };
+            size = {
+                width: val,
+                height: val
+            };
         } else {
-            size = val;
+            size = {
+                width: val.width ?? this._size.width,
+                height: val.height ?? this._size.height
+            };
         }
         this._size = size;
         this._initialSize = size;
@@ -260,6 +239,33 @@ class UIWidget<T extends Widget> {
             width: size.width ?? 0,
             height: size.height ?? 0
         };
+    }
+
+    /**
+     * Set the actual occupied size of the window.
+     */
+    occupiedSize(val: UIOptionalSize | number): this {
+        var size = UIOptionalSizeDefault;
+        if (typeof val === "number") {
+            size = {
+                width: val,
+                height: val
+            };
+        } else {
+            size = {
+                width: val.width ?? this._occupiedSize?.width,
+                height: val.height ?? this._occupiedSize?.height
+            };
+        }
+        this._occupiedSize = size;
+        return this;
+    }
+
+    getOccupiedSize(): UISize {
+        return {
+            width: this._occupiedSize?.width ?? this._size.width ?? 0,
+            height: this._occupiedSize?.height ?? this._size.height ?? 0
+        }
     }
 
     /**
@@ -313,8 +319,11 @@ class UIWidget<T extends Widget> {
     /**
      * Set the offset.
      */
-    offset(val: UIPoint): this {
-        this._offset = val;
+    offset(val: UIOptionalPoint): this {
+        this._offset = {
+            x: val.x ?? this._offset.x,
+            y: val.y ?? this._offset.y
+        };
         return this;
     }
 
@@ -325,8 +334,13 @@ class UIWidget<T extends Widget> {
     /**
      * Extend the edge.
      */
-    extends(val: UIEdgeInsets): this {
-        this._extends = val;
+    extends(val: UIOptionalEdgeInsets): this {
+        this._extends = {
+            top: val.top ?? this._extends.top,
+            left: val.left ?? this._extends.left,
+            bottom: val.bottom ?? this._extends.bottom,
+            right: val.right ?? this._extends.right
+        };
         return this;
     }
 

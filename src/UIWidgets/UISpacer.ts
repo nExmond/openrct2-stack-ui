@@ -7,7 +7,7 @@
 class UISpacer extends UIWidget<LabelWidget> {
 
     protected _axis!: UIAxis;
-    protected _spacing: number | undefined;
+    protected _spacing?: number;
 
     /**
      * Creates an instance of spacer.

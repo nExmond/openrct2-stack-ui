@@ -48,7 +48,7 @@ class UIViewport extends UIWidget<ViewportWidget> {
         }
     }
 
-    _update(widget: ViewportWidget) {
+    protected _update(widget: ViewportWidget) {
         super._update(widget);
         this._viewport.left = this._origin.x;
         this._viewport.top = this._origin.y;

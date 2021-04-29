@@ -25,29 +25,32 @@ class UIConstructor {
         const minWidth = 31 * tabs.length + 6
         for (var i = 0; i < tabs.length; i++) {
             const tab = tabs[i];
-            const stack = tab._contentView
-                .spacing(tab._spacing ?? spacing)
-                .padding(tab._padding ?? padding);
+            const stack = tab._getContentView()
+                .spacing(tab.getSpacing() ?? spacing)
+                .padding(tab.getPadding() ?? padding);
 
                 const results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, usingBuild);
-            tab._minSize = {
+            tab._setMinSize({
                 width: Math.max(minWidth, results.size.width),
                 height: results.size.height
-            }
+            })
 
-            if (tab._maxSize.width < tab._minSize.width || tab._maxSize.height < tab._minSize.height) {
+            const tabMinSize = tab.getMinSize();
+            const tabMaxSize = tab.getMaxSize();
+
+            if (tabMaxSize.width < tabMinSize.width || tabMaxSize.height < tabMinSize.height) {
                 console.log(`
 WARNING: UITab[${i}] maximum size is less than its minimum size!
-minSize: { width: ${tab._minSize.width}, height: ${tab._minSize.height} }
-maxSize: { width: ${tab._maxSize.width}, height: ${tab._maxSize.height} }
+minSize: { width: ${tabMinSize.width}, height: ${tabMinSize.height} }
+maxSize: { width: ${tabMaxSize.width}, height: ${tabMaxSize.height} }
 Errors can occur when resizing windows.
 `);
             }
         }
         const selectedTab = tabs[selectedIndex];
-        this.refreshTab(selectedTab, selectedTab._minSize);
+        this.refreshTab(selectedTab, selectedTab.getMinSize());
         return {
-            size: selectedTab._minSize,
+            size: selectedTab.getMinSize(),
             widgets: [],
             tabs: tabs.map(val => val._data())
         }
@@ -71,8 +74,8 @@ Errors can occur when resizing windows.
     _injectInteractor(stack: UIStack, interactor: UIInteractor) {
 
         const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
-        stack._interactor = interactor;
-        flattedChilds.forEach(val => val._interactor = interactor);
+        stack._setInteractor(interactor);
+        flattedChilds.forEach(val => val._setInteractor(interactor));
     }
 
     protected calculateBounds(stack: UIStack, insets: UIEdgeInsets, usingBuild: boolean = true): UISize {
@@ -100,9 +103,9 @@ Errors can occur when resizing windows.
      * @param tabs 
      */
     didLoadTabs(tabs: UITab[]) {
-        const flattedChilds: UIWidget<any>[] = tabs.map(val => val._contentView._getUIWidgets()).flatMap();
+        const flattedChilds: UIWidget<any>[] = tabs.map(val => val._getContentView()._getUIWidgets()).flatMap();
         flattedChilds.forEach(val => val._loadWidget());
-        tabs.forEach(val => val._didLoad?.call(val, val));
+        tabs.forEach(val => val._getDidLoad()?.call(val, val));
     }
 
     /**
@@ -120,7 +123,7 @@ Errors can occur when resizing windows.
      * @param windowSize 
      */
     refreshTab(tab: UITab, windowSize: UISize) {
-        this.refresh(tab._contentView, windowSize, UIEdgeInsetsTabContainer);
+        this.refresh(tab._getContentView(), windowSize, UIEdgeInsetsTabContainer);
     }
 
     /**

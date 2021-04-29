@@ -5,16 +5,16 @@
  */
 class UISpinner extends UIWidget<SpinnerWidget> {
 
-    protected _text: string | undefined;
-    protected _onChange: ((spinner: this, val: number) => void) | undefined;
+    protected _text?: string;
+    protected _onChange?: (spinner: this, val: number) => void;
 
     protected _min: number = 0;
     protected _max: number = 1;
     protected _value: number = 0.5;
     protected _step: number = 0.1;
-    protected _fixed: number | undefined;
+    protected _fixed?: number;
 
-    protected _formatter: ((val: number) => string) | undefined;
+    protected _formatter?: (val: number) => string;
 
     protected _dialogueTitle = "Title";
     protected _dialogueMessage = "Message{NEWLINE}(Set it using function 'dialogueInfo')";
@@ -31,7 +31,8 @@ class UISpinner extends UIWidget<SpinnerWidget> {
      */
     static $(): UISpinner {
         const spinner = new UISpinner();
-        return spinner.height(15)
+        return spinner
+            .size({ height: 15 })
             .minSize({ width: 50, height: 15 });
     }
 
@@ -104,7 +105,7 @@ class UISpinner extends UIWidget<SpinnerWidget> {
         }
     }
 
-    _update(widget: SpinnerWidget) {
+    protected _update(widget: SpinnerWidget) {
         super._update(widget);
         widget.text = this._applyFont(this._text);
     }
@@ -119,14 +120,14 @@ class UISpinner extends UIWidget<SpinnerWidget> {
 
     protected _updateMinWidth() {
         var text: string;
-        var correction = this._min < 0 ? 4: 0;
+        var correction = this._min < 0 ? 4 : 0;
         if (this._usingFormatter()) {
             text = this._formatter!(this._max);
         } else {
             text = this._max.toFixed(this.__fixed());
         }
         const textMinWidth = text.containerSize().width + correction;
-        this.minWidth(textMinWidth + 11 * 2);
+        this.minSize({ width: textMinWidth + 11 * 2 });
     }
 
     //Public
@@ -134,7 +135,9 @@ class UISpinner extends UIWidget<SpinnerWidget> {
     /**
      * Set the range of numbers.
      */
-    range(min: number, max: number): this {
+    range(val: UIOptionalRange): this {
+        const min = val.min ?? Number.MIN_SAFE_INTEGER;
+        const max = val.min ?? Number.MAX_SAFE_INTEGER;
         if (min > max) {
             console.log("'min' cannot be greater than 'max'.");
         } else {

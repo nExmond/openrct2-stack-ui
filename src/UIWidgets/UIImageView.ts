@@ -8,7 +8,7 @@ class UIImageView extends UIWidget<CustomWidget> {
     protected _image: UIImage = UIImageNone;
     protected _theme: UIWindowTheme = { tertiary: UIColor.Yellow };
 
-    protected _graphicsContext: GraphicsContext | undefined;
+    protected _graphicsContext?: GraphicsContext;
 
     /**
      * Creates an instance of image view.
@@ -103,42 +103,6 @@ class UIImageView extends UIWidget<CustomWidget> {
      */
     theme(val: UIWindowTheme): this {
         this._theme = val;
-        return this;
-    }
-
-    /**
-     * Set the primary theme color.
-     */
-    themePrimaryColor(val: UIColor | undefined): this {
-        this._theme = {
-            primary: val,
-            secondary: this._theme.secondary,
-            tertiary: this._theme.tertiary
-        }
-        return this;
-    }
-
-    /**
-     * Set the secondary theme color.
-     */
-    themeSecondaryColor(val: UIColor | undefined): this {
-        this._theme = {
-            primary: this._theme.primary,
-            secondary: val,
-            tertiary: this._theme.tertiary
-        }
-        return this;
-    }
-
-    /**
-     * Set the terriary theme color.
-     */
-    themeTertiaryColor(val: UIColor | undefined): this {
-        this._theme = {
-            primary: this._theme.primary,
-            secondary: this._theme.secondary,
-            tertiary: val
-        }
         return this;
     }
 

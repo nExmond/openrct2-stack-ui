@@ -5,20 +5,22 @@
  */
 class UITab {
 
-    _minSize: UISize = UISizeZero;
-    _maxSize: UISize = { width: ui.width, height: ui.height };
+    protected _name: string;
 
-    _spacing: number | undefined;
-    _padding: UIEdgeInsets | undefined;
-    _isExpandable: boolean = false;
+    protected _minSize: UISize = UISizeZero;
+    protected _maxSize: UISize = { width: ui.width, height: ui.height };
 
-    protected _title: string | undefined;
-    protected _theme: UIWindowTheme | undefined;
+    protected _spacing?: number;
+    protected _padding?: UIEdgeInsets;
+    protected _isExpandable: boolean = false;
+
+    protected _title?: string;
+    protected _theme?: UIWindowTheme;
 
     protected _image: UIImage;
-    _contentView: UIStack;
+    protected _contentView: UIStack;
 
-    _didLoad: ((tab: this) => void) | undefined;
+    protected _didLoad?: (tab: this) => void;
 
     /**
      * Creates an instance of uitab.
@@ -27,6 +29,7 @@ class UITab {
      * @param image Image to display on the tab
      */
     constructor(contentView: UIStack, image: UIImage | undefined = undefined) {
+        this._name = this.constructor.name + '-' + uuid();
         this._image = image ?? UIImageNone;
         this._contentView = contentView;
     }
@@ -57,7 +60,31 @@ class UITab {
         this._contentView._build();
     }
 
+    _getContentView(): UIStack {
+        return this._contentView;
+    }
+
+    _setMinSize(val: UISize) {
+        this._minSize = val;
+    }
+
+    _getDidLoad(): ((tab: this) => void) | undefined {
+        return this._didLoad;
+    }
+
     //Public
+
+    /**
+     * Set the name.
+     */
+     name(val: string): this {
+        this._name = val;
+        return this;
+    }
+
+    getName(): string {
+        return this._name;
+    }
 
     /**
      * Widget spacing on top stack.
@@ -74,8 +101,13 @@ class UITab {
     /**
      * Top stack padding.
      */
-    padding(val: UIEdgeInsets): this {
-        this._padding = val;
+    padding(val: UIOptionalEdgeInsets): this {
+        this._padding = {
+            top: val.top ?? this._padding?.top ?? 0,
+            left: val.left ?? this._padding?.left ?? 0,
+            bottom: val.bottom ?? this._padding?.bottom ?? 0,
+            right: val.right ?? this._padding?.right ?? 0
+        };
         return this;
     }
 
@@ -103,8 +135,11 @@ class UITab {
     /**
      * Set the maximum size of the window in tab.
      */
-    maxSize(val: UISize): this {
-        this._maxSize = val;
+    maxSize(val: UIOptionalSize): this {
+        this._maxSize = {
+            width: val.width ?? this._maxSize.width,
+            height: val.height ?? this._maxSize.height
+        };
         return this;
     }
 
@@ -142,42 +177,6 @@ class UITab {
      */
     theme(val: UIWindowTheme): this {
         this._theme = val;
-        return this;
-    }
-
-    /**
-     * Set the primary theme color.
-     */
-    themePrimaryColor(val: UIColor | undefined): this {
-        this._theme = {
-            primary: val,
-            secondary: this._theme?.secondary,
-            tertiary: this._theme?.tertiary
-        }
-        return this;
-    }
-
-    /**
-     * Set the secondary theme color.
-     */
-    themeSecondaryColor(val: UIColor | undefined): this {
-        this._theme = {
-            primary: this._theme?.primary,
-            secondary: val,
-            tertiary: this._theme?.tertiary
-        }
-        return this;
-    }
-
-    /**
-     * Set the terriary theme color.
-     */
-    themeTertiaryColor(val: UIColor | undefined): this {
-        this._theme = {
-            primary: this._theme?.primary,
-            secondary: this._theme?.secondary,
-            tertiary: val
-        }
         return this;
     }
 

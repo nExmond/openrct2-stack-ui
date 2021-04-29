@@ -9,10 +9,10 @@
 class TextBuilder {
 
     protected _root: TextNode;
-    protected _font: TextFont | undefined;
+    protected _font?: TextFont;
 
     protected _outline: boolean = false;
-    protected _color: TextColor | undefined;
+    protected _color?: TextColor;
 
     /**
      * Creates an instance of text builder.

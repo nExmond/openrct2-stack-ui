@@ -8,7 +8,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
 
     protected _items: string[];
     protected _selectedIndex: number = 0;
-    protected _onChange: ((dropdown: this, index: number, item: string) => void) | undefined;
+    protected _onChange?: (dropdown: this, index: number, item: string) => void;
 
     /**
      * Creates an instance of dropdown.
@@ -27,7 +27,8 @@ class UIDropdown extends UIWidget<DropdownWidget> {
     static $(items: string[]): UIDropdown {
         const dropdown = new UIDropdown(items);
         const itemsMinWidth = items.map(val => val.containerSize().width).max();
-        return dropdown.height(15)
+        return dropdown
+            .size({ height: 15 })
             .minSize({ width: itemsMinWidth + 11, height: 15 });
     }
 
@@ -48,7 +49,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
         }
     }
 
-    _update(widget: DropdownWidget) {
+    protected _update(widget: DropdownWidget) {
         super._update(widget);
         widget.items = this._items.map(val => this._applyFont(val)!);
         widget.selectedIndex = this._selectedIndex;
@@ -67,7 +68,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
         if (val < this._items.length && val >= 0) {
             this._selectedIndex = val;
         } else {
-            const max = Math.max(0, this._items.length-1);
+            const max = Math.max(0, this._items.length - 1);
             throw new Error(`Enter a value between 0 and ${max}.`);
         }
         return this;

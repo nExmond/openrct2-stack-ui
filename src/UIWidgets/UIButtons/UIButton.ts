@@ -7,13 +7,13 @@
 class UIButton extends UIWidget<ButtonWidget> {
 
     protected _border: boolean = true;
-    protected _image: number | undefined;
+    protected _image?: number;
     protected _isPressed: boolean = false;
-    protected _title: string | undefined;
-    protected _onClick: ((button: this) => void) | undefined;
+    protected _title?: string;
+    protected _onClick?: (button: this) => void;
 
-    protected _intervalHelper: IntervalHelper | undefined;
-    protected _uiImage: UIImage | undefined;
+    protected _intervalHelper?: IntervalHelper;
+    protected _uiImage?: UIImage;
 
     constructor() {
         super();
@@ -73,7 +73,7 @@ class UIButton extends UIWidget<ButtonWidget> {
         }
     }
 
-    _update(widget: ButtonWidget) {
+    protected _update(widget: ButtonWidget) {
         super._update(widget);
         widget.border = this._border;
         if (typeof this._image !== "undefined") {
@@ -85,7 +85,7 @@ class UIButton extends UIWidget<ButtonWidget> {
         }
     }
 
-    _isImageType(): boolean {
+    protected _isImageType(): boolean {
         return typeof this._image !== "undefined";
     }
 
@@ -117,11 +117,11 @@ class UIButton extends UIWidget<ButtonWidget> {
         this._uiImage = val;
 
         intervalHelper.end(this._name);
-        if (val._isAnimatable()) {
+        if (val.isAnimatable()) {
             var count = 0;
-            intervalHelper.start(this._name, val._duration * 20, () => {
-                var index = count % val._frames.length;
-                var frame = val._frames[index];
+            intervalHelper.start(this._name, val.getDuration() * 20, () => {
+                var index = count % val._getFrames().length;
+                var frame = val._getFrames()[index];
                 this.updateUI(widget => {
                     widget._image = frame;
                 });
@@ -129,7 +129,7 @@ class UIButton extends UIWidget<ButtonWidget> {
             })
         }
 
-        this._image = val._frames[0];
+        this._image = val._getFrames()[0];
         this._border = false;
         return this;
     }

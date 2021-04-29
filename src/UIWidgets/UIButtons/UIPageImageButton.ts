@@ -7,7 +7,7 @@ class UIPageImageButton extends UIButton {
 
     protected _images: UIImage[];
     protected _index = 0;
-    protected _onPage: ((button: this, image: UIImage) => void) | undefined;
+    protected _onPage?: (button: this, image: UIImage) => void;
 
     /**
      * Creates an instance of page image button.

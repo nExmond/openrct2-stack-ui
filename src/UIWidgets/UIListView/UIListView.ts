@@ -12,14 +12,14 @@ class UIListView extends UIWidget<ListView> {
     protected _isStriped: boolean = false;
 
     protected _showColumnHeaders: boolean = false;
-    protected _columns: UIListViewColumn[] | undefined;
+    protected _columns?: UIListViewColumn[];
     protected _items: UIListViewItem[] = [];
 
-    protected _selectedCell: RowColumn | undefined;
+    protected _selectedCell?: RowColumn;
     protected _canSelect: boolean = false;
 
-    protected _onHeighlight: ((listView: this, column: number, item: number) => void) | undefined;
-    protected _onClick: ((listView: this, column: number, item: number) => void) | undefined;
+    protected _onHeighlight?: (listView: this, column: number, item: number) => void;
+    protected _onClick?: (listView: this, column: number, item: number) => void;
 
     /**
      * Creates an instance of list view.
@@ -62,7 +62,7 @@ class UIListView extends UIWidget<ListView> {
         }
     }
 
-    _update(widget: ListView) {
+    protected _update(widget: ListView) {
         super._update(widget);
         widget.scrollbars = this._scrollbarType;
         widget.isStriped = this._isStriped;

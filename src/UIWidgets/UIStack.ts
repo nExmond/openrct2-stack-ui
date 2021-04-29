@@ -12,9 +12,9 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     protected _childs: UIWidget<any>[];
 
     protected _isGrouped: boolean;
-    protected _groupTitle: string | undefined;
+    protected _groupTitle?: string;
 
-    _widget: GroupBoxWidget | any;
+    protected _widget: GroupBoxWidget | any;
 
     protected _insets: UIEdgeInsets = UIEdgeInsetsZero;
     protected _padding: UIEdgeInsets = UIEdgeInsetsZero;
@@ -258,7 +258,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         this._childs.forEach(val => val._build())
     }
 
-    _update(widget: any) {
+    protected _update(widget: any) {
         if (this._isGrouped && widget) {
             super._update(widget);
             widget.name = this._groupTitle ?? "";
@@ -298,8 +298,13 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     /**
      * stack padding.
      */
-    padding(val: UIEdgeInsets): this {
-        this._padding = val;
+    padding(val: UIOptionalEdgeInsets): this {
+        this._padding = {
+            top: val.top ?? this._padding.top,
+            left: val.left ?? this._padding.left,
+            bottom: val.bottom ?? this._padding.bottom,
+            right: val.right ?? this._padding.right
+        };
         return this;
     }
 

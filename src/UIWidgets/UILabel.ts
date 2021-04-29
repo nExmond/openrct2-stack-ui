@@ -8,7 +8,7 @@ class UILabel extends UIWidget<LabelWidget> {
 
     protected _text: string;
     protected _align: UITextAlignment = UITextAlignment.Left;
-    protected _onChange: ((label: this, index: number) => void) | undefined;
+    protected _onChange?: (label: this, index: number) => void;
 
     /**
      * Creates an instance of label.
@@ -51,7 +51,7 @@ class UILabel extends UIWidget<LabelWidget> {
         }
     }
 
-    _update(widget: LabelWidget) {
+    protected _update(widget: LabelWidget) {
         super._update(widget);
         widget.text = this._applyFont(this._text);
         widget.textAlign = this._align;

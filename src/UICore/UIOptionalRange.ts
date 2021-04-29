@@ -1,5 +1,5 @@
 
 interface UIOptionalRange {
-    min: number | undefined
-    max: number | undefined
+    min?: number
+    max?: number
 }
