@@ -174,9 +174,9 @@ class UIWidget<T extends Widget> {
      * @param block update block
      */
     updateUI(block: ((widget: this) => void) | undefined = undefined) {
-        var prevSize = this._size;
+        const prevSize = this._size;
         block?.(this);
-        var changedSize = this._size;
+        const changedSize = this._size;
         if (prevSize.width === changedSize.width && prevSize.height === changedSize.height) {
             this._refreshUI();
         } else {
@@ -334,13 +334,22 @@ class UIWidget<T extends Widget> {
     /**
      * Extend the edge.
      */
-    extends(val: UIOptionalEdgeInsets): this {
-        this._extends = {
-            top: val.top ?? this._extends.top,
-            left: val.left ?? this._extends.left,
-            bottom: val.bottom ?? this._extends.bottom,
-            right: val.right ?? this._extends.right
-        };
+    extends(val: UIOptionalEdgeInsets | number): this {
+        if (typeof val === "number") {
+            this._extends = {
+                top: val,
+                left: val,
+                bottom: val,
+                right: val
+            };
+        } else {
+            this._extends = {
+                top: val.top ?? this._extends.top,
+                left: val.left ?? this._extends.left,
+                bottom: val.bottom ?? this._extends.bottom,
+                right: val.right ?? this._extends.right
+            };
+        }
         return this;
     }
 

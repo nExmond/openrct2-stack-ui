@@ -24,6 +24,12 @@ class UIWindowProxy implements UIProxy<UIWindow> {
     _bind(ui: UIWindow) {
         this.ui = ui;
     }
+
+    //Public
+
+    updateUI(block: ((ui: UIWindow) => void)) {
+        this.ui?.updateUI(block);
+    }
 }
 
 /**

@@ -74,7 +74,7 @@ var ImageWindow = function (): UIWindowProxy {
                 ).spacing(2)
             ).title("Colors")
                 .spacing(2)
-                .padding({ top: 0, left: 4, bottom: 0, right: 4 })
+                .padding({ left: 4, right: 4 })
         ),
         UICheckbox.$("isExpandable", true).bind(isExpandable)
     ).bind(window)
@@ -152,10 +152,6 @@ var ListWindow = function (): UIWindowProxy {
     UIWindow.$T("StackUI Demo - List",
         UITab.$(
             UIStack.$H(
-                UIImageView.$(UIImageTabStaffHandymen)
-                    .theme({ primary: UIColor.BrightRed })
-                    .occupiedSize(UISizeZero)
-                    .offset({ x: 10, y: -22 }),
                 UIStack.$V(
                     UISpacer.$(10),
                     UIStack.$H(
@@ -171,7 +167,7 @@ var ListWindow = function (): UIWindowProxy {
                         .tooltip((1948).stringId()),
                     UILabel.$((1858).stringId(500))
                         .occupiedSize({ width: 0 })
-                ).offset({ y: -29 }),
+                ).offset({ x: -70, y: -29 }),
                 UIStack.$H(
                     UIButton.$I(UIImageDemolish)
                         .size(25)
@@ -185,14 +181,14 @@ var ListWindow = function (): UIWindowProxy {
                 )
             ),
             UIListView.$()
-                .offset({ x: 0, y: -6 })
-                .extends({ top: 0, left: 0, bottom: 6, right: 0 }),
+                .offset({ y: -6 })
+                .extends({ bottom: 6 }),
             UILabel.$(`${0} ${(1863).stringId()}`.color(TextColor.Black))
-        )
-        // .image(UIImageTabStaffHandymen)
+        ).image(UIImageTabStaffHandymen)
     ).bind(window)
-        .padding({ top: 0, left: 1, bottom: -3, right: 0 })
+        .padding({ left: 1, bottom: -3 })
         .theme({ secondary: UIColor.LightPurple })
+        // .minSize({ width: 250})
         .isExpandable(true)
         .spacing(2)
 
@@ -257,7 +253,7 @@ var ViewportWindow = function (): UIWindowProxy {
                         )
                     )
                 ).title("Flags")
-                    .padding({ top: 0, right: 2, bottom: 0, left: 2 }),
+                    .padding({ right: 2, left: 2 }),
                 UIViewport.$().bind(viewport)
             ),
             UIStack.$V(
@@ -401,6 +397,9 @@ var BasicWindow = function (): UIWindowProxy {
     //Proxy
     const window = UIWDP.$();
 
+    const buttonBasicTitle = UIWP.$<UIButton>();
+    const buttonBasicImage = UIWP.$<UIButton>();
+
     const buttonToggleTitle = UIWP.$<UIToggleButton>();
     const buttonToggleImage = UIWP.$<UIToggleButton>();
 
@@ -459,12 +458,12 @@ var BasicWindow = function (): UIWindowProxy {
         ).title("TextBox"),
         UIStack.$HG(
             UIStack.$HG(
-                UIButton.$("button", true),
-                UIButton.$I(UIImageGuests)
+                UIButton.$("button", true).bind(buttonBasicTitle),
+                UIButton.$I(UIImageGuests).bind(buttonBasicImage)
             ).title("Basic"),
             UIStack.$HG(
                 UIToggleButton.$("button").bind(buttonToggleTitle),
-                UIToggleButton.$I(UIImageGuests).bind(buttonToggleImage),
+                UIToggleButton.$I(UIImageTabPaint).bind(buttonToggleImage),
             ).title("Toggle"),
             UIStack.$HG(
                 UIPageImageButton.$IP(...[
@@ -480,10 +479,16 @@ var BasicWindow = function (): UIWindowProxy {
 
 
     //Bind
+    buttonBasicTitle.ui?.onClick(() => {
+        buttonBasicImage.updateUI(w => {
+            w.isDisabled(!w.getIsDisabled());
+        });
+    });
+
     buttonToggleImage.ui?.onClick(() => {
         buttonToggleTitle.ui?.updateUI(w => {
             w.isVisible(!w.getIsVisible());
-        })
+        });
     });
 
 
@@ -495,6 +500,7 @@ var MainWindow = function (): UIWindowProxy {
     //Proxy
     const window = UIWDP.$();
     const tab1 = UITP.$();
+    const tab2 = UITP.$();
 
     const basicButton = UIWP.$<UIButton>();
     const basicWindow = BasicWindow();
@@ -507,6 +513,8 @@ var MainWindow = function (): UIWindowProxy {
 
     const imageButton = UIWP.$<UIButton>();
     const imageWindow = ImageWindow();
+    
+    const updateTabButton = UIWP.$<UIButton>();
 
     //Construct
     UIWindow.$T("StackUI Demo",
@@ -517,7 +525,12 @@ var MainWindow = function (): UIWindowProxy {
             UIButton.$("Image").bind(imageButton),
             UISpacer.$(10)
         ).bind(tab1)
-            .isExpandable(true)
+            .isExpandable(true),
+        UITab.$(
+            UIImageView.$(UIImageMenuLogo),
+            UIButton.$("Update").bind(updateTabButton),
+        ).bind(tab2)
+            .title("StackUI Demo - 2")
     ).bind(window)
         .spacing(2)
 
@@ -533,6 +546,17 @@ var MainWindow = function (): UIWindowProxy {
     });
     imageButton.ui?.onClick(_ => {
         imageWindow.ui?.show();
+    });
+    updateTabButton.ui?.onClick(_ => {
+        tab2.ui?.updateUI(tab => {
+            tab.title("Updated!");
+            tab.theme({ primary: UIColor.DarkBlue });
+            tab.image(UIImageTabStaffOptions);
+            tab.isExpandable(true);
+            tab.padding(8);
+            tab.spacing(8);
+            tab.maxSize({ height: 600 });
+        });
     });
 
     return window;

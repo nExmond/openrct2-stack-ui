@@ -24,6 +24,12 @@ class UIWidgetProxy<T extends UIWidget<any>> implements UIProxy<T> {
     _bind(ui: T) {
         this.ui = ui;
     }
+
+    //Public
+
+    updateUI(block: ((ui: T) => void)) {
+        this.ui?.updateUI(block);
+    }
 }
 
 /**

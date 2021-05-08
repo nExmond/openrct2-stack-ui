@@ -6,6 +6,7 @@ class UIInteractor {
 
     protected __findWidget!: <T extends Widget>(name: string) => T | undefined;
     protected _refreshWindow!: () => void;
+    protected _refreshWindowTab!: (isReopen: boolean) => void;
     protected __windowTheme!: () => UIWindowTheme;
 
     constructor() { }
@@ -23,6 +24,10 @@ class UIInteractor {
         }
     }
 
+    _refreshTab(block: (isReopen: boolean) => void) {
+        this._refreshWindowTab = block;
+    }
+
     _refresh(block: () => void) {
         this._refreshWindow = block;
     }
@@ -38,6 +43,13 @@ class UIInteractor {
      */
     refreshWindow() {
         this._refreshWindow();
+    }
+
+    /**
+     * Updates the tab and its child widgets.
+     */
+    refreshWindowTab(isReopen: boolean) {
+        this._refreshWindowTab(isReopen);
     }
 
     getWindowTheme(): UIWindowTheme {

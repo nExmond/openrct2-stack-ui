@@ -8,7 +8,7 @@ class UITab {
     protected _name: string;
 
     protected _minSize: UISize = UISizeZero;
-    protected _maxSize: UISize = { width: ui.width, height: ui.height };
+    protected _maxSize?: UIOptionalSize;
 
     protected _spacing?: number;
     protected _padding?: UIEdgeInsets;
@@ -19,6 +19,8 @@ class UITab {
 
     protected _image: UIImage;
     protected _contentView: UIStack;
+
+    protected _interactor!: UIInteractor;
 
     protected _didLoad?: (tab: this) => void;
 
@@ -72,12 +74,28 @@ class UITab {
         return this._didLoad;
     }
 
+    _setInteractor(val: UIInteractor) {
+        this._interactor = val;
+    }
+
     //Public
+
+    /**
+     * Modify and update the properties of the window.
+     * @param block update block
+     */
+     updateUI(block: ((val: this) => void) | undefined = undefined) {
+        const prevImage = this._image;
+        block?.call(this, this);
+        const changedImage = this._image;
+        const imageChanged = !changedImage.isEqual(prevImage);
+        this._interactor.refreshWindowTab(imageChanged);
+    }
 
     /**
      * Set the name.
      */
-     name(val: string): this {
+    name(val: string): this {
         this._name = val;
         return this;
     }
@@ -101,13 +119,22 @@ class UITab {
     /**
      * Top stack padding.
      */
-    padding(val: UIOptionalEdgeInsets): this {
-        this._padding = {
-            top: val.top ?? this._padding?.top ?? 0,
-            left: val.left ?? this._padding?.left ?? 0,
-            bottom: val.bottom ?? this._padding?.bottom ?? 0,
-            right: val.right ?? this._padding?.right ?? 0
-        };
+    padding(val: UIOptionalEdgeInsets | number): this {
+        if (typeof val === "number") {
+            this._padding = {
+                top: val,
+                left: val,
+                bottom: val,
+                right: val
+            };
+        } else {
+            this._padding = {
+                top: val.top ?? this._padding?.top ?? 0,
+                left: val.left ?? this._padding?.left ?? 0,
+                bottom: val.bottom ?? this._padding?.bottom ?? 0,
+                right: val.right ?? this._padding?.right ?? 0
+            };
+        }
         return this;
     }
 
@@ -137,13 +164,13 @@ class UITab {
      */
     maxSize(val: UIOptionalSize): this {
         this._maxSize = {
-            width: val.width ?? this._maxSize.width,
-            height: val.height ?? this._maxSize.height
+            width: val.width ?? this._maxSize?.width,
+            height: val.height ?? this._maxSize?.height
         };
         return this;
     }
 
-    getMaxSize(): UISize {
+    getMaxSize(): UIOptionalSize | undefined {
         return this._maxSize;
     }
 
@@ -195,7 +222,7 @@ class UITab {
     /**
      * This function is called immediately after the window is displayed.
      */
-     didLoad(block: (tab: this) => void): this {
+    didLoad(block: (tab: this) => void): this {
         this._didLoad = block;
         return this;
     }

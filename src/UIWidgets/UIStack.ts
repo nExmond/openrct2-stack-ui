@@ -298,13 +298,22 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     /**
      * stack padding.
      */
-    padding(val: UIOptionalEdgeInsets): this {
-        this._padding = {
-            top: val.top ?? this._padding.top,
-            left: val.left ?? this._padding.left,
-            bottom: val.bottom ?? this._padding.bottom,
-            right: val.right ?? this._padding.right
-        };
+    padding(val: UIOptionalEdgeInsets | number): this {
+        if (typeof val === "number") {
+            this._padding = {
+                top: val,
+                left: val,
+                bottom: val,
+                right: val
+            };
+        } else {
+            this._padding = {
+                top: val.top ?? this._padding.top,
+                left: val.left ?? this._padding.left,
+                bottom: val.bottom ?? this._padding.bottom,
+                right: val.right ?? this._padding.right
+            };
+        }
         return this;
     }
 

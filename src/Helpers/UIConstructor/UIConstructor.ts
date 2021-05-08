@@ -18,7 +18,7 @@ class UIConstructor {
      * @param padding 
      * @returns construction result
      */
-    constructTabs(tabs: UITab[], selectedIndex: number, interactor: UIInteractor, spacing: number, padding: UIEdgeInsets, usingBuild: boolean = true): UIConstructResult {
+    constructTabs(tabs: UITab[], selectedIndex: number, interactor: UIInteractor, spacing: number, padding: UIEdgeInsets, maxSize: UISize, usingBuild: boolean = true): UIConstructResult {
         if (selectedIndex >= tabs.length || selectedIndex < 0) {
             throw new Error("SelectedIndex is less than the count of tabs and must be at least 0.");
         }
@@ -29,14 +29,19 @@ class UIConstructor {
                 .spacing(tab.getSpacing() ?? spacing)
                 .padding(tab.getPadding() ?? padding);
 
-                const results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, usingBuild);
+            tab._setInteractor(interactor);
+            const results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, usingBuild);
             tab._setMinSize({
                 width: Math.max(minWidth, results.size.width),
                 height: results.size.height
             })
 
             const tabMinSize = tab.getMinSize();
-            const tabMaxSize = tab.getMaxSize();
+            const tempTabMaxSize = tab.getMaxSize();
+            const tabMaxSize = {
+                width: tempTabMaxSize?.width ?? maxSize.width,
+                height: tempTabMaxSize?.height ?? maxSize.height
+            }
 
             if (tabMaxSize.width < tabMinSize.width || tabMaxSize.height < tabMinSize.height) {
                 console.log(`
