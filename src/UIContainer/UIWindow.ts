@@ -217,6 +217,7 @@ class UIWindow {
         var minSize = this._minSize;
         var maxSize = this._maxSize;
         var contentView = this._singleContentView;
+        var title = this._title;
 
         if (typeof this._tabs !== "undefined") {
             const currentTab = this._tabs![this._selectedTabIndex];
@@ -232,6 +233,7 @@ class UIWindow {
                 width: tabMaxSize?.width ?? maxSize.width,
                 height: tabMaxSize?.height ?? maxSize.height
             }
+            title = this._tabs?.[this._selectedTabIndex].getTitle() ?? this._originalTitle;
 
         } else if (typeof this._singleContentView !== "undefined") {
             contentView = this._singleContentView;
@@ -252,6 +254,7 @@ class UIWindow {
         this.updateUI(window => {
             window._minSize = minSize;
             window._maxSize = maxSize;
+            window._title = title;
         })
     }
 

@@ -55,7 +55,7 @@ var ImageWindow = function (): UIWindowProxy {
                 UIStack.$H(
                     UILabel.$("Primary:"),
                     UIColorPicker.$().bind(primaryColorpicker)
-                        .color(Math.round(Math.random() * 32))
+                        .color(UIColor.LightBlue)
                         .name("primaryColorPicker"),
                     UISpacer.$(),
                     UICheckbox.$("Translucent", true).bind(primaryTranslucent)
@@ -63,14 +63,14 @@ var ImageWindow = function (): UIWindowProxy {
                 UIStack.$H(
                     UILabel.$("Secondary:"),
                     UIColorPicker.$().bind(secondaryColorpicker)
-                        .color(Math.round(Math.random() * 32)),
+                        .color(UIColor.Gray),
                     UISpacer.$(),
                     UICheckbox.$("Translucent", true).bind(secondaryTranslucent)
                 ).spacing(2),
                 UIStack.$H(
                     UILabel.$("Tertiary:"),
                     UIColorPicker.$().bind(tertiaryColorpicker)
-                        .color(Math.round(Math.random() * 32))
+                        .color(UIColor.Yellow)
                 ).spacing(2)
             ).title("Colors")
                 .spacing(2)

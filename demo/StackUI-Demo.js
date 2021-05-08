@@ -51,10 +51,10 @@ var ImageWindow = function () {
     var secondaryTranslucent = UIWP.$();
     var isExpandable = UIWP.$();
     UIWindow.$("StackUI Demo - Image", UIStack.$H(UIImageView.$(UIImageG2Logo).bind(imageView1), UISpacer.$(), UIImageView.$(UIImageG2Title).bind(imageView2)).spacing(4), UISpacer.$(), UIStack.$H(UIImageView.$(UIImage.$(5627)).bind(imageView3), UISpacer.$(), UIImageView.$(UIImageTesting).bind(imageView4)).spacing(4), UIStack.$H(UIStack.$VG(UIStack.$H(UILabel.$("Primary:"), UIColorPicker.$().bind(primaryColorpicker)
-        .color(Math.round(Math.random() * 32))
+        .color(UIColor.LightBlue)
         .name("primaryColorPicker"), UISpacer.$(), UICheckbox.$("Translucent", true).bind(primaryTranslucent)).spacing(2), UIStack.$H(UILabel.$("Secondary:"), UIColorPicker.$().bind(secondaryColorpicker)
-        .color(Math.round(Math.random() * 32)), UISpacer.$(), UICheckbox.$("Translucent", true).bind(secondaryTranslucent)).spacing(2), UIStack.$H(UILabel.$("Tertiary:"), UIColorPicker.$().bind(tertiaryColorpicker)
-        .color(Math.round(Math.random() * 32))).spacing(2)).title("Colors")
+        .color(UIColor.Gray), UISpacer.$(), UICheckbox.$("Translucent", true).bind(secondaryTranslucent)).spacing(2), UIStack.$H(UILabel.$("Tertiary:"), UIColorPicker.$().bind(tertiaryColorpicker)
+        .color(UIColor.Yellow)).spacing(2)).title("Colors")
         .spacing(2)
         .padding({ left: 4, right: 4 })), UICheckbox.$("isExpandable", true).bind(isExpandable)).bind(window)
         .spacing(2);
@@ -2122,10 +2122,11 @@ var UIWindow = (function () {
         }
     };
     UIWindow.prototype._reflectResizingFromChild = function () {
-        var _a, _b;
+        var _a, _b, _c, _d;
         var minSize = this._minSize;
         var maxSize = this._maxSize;
         var contentView = this._singleContentView;
+        var title = this._title;
         if (typeof this._tabs !== "undefined") {
             var currentTab = this._tabs[this._selectedTabIndex];
             contentView = currentTab._getContentView();
@@ -2137,6 +2138,7 @@ var UIWindow = (function () {
                 width: (_a = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.width) !== null && _a !== void 0 ? _a : maxSize.width,
                 height: (_b = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.height) !== null && _b !== void 0 ? _b : maxSize.height
             };
+            title = (_d = (_c = this._tabs) === null || _c === void 0 ? void 0 : _c[this._selectedTabIndex].getTitle()) !== null && _d !== void 0 ? _d : this._originalTitle;
         }
         else if (typeof this._singleContentView !== "undefined") {
             contentView = this._singleContentView;
@@ -2153,6 +2155,7 @@ var UIWindow = (function () {
         this.updateUI(function (window) {
             window._minSize = minSize;
             window._maxSize = maxSize;
+            window._title = title;
         });
     };
     UIWindow.prototype._activeInterval = function (flag) {
@@ -2197,6 +2200,7 @@ var UIWindow = (function () {
             title = (_g = (_f = this._tabs) === null || _f === void 0 ? void 0 : _f[this._selectedTabIndex].getTitle()) !== null && _g !== void 0 ? _g : this._originalTitle;
             colors = this._convertColors(this._selectedTabIndex);
         }
+        console.log(title);
         this._activeInterval(true);
         var windowDesc = {
             classification: this._title,
