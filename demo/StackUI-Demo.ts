@@ -148,24 +148,30 @@ var ListWindow = function (): UIWindowProxy {
     //Proxy
     const window = UIWDP.$();
 
-    //Construct
-    UIWindow.$T("StackUI Demo - List",
-        UITab.$(
+    var createTab = (
+        usingColor: boolean,
+        defaultColor: UIColor,
+        hireTargetTitle: number,
+        hireCost: number,
+        hireTargetInfo: number,
+        tabImage: UIImage
+    ): UITab => {
+        return UITab.$(
             UIStack.$H(
                 UIStack.$V(
                     UISpacer.$(10),
                     UIStack.$H(
-                        UILabel.$((1791).stringId()),
-                        UIColorPicker.$(UIColor.BrightRed)
+                        UILabel.$((1791).stringId()).isVisible(usingColor),
+                        UIColorPicker.$(defaultColor).isVisible(usingColor)
                     )
                 ),
                 UISpacer.$(),
                 UIStack.$V(
-                    UIButton.$((1700).stringId(), true)
+                    UIButton.$(hireTargetTitle.stringId(), true)
                         .occupiedSize({ width: 0 })
                         .size({ width: 145 })
                         .tooltip((1948).stringId()),
-                    UILabel.$((1858).stringId(500))
+                    UILabel.$((1858).stringId(hireCost))
                         .occupiedSize({ width: 0 })
                 ).offset({ x: -70, y: -29 }),
                 UIStack.$H(
@@ -183,8 +189,16 @@ var ListWindow = function (): UIWindowProxy {
             UIListView.$()
                 .offset({ y: -6 })
                 .extends({ bottom: 6 }),
-            UILabel.$(`${0} ${(1863).stringId()}`.color(TextColor.Black))
-        ).image(UIImageTabStaffHandymen)
+            UILabel.$(`${0} ${hireTargetInfo.stringId()}`.color(TextColor.Black))
+        ).image(tabImage)
+    }
+
+    //Construct
+    UIWindow.$T("StackUI Demo - List",
+        createTab(true, UIColor.BrightRed, 1700, 500, 1859, UIImageTabStaffHandymen),
+        createTab(true, UIColor.LightBlue, 1701, 800, 1860, UIImageTabStaffMechanics),
+        createTab(true, UIColor.Yellow, 1702, 600, 1861, UIImageTabStaffSecurityGuards),
+        createTab(false, UIColor.BrightRed, 1703, 550, 1862, UIImageTabStaffEntertainers)
     ).bind(window)
         .padding({ left: 1, bottom: -3 })
         .theme({ secondary: UIColor.LightPurple })
@@ -193,6 +207,7 @@ var ListWindow = function (): UIWindowProxy {
         .spacing(2)
 
     //Bind
+
 
     return window;
 }
@@ -513,7 +528,7 @@ var MainWindow = function (): UIWindowProxy {
 
     const imageButton = UIWP.$<UIButton>();
     const imageWindow = ImageWindow();
-    
+
     const updateTabButton = UIWP.$<UIButton>();
 
     //Construct

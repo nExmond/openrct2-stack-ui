@@ -118,18 +118,21 @@ var ImageWindow = function () {
 };
 var ListWindow = function () {
     var window = UIWDP.$();
-    UIWindow.$T("StackUI Demo - List", UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(10), UIStack.$H(UILabel.$((1791).stringId()), UIColorPicker.$(UIColor.BrightRed))), UISpacer.$(), UIStack.$V(UIButton.$((1700).stringId(), true)
-        .occupiedSize({ width: 0 })
-        .size({ width: 145 })
-        .tooltip((1948).stringId()), UILabel.$((1858).stringId(500))
-        .occupiedSize({ width: 0 })).offset({ x: -70, y: -29 }), UIStack.$H(UIButton.$I(UIImageDemolish)
-        .size(25)
-        .tooltip((5300).stringId()), UIButton.$I(UIImagePatrol)
-        .size(25)
-        .tooltip((1947).stringId()), UIButton.$I(UIImageMap)
-        .size(25)
-        .tooltip((2804).stringId()))), UIListView.$()
-        .offset({ y: -6 })["extends"]({ bottom: 6 }), UILabel.$((0 + " " + (1863).stringId()).color(TextColor.Black))).image(UIImageTabStaffHandymen)).bind(window)
+    var createTab = function (usingColor, defaultColor, hireTargetTitle, hireCost, hireTargetInfo, tabImage) {
+        return UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(10), UIStack.$H(UILabel.$((1791).stringId()).isVisible(usingColor), UIColorPicker.$(defaultColor).isVisible(usingColor))), UISpacer.$(), UIStack.$V(UIButton.$(hireTargetTitle.stringId(), true)
+            .occupiedSize({ width: 0 })
+            .size({ width: 145 })
+            .tooltip((1948).stringId()), UILabel.$((1858).stringId(hireCost))
+            .occupiedSize({ width: 0 })).offset({ x: -70, y: -29 }), UIStack.$H(UIButton.$I(UIImageDemolish)
+            .size(25)
+            .tooltip((5300).stringId()), UIButton.$I(UIImagePatrol)
+            .size(25)
+            .tooltip((1947).stringId()), UIButton.$I(UIImageMap)
+            .size(25)
+            .tooltip((2804).stringId()))), UIListView.$()
+            .offset({ y: -6 })["extends"]({ bottom: 6 }), UILabel.$((0 + " " + hireTargetInfo.stringId()).color(TextColor.Black))).image(tabImage);
+    };
+    UIWindow.$T("StackUI Demo - List", createTab(true, UIColor.BrightRed, 1700, 500, 1859, UIImageTabStaffHandymen), createTab(true, UIColor.LightBlue, 1701, 800, 1860, UIImageTabStaffMechanics), createTab(true, UIColor.Yellow, 1702, 600, 1861, UIImageTabStaffSecurityGuards), createTab(false, UIColor.BrightRed, 1703, 550, 1862, UIImageTabStaffEntertainers)).bind(window)
         .padding({ left: 1, bottom: -3 })
         .theme({ secondary: UIColor.LightPurple })
         .isExpandable(true)
@@ -2200,7 +2203,6 @@ var UIWindow = (function () {
             title = (_g = (_f = this._tabs) === null || _f === void 0 ? void 0 : _f[this._selectedTabIndex].getTitle()) !== null && _g !== void 0 ? _g : this._originalTitle;
             colors = this._convertColors(this._selectedTabIndex);
         }
-        console.log(title);
         this._activeInterval(true);
         var windowDesc = {
             classification: this._title,
@@ -2519,7 +2521,10 @@ var UIImageStaffCostumeAstronaut = UIImage.$(5125);
 var UIImageStaffCostumeBandit = UIImage.$(5126);
 var UIImageStaffCostumeSheriff = UIImage.$(5127);
 var UIImageStaffCostumePirate = UIImage.$(5128);
-var UIImageTabStaffHandymen = UIImage.$(11262).offset({ x: 15, y: 21 });
+var UIImageTabStaffHandymen = UIImage.$(11262).offset({ x: 16, y: 20 });
+var UIImageTabStaffMechanics = UIImage.$(11442).offset({ x: 16, y: 20 });
+var UIImageTabStaffSecurityGuards = UIImage.$(11882).offset({ x: 16, y: 20 });
+var UIImageTabStaffEntertainers = UIImage.$(12326).offset({ x: 16, y: 25 });
 var UIImageInformationSmall = UIImage.$(5129);
 var UIImageRatingIncrease = UIImage.$(5130);
 var UIImageRatingDecrease = UIImage.$(5131);
