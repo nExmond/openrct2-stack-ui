@@ -1796,7 +1796,7 @@ var UIConstructor = (function () {
     function UIConstructor() {
     }
     UIConstructor.prototype.constructTabs = function (tabs, selectedIndex, interactor, spacing, padding, minSize, maxSize, usingBuild) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         if (usingBuild === void 0) { usingBuild = true; }
         if (selectedIndex >= tabs.length || selectedIndex < 0) {
             throw new Error("SelectedIndex is less than the count of tabs and must be at least 0.");
@@ -1809,16 +1809,17 @@ var UIConstructor = (function () {
                 .padding((_b = tab.getPadding()) !== null && _b !== void 0 ? _b : padding);
             tab._setInteractor(interactor);
             var results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, minSize, usingBuild);
-            var tabMinWidth = (_d = (_c = tab.getMinSize()) === null || _c === void 0 ? void 0 : _c.width) !== null && _d !== void 0 ? _d : 0;
-            var tabMinHeight = (_f = (_e = tab.getMinSize()) === null || _e === void 0 ? void 0 : _e.height) !== null && _f !== void 0 ? _f : 0;
+            var tempTabMinSize = tab.getMinSize();
+            var tabMinWidth = (_c = tempTabMinSize === null || tempTabMinSize === void 0 ? void 0 : tempTabMinSize.width) !== null && _c !== void 0 ? _c : 0;
+            var tabMinHeight = (_d = tempTabMinSize === null || tempTabMinSize === void 0 ? void 0 : tempTabMinSize.height) !== null && _d !== void 0 ? _d : 0;
             var tabMinSize = tab._setMinSize({
-                width: Math.max(results.size.width, minSize.width, tabMinWidth, tabButtonMinWidth),
-                height: Math.max(results.size.height, minSize.height, tabMinHeight)
+                width: Math.max(results.size.width, tabMinWidth, tabButtonMinWidth),
+                height: Math.max(results.size.height, tabMinHeight)
             });
             var tempTabMaxSize = tab.getMaxSize();
             var tabMaxSize = {
-                width: (_g = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.width) !== null && _g !== void 0 ? _g : maxSize.width,
-                height: (_h = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.height) !== null && _h !== void 0 ? _h : maxSize.height
+                width: (_e = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.width) !== null && _e !== void 0 ? _e : maxSize.width,
+                height: (_f = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.height) !== null && _f !== void 0 ? _f : maxSize.height
             };
             if (tabMaxSize.width < tabMinSize.width || tabMaxSize.height < tabMinSize.height) {
                 console.log("\nWARNING: UITab[" + i + "] maximum size is less than its minimum size!\nminSize: { width: " + tabMinSize.width + ", height: " + tabMinSize.height + " }\nmaxSize: { width: " + tabMaxSize.width + ", height: " + tabMaxSize.height + " }\nErrors can occur when resizing windows.\n");
@@ -1827,8 +1828,8 @@ var UIConstructor = (function () {
         var selectedTab = tabs[selectedIndex];
         var tempMinSize = selectedTab.getMinSize();
         var selectedTabMinSize = {
-            width: (_j = tempMinSize === null || tempMinSize === void 0 ? void 0 : tempMinSize.width) !== null && _j !== void 0 ? _j : minSize.width,
-            height: (_k = tempMinSize === null || tempMinSize === void 0 ? void 0 : tempMinSize.height) !== null && _k !== void 0 ? _k : minSize.height
+            width: (_g = tempMinSize === null || tempMinSize === void 0 ? void 0 : tempMinSize.width) !== null && _g !== void 0 ? _g : minSize.width,
+            height: (_h = tempMinSize === null || tempMinSize === void 0 ? void 0 : tempMinSize.height) !== null && _h !== void 0 ? _h : minSize.height
         };
         this.refreshTab(selectedTab, selectedTabMinSize);
         return {
@@ -2119,7 +2120,6 @@ var UIWindow = (function () {
             var windowMaxSize = this.getMaxSize();
             var currentTab_1 = this._tabs[this._selectedTabIndex];
             var tempTabMinSize = currentTab_1.getMinSize();
-            console.log(tempTabMinSize);
             var tabMinSize_1 = {
                 width: (_a = tempTabMinSize === null || tempTabMinSize === void 0 ? void 0 : tempTabMinSize.width) !== null && _a !== void 0 ? _a : windowMinSize.width,
                 height: (_b = tempTabMinSize === null || tempTabMinSize === void 0 ? void 0 : tempTabMinSize.height) !== null && _b !== void 0 ? _b : windowMinSize.height

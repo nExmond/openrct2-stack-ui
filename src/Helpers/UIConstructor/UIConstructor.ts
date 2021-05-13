@@ -31,11 +31,12 @@ class UIConstructor {
 
             tab._setInteractor(interactor);
             const results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, minSize, usingBuild);
-            const tabMinWidth = tab.getMinSize()?.width ?? 0;
-            const tabMinHeight = tab.getMinSize()?.height ?? 0;
+            const tempTabMinSize = tab.getMinSize();
+            const tabMinWidth = tempTabMinSize?.width ?? 0;
+            const tabMinHeight = tempTabMinSize?.height ?? 0;
             const tabMinSize = tab._setMinSize({
-                width: Math.max(results.size.width, minSize.width, tabMinWidth, tabButtonMinWidth),
-                height: Math.max(results.size.height, minSize.height, tabMinHeight)
+                width: Math.max(results.size.width, tabMinWidth, tabButtonMinWidth),
+                height: Math.max(results.size.height, tabMinHeight)
             })
 
             const tempTabMaxSize = tab.getMaxSize();

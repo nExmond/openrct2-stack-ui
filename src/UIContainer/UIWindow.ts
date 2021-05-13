@@ -310,12 +310,14 @@ class UIWindow {
             const constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, this._minSize, this._maxSize);
             tabDescriptions = constructed.tabs;
             this._minSize = constructed.size;
+
             const windownMaxSize = this.getMaxSize();
             const tabMaxSize = this._tabs[this._selectedTabIndex].getMaxSize();
             this._maxSize = {
                 width: tabMaxSize?.width ?? windownMaxSize.width,
                 height: tabMaxSize?.height ?? windownMaxSize.height
             }
+            
             this._isExpandable ||= this._tabs?.[this._selectedTabIndex].getIsExpandable() ?? false;
 
             title = this._tabs?.[this._selectedTabIndex].getTitle() ?? this._originalTitle;
