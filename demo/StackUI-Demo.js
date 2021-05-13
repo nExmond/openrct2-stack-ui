@@ -132,9 +132,14 @@ var ListWindow = function () {
             .tooltip((2804).stringId()))), UIListView.$()
             .offset({ y: -6 })["extends"]({ bottom: 6 }), UILabel.$((0 + " " + hireTargetInfo.stringId()).color(TextColor.Black))).image(tabImage);
     };
-    UIWindow.$T("StackUI Demo - List", createTab(true, UIColor.BrightRed, 1700, 500, 1859, UIImageTabStaffHandymen), createTab(true, UIColor.LightBlue, 1701, 800, 1860, UIImageTabStaffMechanics), createTab(true, UIColor.Yellow, 1702, 600, 1861, UIImageTabStaffSecurityGuards), createTab(false, UIColor.BrightRed, 1703, 550, 1862, UIImageTabStaffEntertainers)).bind(window)
+    UIWindow.$T("StackUI Demo - List", createTab(true, UIColor.BrightRed, 1700, 500, 1859, UIImageTabStaffHandymen), createTab(true, UIColor.LightBlue, 1701, 800, 1860, UIImageTabStaffMechanics)
+        .minSize({ width: 300 }).maxSize({ width: 400 }), createTab(true, UIColor.Yellow, 1702, 600, 1861, UIImageTabStaffSecurityGuards)
+        .minSize({ width: 100, height: 300 }), createTab(false, UIColor.BrightRed, 1703, 550, 1862, UIImageTabStaffEntertainers)
+        .minSize({ height: 500 })).bind(window)
         .padding({ left: 1, bottom: -3 })
         .theme({ secondary: UIColor.LightPurple })
+        .minSize({ width: 250 })
+        .maxSize({ width: 600, height: 600 })
         .isExpandable(true)
         .spacing(2);
     return window;
@@ -1353,7 +1358,6 @@ var UIWidget = (function () {
 var UITab = (function () {
     function UITab(contentView, image) {
         if (image === void 0) { image = undefined; }
-        this._minSize = UISizeZero;
         this._isExpandable = false;
         this._name = this.constructor.name + '-' + uuid();
         this._image = image !== null && image !== void 0 ? image : UIImageNone;
@@ -1384,6 +1388,7 @@ var UITab = (function () {
     };
     UITab.prototype._setMinSize = function (val) {
         this._minSize = val;
+        return val;
     };
     UITab.prototype._getDidLoad = function () {
         return this._didLoad;
@@ -1442,6 +1447,14 @@ var UITab = (function () {
     };
     UITab.prototype.getIsExpandable = function () {
         return this._isExpandable;
+    };
+    UITab.prototype.minSize = function (val) {
+        var _a, _b, _c, _d;
+        this._minSize = {
+            width: (_a = val.width) !== null && _a !== void 0 ? _a : (_b = this._minSize) === null || _b === void 0 ? void 0 : _b.width,
+            height: (_c = val.height) !== null && _c !== void 0 ? _c : (_d = this._minSize) === null || _d === void 0 ? void 0 : _d.height
+        };
+        return this;
     };
     UITab.prototype.getMinSize = function () {
         return this._minSize;
@@ -1782,48 +1795,58 @@ var UIStack = (function (_super) {
 var UIConstructor = (function () {
     function UIConstructor() {
     }
-    UIConstructor.prototype.constructTabs = function (tabs, selectedIndex, interactor, spacing, padding, maxSize, usingBuild) {
-        var _a, _b, _c, _d;
+    UIConstructor.prototype.constructTabs = function (tabs, selectedIndex, interactor, spacing, padding, minSize, maxSize, usingBuild) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         if (usingBuild === void 0) { usingBuild = true; }
         if (selectedIndex >= tabs.length || selectedIndex < 0) {
             throw new Error("SelectedIndex is less than the count of tabs and must be at least 0.");
         }
-        var minWidth = 31 * tabs.length + 6;
+        var tabButtonMinWidth = 31 * tabs.length + 6;
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
             var stack = tab._getContentView()
                 .spacing((_a = tab.getSpacing()) !== null && _a !== void 0 ? _a : spacing)
                 .padding((_b = tab.getPadding()) !== null && _b !== void 0 ? _b : padding);
             tab._setInteractor(interactor);
-            var results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, usingBuild);
-            tab._setMinSize({
-                width: Math.max(minWidth, results.size.width),
-                height: results.size.height
+            var results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, minSize, usingBuild);
+            var tabMinWidth = (_d = (_c = tab.getMinSize()) === null || _c === void 0 ? void 0 : _c.width) !== null && _d !== void 0 ? _d : 0;
+            var tabMinHeight = (_f = (_e = tab.getMinSize()) === null || _e === void 0 ? void 0 : _e.height) !== null && _f !== void 0 ? _f : 0;
+            var tabMinSize = tab._setMinSize({
+                width: Math.max(results.size.width, minSize.width, tabMinWidth, tabButtonMinWidth),
+                height: Math.max(results.size.height, minSize.height, tabMinHeight)
             });
-            var tabMinSize = tab.getMinSize();
             var tempTabMaxSize = tab.getMaxSize();
             var tabMaxSize = {
-                width: (_c = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.width) !== null && _c !== void 0 ? _c : maxSize.width,
-                height: (_d = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.height) !== null && _d !== void 0 ? _d : maxSize.height
+                width: (_g = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.width) !== null && _g !== void 0 ? _g : maxSize.width,
+                height: (_h = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.height) !== null && _h !== void 0 ? _h : maxSize.height
             };
             if (tabMaxSize.width < tabMinSize.width || tabMaxSize.height < tabMinSize.height) {
                 console.log("\nWARNING: UITab[" + i + "] maximum size is less than its minimum size!\nminSize: { width: " + tabMinSize.width + ", height: " + tabMinSize.height + " }\nmaxSize: { width: " + tabMaxSize.width + ", height: " + tabMaxSize.height + " }\nErrors can occur when resizing windows.\n");
             }
         }
         var selectedTab = tabs[selectedIndex];
-        this.refreshTab(selectedTab, selectedTab.getMinSize());
+        var tempMinSize = selectedTab.getMinSize();
+        var selectedTabMinSize = {
+            width: (_j = tempMinSize === null || tempMinSize === void 0 ? void 0 : tempMinSize.width) !== null && _j !== void 0 ? _j : minSize.width,
+            height: (_k = tempMinSize === null || tempMinSize === void 0 ? void 0 : tempMinSize.height) !== null && _k !== void 0 ? _k : minSize.height
+        };
+        this.refreshTab(selectedTab, selectedTabMinSize);
         return {
-            size: selectedTab.getMinSize(),
+            size: selectedTabMinSize,
             widgets: [],
             tabs: tabs.map(function (val) { return val._data(); })
         };
     };
-    UIConstructor.prototype.construct = function (stack, interactor, insets, usingBuild) {
+    UIConstructor.prototype.construct = function (stack, interactor, insets, minSize, usingBuild) {
         if (insets === void 0) { insets = UIEdgeInsetsContainer; }
         if (usingBuild === void 0) { usingBuild = true; }
         this._injectInteractor(stack, interactor);
+        var size = this.calculateBounds(stack, insets, usingBuild);
         return {
-            size: this.calculateBounds(stack, insets, usingBuild),
+            size: {
+                width: Math.max(size.width, minSize.width),
+                height: Math.max(size.height, minSize.height)
+            },
             widgets: stack._getWidgets()
         };
     };
@@ -2090,15 +2113,21 @@ var UIWindow = (function () {
     };
     UIWindow.prototype._internalOnTabChange = function () {
         var _this = this;
-        var _a, _b;
+        var _a, _b, _c, _d;
         if (typeof this._tabs !== "undefined") {
+            var windowMinSize = this.getMinSize();
             var windowMaxSize = this.getMaxSize();
             var currentTab_1 = this._tabs[this._selectedTabIndex];
-            var tabMinSize_1 = currentTab_1.getMinSize();
+            var tempTabMinSize = currentTab_1.getMinSize();
+            console.log(tempTabMinSize);
+            var tabMinSize_1 = {
+                width: (_a = tempTabMinSize === null || tempTabMinSize === void 0 ? void 0 : tempTabMinSize.width) !== null && _a !== void 0 ? _a : windowMinSize.width,
+                height: (_b = tempTabMinSize === null || tempTabMinSize === void 0 ? void 0 : tempTabMinSize.height) !== null && _b !== void 0 ? _b : windowMinSize.height
+            };
             var tempTabMaxSize = currentTab_1.getMaxSize();
             var tabMaxSize_1 = {
-                width: (_a = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.width) !== null && _a !== void 0 ? _a : windowMaxSize.width,
-                height: (_b = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.height) !== null && _b !== void 0 ? _b : windowMaxSize.height
+                width: (_c = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.width) !== null && _c !== void 0 ? _c : windowMaxSize.width,
+                height: (_d = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.height) !== null && _d !== void 0 ? _d : windowMaxSize.height
             };
             var size = {
                 width: Math.max(Math.min(this._size.width, tabMaxSize_1.width), tabMinSize_1.width),
@@ -2125,7 +2154,7 @@ var UIWindow = (function () {
         }
     };
     UIWindow.prototype._reflectResizingFromChild = function () {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e, _f;
         var minSize = this._minSize;
         var maxSize = this._maxSize;
         var contentView = this._singleContentView;
@@ -2134,19 +2163,23 @@ var UIWindow = (function () {
             var currentTab = this._tabs[this._selectedTabIndex];
             contentView = currentTab._getContentView();
             contentView._resetSize();
-            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, this._maxSize, false);
-            minSize = currentTab.getMinSize();
+            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, this._minSize, this._maxSize, false);
+            var tabMinSize = currentTab.getMinSize();
+            minSize = {
+                width: (_a = tabMinSize === null || tabMinSize === void 0 ? void 0 : tabMinSize.width) !== null && _a !== void 0 ? _a : minSize.width,
+                height: (_b = tabMinSize === null || tabMinSize === void 0 ? void 0 : tabMinSize.height) !== null && _b !== void 0 ? _b : minSize.height
+            };
             var tabMaxSize = currentTab.getMaxSize();
             maxSize = {
-                width: (_a = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.width) !== null && _a !== void 0 ? _a : maxSize.width,
-                height: (_b = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.height) !== null && _b !== void 0 ? _b : maxSize.height
+                width: (_c = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.width) !== null && _c !== void 0 ? _c : maxSize.width,
+                height: (_d = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.height) !== null && _d !== void 0 ? _d : maxSize.height
             };
-            title = (_d = (_c = this._tabs) === null || _c === void 0 ? void 0 : _c[this._selectedTabIndex].getTitle()) !== null && _d !== void 0 ? _d : this._originalTitle;
+            title = (_f = (_e = this._tabs) === null || _e === void 0 ? void 0 : _e[this._selectedTabIndex].getTitle()) !== null && _f !== void 0 ? _f : this._originalTitle;
         }
         else if (typeof this._singleContentView !== "undefined") {
             contentView = this._singleContentView;
             contentView._resetSize();
-            var construct = this._uiConstructor.construct(this._singleContentView, this._interactor, UIEdgeInsetsContainer, false);
+            var construct = this._uiConstructor.construct(this._singleContentView, this._interactor, UIEdgeInsetsContainer, this._minSize, false);
             minSize = construct.size;
             maxSize = this._maxSize;
         }
@@ -2181,7 +2214,7 @@ var UIWindow = (function () {
         var singlecontentView = (_a = this._singleContentView) === null || _a === void 0 ? void 0 : _a.spacing(this._spacing).padding(this._padding);
         var singleContentViewWidget;
         if (typeof singlecontentView !== "undefined") {
-            var constructed = this._uiConstructor.construct(singlecontentView, this._interactor);
+            var constructed = this._uiConstructor.construct(singlecontentView, this._interactor, UIEdgeInsetsContainer, this._minSize);
             singleContentViewWidget = constructed.widgets;
             this._minSize = constructed.size;
             title = this._originalTitle;
@@ -2190,7 +2223,7 @@ var UIWindow = (function () {
         ;
         var tabDescriptions;
         if (typeof this._tabs !== "undefined") {
-            var constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, this._maxSize);
+            var constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, this._minSize, this._maxSize);
             tabDescriptions = constructed.tabs;
             this._minSize = constructed.size;
             var windownMaxSize = this.getMaxSize();
@@ -2328,6 +2361,14 @@ var UIWindow = (function () {
     };
     UIWindow.prototype.getSize = function () {
         return this._size;
+    };
+    UIWindow.prototype.minSize = function (val) {
+        var _a, _b;
+        this._minSize = {
+            width: (_a = val.width) !== null && _a !== void 0 ? _a : this._minSize.width,
+            height: (_b = val.height) !== null && _b !== void 0 ? _b : this._minSize.height
+        };
+        return this;
     };
     UIWindow.prototype.getMinSize = function () {
         return this._minSize;

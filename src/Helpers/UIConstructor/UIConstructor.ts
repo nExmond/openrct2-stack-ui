@@ -18,11 +18,11 @@ class UIConstructor {
      * @param padding 
      * @returns construction result
      */
-    constructTabs(tabs: UITab[], selectedIndex: number, interactor: UIInteractor, spacing: number, padding: UIEdgeInsets, maxSize: UISize, usingBuild: boolean = true): UIConstructResult {
+    constructTabs(tabs: UITab[], selectedIndex: number, interactor: UIInteractor, spacing: number, padding: UIEdgeInsets, minSize: UISize, maxSize: UISize, usingBuild: boolean = true): UIConstructResult {
         if (selectedIndex >= tabs.length || selectedIndex < 0) {
             throw new Error("SelectedIndex is less than the count of tabs and must be at least 0.");
         }
-        const minWidth = 31 * tabs.length + 6
+        const tabButtonMinWidth = 31 * tabs.length + 6
         for (var i = 0; i < tabs.length; i++) {
             const tab = tabs[i];
             const stack = tab._getContentView()
@@ -30,13 +30,14 @@ class UIConstructor {
                 .padding(tab.getPadding() ?? padding);
 
             tab._setInteractor(interactor);
-            const results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, usingBuild);
-            tab._setMinSize({
-                width: Math.max(minWidth, results.size.width),
-                height: results.size.height
+            const results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, minSize, usingBuild);
+            const tabMinWidth = tab.getMinSize()?.width ?? 0;
+            const tabMinHeight = tab.getMinSize()?.height ?? 0;
+            const tabMinSize = tab._setMinSize({
+                width: Math.max(results.size.width, minSize.width, tabMinWidth, tabButtonMinWidth),
+                height: Math.max(results.size.height, minSize.height, tabMinHeight)
             })
 
-            const tabMinSize = tab.getMinSize();
             const tempTabMaxSize = tab.getMaxSize();
             const tabMaxSize = {
                 width: tempTabMaxSize?.width ?? maxSize.width,
@@ -53,9 +54,14 @@ Errors can occur when resizing windows.
             }
         }
         const selectedTab = tabs[selectedIndex];
-        this.refreshTab(selectedTab, selectedTab.getMinSize());
+        const tempMinSize = selectedTab.getMinSize();
+        const selectedTabMinSize = {
+            width: tempMinSize?.width ?? minSize.width,
+            height: tempMinSize?.height ?? minSize.height
+        }
+        this.refreshTab(selectedTab, selectedTabMinSize);
         return {
-            size: selectedTab.getMinSize(),
+            size: selectedTabMinSize,
             widgets: [],
             tabs: tabs.map(val => val._data())
         }
@@ -68,10 +74,14 @@ Errors can occur when resizing windows.
      * @param insets 
      * @returns construction result
      */
-    construct(stack: UIStack, interactor: UIInteractor, insets: UIEdgeInsets = UIEdgeInsetsContainer, usingBuild: boolean = true): UIConstructResult {
+    construct(stack: UIStack, interactor: UIInteractor, insets: UIEdgeInsets = UIEdgeInsetsContainer, minSize: UISize, usingBuild: boolean = true): UIConstructResult {
         this._injectInteractor(stack, interactor);
+        const size = this.calculateBounds(stack, insets, usingBuild)
         return {
-            size: this.calculateBounds(stack, insets, usingBuild),
+            size: {
+                width: Math.max(size.width, minSize.width),
+                height: Math.max(size.height, minSize.height)
+            },
             widgets: stack._getWidgets()
         };
     }

@@ -7,7 +7,7 @@ class UITab {
 
     protected _name: string;
 
-    protected _minSize: UISize = UISizeZero;
+    protected _minSize?: UIOptionalSize;
     protected _maxSize?: UIOptionalSize;
 
     protected _spacing?: number;
@@ -66,8 +66,9 @@ class UITab {
         return this._contentView;
     }
 
-    _setMinSize(val: UISize) {
+    _setMinSize(val: UISize): UISize {
         this._minSize = val;
+        return val
     }
 
     _getDidLoad(): ((tab: this) => void) | undefined {
@@ -155,12 +156,25 @@ class UITab {
         return this._isExpandable;
     }
 
-    getMinSize(): UISize {
+    /**
+     * Set the minimum size of the window in tab.
+     * If not set, the window's minimum size is followed.
+     */
+    minSize(val: UIOptionalSize): this {
+        this._minSize = {
+            width: val.width ?? this._minSize?.width,
+            height: val.height ?? this._minSize?.height
+        };
+        return this;
+    }
+
+    getMinSize(): UIOptionalSize | undefined {
         return this._minSize;
     }
 
     /**
      * Set the maximum size of the window in tab.
+     * If not set, the window's maximum size is followed.
      */
     maxSize(val: UIOptionalSize): this {
         this._maxSize = {

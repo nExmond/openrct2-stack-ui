@@ -196,13 +196,17 @@ var ListWindow = function (): UIWindowProxy {
     //Construct
     UIWindow.$T("StackUI Demo - List",
         createTab(true, UIColor.BrightRed, 1700, 500, 1859, UIImageTabStaffHandymen),
-        createTab(true, UIColor.LightBlue, 1701, 800, 1860, UIImageTabStaffMechanics),
-        createTab(true, UIColor.Yellow, 1702, 600, 1861, UIImageTabStaffSecurityGuards),
+        createTab(true, UIColor.LightBlue, 1701, 800, 1860, UIImageTabStaffMechanics)
+            .minSize({ width: 300 }).maxSize({ width: 400 }),
+        createTab(true, UIColor.Yellow, 1702, 600, 1861, UIImageTabStaffSecurityGuards)
+            .minSize({ width: 100, height: 300 }),
         createTab(false, UIColor.BrightRed, 1703, 550, 1862, UIImageTabStaffEntertainers)
+            .minSize({ height: 500 })
     ).bind(window)
         .padding({ left: 1, bottom: -3 })
         .theme({ secondary: UIColor.LightPurple })
-        // .minSize({ width: 250})
+        .minSize({ width: 250 })
+        .maxSize({ width: 600, height: 600 })
         .isExpandable(true)
         .spacing(2)
 

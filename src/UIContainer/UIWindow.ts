@@ -178,10 +178,15 @@ class UIWindow {
 
     protected _internalOnTabChange() {
         if (typeof this._tabs !== "undefined") {
+            const windowMinSize = this.getMinSize();
             const windowMaxSize = this.getMaxSize();
 
             const currentTab = this._tabs[this._selectedTabIndex];
-            const tabMinSize = currentTab.getMinSize();
+            const tempTabMinSize = currentTab.getMinSize();
+            const tabMinSize = {
+                width: tempTabMinSize?.width ?? windowMinSize.width,
+                height: tempTabMinSize?.height ?? windowMinSize.height
+            }
             const tempTabMaxSize = currentTab.getMaxSize();
             const tabMaxSize = {
                 width: tempTabMaxSize?.width ?? windowMaxSize.width,
@@ -225,9 +230,13 @@ class UIWindow {
 
             contentView._resetSize();
 
-            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, this._maxSize, false);
+            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, this._minSize, this._maxSize, false);
 
-            minSize = currentTab.getMinSize();
+            const tabMinSize = currentTab.getMinSize();
+            minSize = {
+                width: tabMinSize?.width ?? minSize.width,
+                height: tabMinSize?.height ?? minSize.height
+            }
             const tabMaxSize = currentTab.getMaxSize();
             maxSize = {
                 width: tabMaxSize?.width ?? maxSize.width,
@@ -240,7 +249,7 @@ class UIWindow {
 
             contentView._resetSize();
 
-            const construct = this._uiConstructor.construct(this._singleContentView, this._interactor, UIEdgeInsetsContainer, false);
+            const construct = this._uiConstructor.construct(this._singleContentView, this._interactor, UIEdgeInsetsContainer, this._minSize, false);
 
             minSize = construct.size;
             maxSize = this._maxSize;
@@ -288,7 +297,7 @@ class UIWindow {
         const singlecontentView = this._singleContentView?.spacing(this._spacing).padding(this._padding);
         var singleContentViewWidget: Widget[] | undefined;
         if (typeof singlecontentView !== "undefined") {
-            const constructed = this._uiConstructor.construct(singlecontentView, this._interactor);
+            const constructed = this._uiConstructor.construct(singlecontentView, this._interactor, UIEdgeInsetsContainer, this._minSize);
             singleContentViewWidget = constructed.widgets;
             this._minSize = constructed.size;
 
@@ -298,7 +307,7 @@ class UIWindow {
 
         var tabDescriptions: WindowTabDesc[] | undefined;
         if (typeof this._tabs !== "undefined") {
-            const constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, this._maxSize);
+            const constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, this._minSize, this._maxSize);
             tabDescriptions = constructed.tabs;
             this._minSize = constructed.size;
             const windownMaxSize = this.getMaxSize();
@@ -476,11 +485,27 @@ class UIWindow {
     getSize(): UISize {
         return this._size;
     }
+    
+    /**
+     * Set the minimum size.
+     * The minimum size set in the tab takes precedence.
+     */
+    minSize(val: UIOptionalSize): this {
+        this._minSize = {
+            width: val.width ?? this._minSize.width,
+            height: val.height ?? this._minSize.height
+        }
+        return this;
+    }
 
     getMinSize(): UISize {
         return this._minSize;
     }
 
+    /**
+     * Set the maximum size.
+     * The maximum size set in the tab takes precedence.
+     */
     maxSize(val: UIOptionalSize): this {
         this._maxSize = {
             width: val.width ?? this._maxSize.width,
