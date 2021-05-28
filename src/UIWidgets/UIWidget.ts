@@ -29,6 +29,7 @@ class UIWidget<T extends Widget> {
     protected _font?: TextFont;
 
     protected _didLoad?: (widget: UIWidget<T>) => void;
+    protected _didAppear?: (widget: UIWidget<T>) => void;
 
     constructor() {
         //https://stackoverflow.com/questions/13613524/get-an-objects-class-name-at-runtime
@@ -142,6 +143,10 @@ ${this.description()}`);
             this._widget = widget;
         });
         this._didLoad?.call(this, this);
+    }
+
+    _appearWidget() {
+        this._didAppear?.call(this, this);
     }
 
     _resetSize() {
@@ -390,10 +395,18 @@ ${this.description()}`);
     }
 
     /**
-     * This function is called immediately after the widget is displayed.
+     * This function is called after the widget has been initialized.
      */
     didLoad(block: (widget: this) => void): this {
         this._didLoad = block as (widget: UIWidget<T>) => void;
+        return this;
+    }
+    
+    /**
+     * This function is called immediately after the widget is displayed.
+     */
+     didAppear(block: (widget: this) => void): this {
+        this._didAppear = block as (widget: UIWidget<T>) => void;
         return this;
     }
 

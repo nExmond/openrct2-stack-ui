@@ -43,6 +43,7 @@ class UIWindow {
     protected _onTabChange?: (window: this, selectedIndex: number) => void;
 
     protected _didLoad?: (window: this) => void;
+    protected _didAppear?: (window: this) => void;
 
     /**
      * Creates an instance of *UIWindow*.
@@ -196,7 +197,7 @@ class UIWindow {
                 width: Math.max(Math.min(this._size.width, tabMaxSize.width), tabMinSize.width),
                 height: Math.max(Math.min(this._size.height, tabMaxSize.height), tabMinSize.height)
             }
-            this._uiConstructor.didLoadTabs(this._tabs);
+            this._uiConstructor.didAppearTab(currentTab);
 
             this._refresh(size);
             this.updateUI(window => {
@@ -394,6 +395,18 @@ class UIWindow {
         this._reflectResizingFromChild();
 
         this._didLoad?.call(this, this);
+        
+        //---
+
+        if (typeof singlecontentView !== "undefined") {
+            this._uiConstructor.didAppear(singlecontentView);
+        }
+        if (typeof this._tabs !== "undefined") {
+            const selectedTab = this._tabs[this._selectedTabIndex];
+            this._uiConstructor.didAppearTab(selectedTab);
+        }
+        
+        this._didAppear?.call(this, this);
 
         return this;
     }
@@ -598,10 +611,18 @@ class UIWindow {
     }
 
     /**
-     * This function is called immediately after the window is displayed.
+     * This function is called after the window has been initialized.
      */
     didLoad(block: (window: this) => void): this {
         this._didLoad = block;
+        return this;
+    }
+    
+    /**
+     * This function is called immediately after the window is displayed.
+     */
+     didAppear(block: (window: this) => void): this {
+        this._didAppear = block;
         return this;
     }
 

@@ -23,6 +23,7 @@ class UITab {
     protected _interactor!: UIInteractor;
 
     protected _didLoad?: (tab: this) => void;
+    protected _didAppear?: (tab: this) => void;
 
     /**
      * Creates an instance of uitab.
@@ -73,6 +74,10 @@ class UITab {
 
     _getDidLoad(): ((tab: this) => void) | undefined {
         return this._didLoad;
+    }
+
+    _getDidAppear(): ((tab: this) => void) | undefined {
+        return this._didAppear;
     }
 
     _setInteractor(val: UIInteractor) {
@@ -234,10 +239,18 @@ class UITab {
     }
     
     /**
-     * This function is called immediately after the window is displayed.
+     * This function is called after the tab has been initialized.
      */
     didLoad(block: (tab: this) => void): this {
         this._didLoad = block;
+        return this;
+    }
+    
+    /**
+     * This function is called immediately after the tab is displayed.
+     */
+     didAppear(block: (tab: this) => void): this {
+        this._didAppear = block;
         return this;
     }
 

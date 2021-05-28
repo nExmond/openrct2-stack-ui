@@ -46,12 +46,10 @@ class UIConstructor {
             }
 
             if (tabMaxSize.width < tabMinSize.width || tabMaxSize.height < tabMinSize.height) {
-                console.log(`
-WARNING: UITab[${i}] maximum size is less than its minimum size!
+                console.log(`WARNING: UITab[${i}] maximum size is less than its minimum size!
 minSize: { width: ${tabMinSize.width}, height: ${tabMinSize.height} }
 maxSize: { width: ${tabMaxSize.width}, height: ${tabMaxSize.height} }
-Errors can occur when resizing windows.
-`);
+Errors can occur when resizing windows.`);
             }
         }
         const selectedTab = tabs[selectedIndex];
@@ -131,6 +129,24 @@ Errors can occur when resizing windows.
     didLoad(stack: UIStack) {
         const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
         flattedChilds.forEach(val => val._loadWidget());
+    }
+
+    /**
+     * Notifies all widgets that tab has been displayed.
+     * @param tab
+     */
+    didAppearTab(tab: UITab) {
+        this.didLoad(tab._getContentView());
+        tab._getDidAppear()?.call(tab, tab);
+    }
+    
+    /**
+     * Notifies all widgets that single container has been displayed.
+     * @param stack 
+     */
+    didAppear(stack: UIStack) {
+        const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        flattedChilds.forEach(val => val._appearWidget());
     }
 
     /**
