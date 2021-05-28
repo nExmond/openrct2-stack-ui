@@ -24,6 +24,30 @@ class UITabProxy implements UIProxy<UITab> {
     _bind(ui: UITab) {
         this.ui = ui;
     }
+    
+    //Public
+
+    /**
+     * Modify and update the properties of the window.
+     * @param block update block
+     */
+    updateUI(block: (ui: UITab) => void) {
+        this.ui?.updateUI(block);
+    }
+
+    /**
+     * This function is called after the tab has been initialized.
+     */
+    didLoad(block: (ui: UITab) => void) {
+        this.ui?.didLoad(block);
+    }
+    
+    /**
+     * This function is called immediately after the tab is displayed.
+     */
+    didAppear(block: (ui: UITab) => void) {
+        this.ui?.didAppear(block);
+    }
 }
 
 /**

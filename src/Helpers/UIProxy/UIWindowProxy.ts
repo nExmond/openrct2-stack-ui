@@ -27,8 +27,55 @@ class UIWindowProxy implements UIProxy<UIWindow> {
 
     //Public
 
-    updateUI(block: ((ui: UIWindow) => void)) {
+    /**
+     * Shows a window on the screen.
+     * Initial data is set at this point.
+     */
+    show() {
+        this.ui?.show();
+    }
+
+    /**
+     * Modify and update the properties of the window.
+     * @param block update block
+     */
+    updateUI(block: (ui: UIWindow) => void) {
         this.ui?.updateUI(block);
+    }
+
+    /**
+     * This function is called after the window has been initialized.
+     */
+    didLoad(block: (ui: UIWindow) => void) {
+        this.ui?.didLoad(block);
+    }
+    
+    /**
+     * This function is called immediately after the window is displayed.
+     */
+    didAppear(block: (ui: UIWindow) => void) {
+        this.ui?.didAppear(block);
+    }
+
+    /**
+     * Execute the function when selecting a tab.
+     */
+    onTabChange(block: (ui: UIWindow, tabIndex: number) => void) {
+        this.ui?.onTabChange(block);
+    }
+
+    /**
+     * Execute the function when the window is closed.
+     */
+    onClose(block: (ui: UIWindow) => void) {
+        this.ui?.onClose(block);
+    }
+
+    /**
+     * Closes window
+     */
+    close() {
+        this.ui?.close();
     }
 }
 
