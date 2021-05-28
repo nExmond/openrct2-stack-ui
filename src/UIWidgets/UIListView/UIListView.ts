@@ -144,6 +144,14 @@ class UIListView extends UIWidget<ListViewWidget> {
     }
 
     /**
+     * Clear items.
+     */
+    clearAllItems(): this {
+        this._items = [];
+        return this;
+    }
+
+    /**
      * Selects cell
      */
     selectCell(row: number, column: number): this {
