@@ -106,17 +106,22 @@ class UIWidget<T extends Widget> {
     }
 
     /**
-     * ! If you get an error like the one below, you may have attempted to update the widget before the window opens.
-     * ! 'TypeError: cannot write property 'x' of undefined'
+     * ! If you get an error, you may have attempted an update before the widget is displayed.
      */
      protected _update(widget: T) {
-        widget.x = this._origin.x;
-        widget.y = this._origin.y;
-        widget.width = (this._size.width ?? 0) - 1;
-        widget.height = (this._size.height ?? 0) - 1;
-        widget.tooltip = this._tooltip;
-        widget.isDisabled = this._isDisabled;
-        widget.isVisible = this._isVisible;
+        if (widget) {
+            widget.x = this._origin.x;
+            widget.y = this._origin.y;
+            widget.width = (this._size.width ?? 0) - 1;
+            widget.height = (this._size.height ?? 0) - 1;
+            widget.tooltip = this._tooltip;
+            widget.isDisabled = this._isDisabled;
+            widget.isVisible = this._isVisible;
+        } else {
+            throw new Error(`You cannot change the properties of a widget that is not currently drawn on the screen!
+Please try again after the widget is displayed!
+${this.description()}`);
+        }
     }
 
     protected _buildBaseValues(): {} {
@@ -397,10 +402,8 @@ class UIWidget<T extends Widget> {
      * @returns description 
      */
     description(): string {
-        return `
-name: ${this._name}
+        return `name: ${this._name}
 origin: { x: ${this._origin.x}, y: ${this._origin.y} }
-size: { width: ${this._size.width}, height: ${this._size.height} }
-`;
+size: { width: ${this._size.width}, height: ${this._size.height} }`;
     }
 }
