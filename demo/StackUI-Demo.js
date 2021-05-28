@@ -38,7 +38,6 @@ var Window = function () {
     return window;
 };
 var ImageWindow = function () {
-    var _a, _b, _c, _d, _e, _f, _g;
     var window = UIWDP.$();
     var imageView1 = UIWP.$();
     var imageView2 = UIWP.$();
@@ -59,15 +58,13 @@ var ImageWindow = function () {
         .padding({ left: 4, right: 4 })), UICheckbox.$("isExpandable", true).bind(isExpandable)).bind(window)
         .spacing(2);
     function updateImageViews(block) {
-        var _a, _b, _c, _d;
-        (_a = imageView1.ui) === null || _a === void 0 ? void 0 : _a.updateUI(block);
-        (_b = imageView2.ui) === null || _b === void 0 ? void 0 : _b.updateUI(block);
-        (_c = imageView3.ui) === null || _c === void 0 ? void 0 : _c.updateUI(block);
-        (_d = imageView4.ui) === null || _d === void 0 ? void 0 : _d.updateUI(block);
+        imageView1.updateUI(block);
+        imageView2.updateUI(block);
+        imageView3.updateUI(block);
+        imageView4.updateUI(block);
     }
     function updateWindow(theme) {
-        var _a;
-        (_a = window.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+        window.updateUI(function (w) {
             var _a, _b, _c;
             var windowTheme = w.getTheme();
             w.theme({
@@ -77,7 +74,7 @@ var ImageWindow = function () {
             });
         });
     }
-    (_a = window.ui) === null || _a === void 0 ? void 0 : _a.didLoad(function (w) {
+    window.didLoad(function (w) {
         var _a, _b, _c;
         var theme = {
             primary: (_a = w.getUIWidget("primaryColorPicker")) === null || _a === void 0 ? void 0 : _a.getColor(),
@@ -105,47 +102,174 @@ var ImageWindow = function () {
         updateImageViews(function (w) { return w.theme({ tertiary: color }); });
         updateWindow({ tertiary: color });
     }
-    (_b = primaryColorpicker.ui) === null || _b === void 0 ? void 0 : _b.onChange(function (_) { return primaryColorpickerOnChange(); });
-    (_c = secondaryColorpicker.ui) === null || _c === void 0 ? void 0 : _c.onChange(function (_) { return secondaryColorpickerOnChange(); });
-    (_d = tertiaryColorpicker.ui) === null || _d === void 0 ? void 0 : _d.onChange(function (_) { return tertiaryColorpickerOnChange(); });
-    (_e = primaryTranslucent.ui) === null || _e === void 0 ? void 0 : _e.onChange(function (_) { return primaryColorpickerOnChange(); });
-    (_f = secondaryTranslucent.ui) === null || _f === void 0 ? void 0 : _f.onChange(function (_) { return secondaryColorpickerOnChange(); });
-    (_g = isExpandable.ui) === null || _g === void 0 ? void 0 : _g.onChange(function (_, isChecked) {
-        var _a;
-        (_a = window.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) { return w.isExpandable(isChecked); });
+    primaryColorpicker.onChange(function (_) { return primaryColorpickerOnChange(); });
+    secondaryColorpicker.onChange(function (_) { return secondaryColorpickerOnChange(); });
+    tertiaryColorpicker.onChange(function (_) { return tertiaryColorpickerOnChange(); });
+    primaryTranslucent.onChange(function (_) { return primaryColorpickerOnChange(); });
+    secondaryTranslucent.onChange(function (_) { return secondaryColorpickerOnChange(); });
+    isExpandable.onChange(function (_, isChecked) {
+        window.updateUI(function (w) { return w.isExpandable(isChecked); });
     });
     return window;
 };
 var ListWindow = function () {
     var window = UIWDP.$();
-    var createTab = function (usingColor, defaultColor, hireTargetTitle, hireCost, hireTargetInfo, tabImage) {
+    var tabs = __spreadArray([], Array(4)).map(function (_) { return UITP.$(); });
+    var lists = __spreadArray([], Array(4)).map(function (_) { return UIWP.$(); });
+    var counts = __spreadArray([], Array(4)).map(function (_) { return UIWP.$(); });
+    var createTab = function (usingColor, defaultColor, hireTargetTitle, hireCost, hireTargetInfo, tabImage, tag) {
         return UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(10), UIStack.$H(UILabel.$((1791).stringId()).isVisible(usingColor), UIColorPicker.$(defaultColor).isVisible(usingColor))), UISpacer.$(), UIStack.$V(UIButton.$(hireTargetTitle.stringId(), true)
             .occupiedSize({ width: 0 })
             .size({ width: 145 })
             .tooltip((1948).stringId()), UILabel.$((1858).stringId(hireCost))
-            .occupiedSize({ width: 0 })).offset({ x: -70, y: -29 }), UIStack.$H(UIButton.$I(UIImageDemolish)
+            .occupiedSize({ width: 0 })).offset({ x: -70, y: -29 }), UIStack.$H(UIToggleButton.$I(UIImageDemolish)
             .size(25)
-            .tooltip((5300).stringId()), UIButton.$I(UIImagePatrol)
+            .tooltip((5300).stringId()), UIToggleButton.$I(UIImagePatrol)
             .size(25)
             .tooltip((1947).stringId()), UIButton.$I(UIImageMap)
             .size(25)
-            .tooltip((2804).stringId()))), UIListView.$()
-            .offset({ y: -6 })["extends"]({ bottom: 6 }), UILabel.$((0 + " " + hireTargetInfo.stringId()).color(TextColor.Black))).image(tabImage);
+            .tooltip((2804).stringId()))), UIListView.$([
+            UIListViewColumn.$W("Name", 1),
+            UIListViewColumn.$F("Orders", 80),
+            UIListViewColumn.$W("Status", 2)
+        ]).bind(lists[tag])
+            .offset({ y: -6 })["extends"]({ bottom: 6 })
+            .scrollbarType(UIScrollbarType.Vertical), UILabel.$((0 + " " + hireTargetInfo.stringId()).color(TextColor.Black)).bind(counts[tag])
+            .size({ width: 200 })).bind(tabs[tag])
+            .image(tabImage);
     };
-    UIWindow.$T("StackUI Demo - List", createTab(true, UIColor.BrightRed, 1700, 500, 1859, UIImageTabStaffHandymen), createTab(true, UIColor.LightBlue, 1701, 800, 1860, UIImageTabStaffMechanics)
-        .minSize({ width: 300 }).maxSize({ width: 400 }), createTab(true, UIColor.Yellow, 1702, 600, 1861, UIImageTabStaffSecurityGuards)
-        .minSize({ width: 100, height: 300 }), createTab(false, UIColor.BrightRed, 1703, 550, 1862, UIImageTabStaffEntertainers)
-        .minSize({ height: 500 })).bind(window)
+    UIWindow.$T("StackUI Demo - List", createTab(true, UIColor.BrightRed, 1700, 500, 1859, UIImageTabStaffHandymen, 0), createTab(true, UIColor.LightBlue, 1701, 800, 1860, UIImageTabStaffMechanics, 1), createTab(true, UIColor.Yellow, 1702, 600, 1861, UIImageTabStaffSecurityGuards, 2), createTab(false, UIColor.BrightRed, 1703, 550, 1862, UIImageTabStaffEntertainers, 3)).bind(window)
         .padding({ left: 1, bottom: -3 })
         .theme({ secondary: UIColor.LightPurple })
-        .minSize({ width: 250 })
-        .maxSize({ width: 600, height: 600 })
+        .minSize({ width: 276, height: 270 })
+        .maxSize({ width: 500, height: 450 })
         .isExpandable(true)
         .spacing(2);
+    tabs[0].didLoad(function (w) {
+        console.log("tab 0 didLoad");
+    });
+    tabs[0].didAppear(function (w) {
+        console.log("tab 0 didAppear");
+        var refresh = function () {
+            var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
+            var handymans = staffs.filter(function (val) { return val.staffType === "handyman"; });
+            lists[0].updateUI(function (w) {
+                var items = handymans.map(function (val) {
+                    var name = val.name;
+                    var sweep = val.orders & 1 << 0 ? UIImageStaffOrdersSweeping.string() : "";
+                    var water = val.orders & 1 << 1 ? UIImageStaffOrdersWaterFlowers.string() : "";
+                    var tarsh = val.orders & 1 << 2 ? UIImageStaffOrdersEmptyBins.string() : "";
+                    var grass = val.orders & 1 << 3 ? UIImageStaffOrdersMowing.string() : "";
+                    var status = (1431).format(TextFormat.StringId);
+                    return UIListViewItem.$([name, "" + sweep + water + tarsh + grass, status]);
+                });
+                w.clearAllItems().addItems(items);
+            });
+            counts[0].updateUI(function (w) {
+                w.text((handymans.length + " " + (1859).stringId()).color(TextColor.Black));
+            });
+        };
+        context.subscribe("action.execute", function (event) {
+            if (event.action.includes("staff")) {
+                refresh();
+            }
+        });
+        refresh();
+    });
+    tabs[1].didLoad(function (w) {
+        console.log("tab 1 didLoad");
+    });
+    tabs[1].didAppear(function (w) {
+        console.log("tab 1 didAppear");
+        var refresh = function () {
+            var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
+            var mechanics = staffs.filter(function (val) { return val.staffType === "mechanic"; });
+            lists[1].updateUI(function (w) {
+                var items = mechanics.map(function (val) {
+                    var name = val.name;
+                    var inspect = val.orders & 1 << 0 ? UIImageStaffOrdersInspectRides.string() : "";
+                    var fix = val.orders & 1 << 1 ? UIImageStaffOrdersFixRides.string() : "";
+                    var status = (1431).format(TextFormat.StringId);
+                    return UIListViewItem.$([name, "" + inspect + fix, status]);
+                });
+                w.clearAllItems().addItems(items);
+            });
+            counts[1].updateUI(function (w) {
+                w.text((mechanics.length + " " + (1860).stringId()).color(TextColor.Black));
+            });
+        };
+        context.subscribe("action.execute", function (event) {
+            if (event.action.includes("staff")) {
+                refresh();
+            }
+        });
+        refresh();
+    });
+    tabs[2].didLoad(function (w) {
+        console.log("tab 2 didLoad");
+    });
+    tabs[2].didAppear(function (w) {
+        console.log("tab 2 didAppear");
+        var refresh = function () {
+            var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
+            var securites = staffs.filter(function (val) { return val.staffType === "security"; });
+            lists[2].updateUI(function (w) {
+                var items = securites.map(function (val) {
+                    var name = val.name;
+                    var status = (1431).format(TextFormat.StringId);
+                    return UIListViewItem.$([name, "", status]);
+                });
+                w.clearAllItems().addItems(items);
+            });
+            counts[2].updateUI(function (w) {
+                w.text((securites.length + " " + (1861).stringId()).color(TextColor.Black));
+            });
+        };
+        context.subscribe("action.execute", function (event) {
+            if (event.action.includes("staff")) {
+                refresh();
+            }
+        });
+        refresh();
+    });
+    tabs[3].didLoad(function (w) {
+        console.log("tab 3 didLoad");
+    });
+    tabs[3].didAppear(function (w) {
+        console.log("tab 3 didAppear");
+        var refresh = function () {
+            var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
+            var entertainers = staffs.filter(function (val) { return val.staffType === "entertainer"; });
+            console.log(entertainers);
+            lists[3].updateUI(function (w) {
+                var items = entertainers.map(function (val) {
+                    var name = val.name;
+                    var costume = UIImage.$(5118 + val.costume).string();
+                    var status = (1431).format(TextFormat.StringId);
+                    return UIListViewItem.$([name, costume, status]);
+                });
+                w.clearAllItems().addItems(items);
+            });
+            counts[3].updateUI(function (w) {
+                w.text((entertainers.length + " " + (1862).stringId()).color(TextColor.Black));
+            });
+        };
+        context.subscribe("action.execute", function (event) {
+            if (event.action.includes("staff")) {
+                refresh();
+            }
+        });
+        refresh();
+    });
+    window.didLoad(function (window) {
+        console.log("window didLoad");
+    });
+    window.didAppear(function (window) {
+        console.log("window didAppear");
+    });
     return window;
 };
 var ViewportWindow = function () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
     var window = UIWDP.$();
     var checkboxHide = UIWP.$();
     var checkboxRights = UIWP.$();
@@ -174,12 +298,11 @@ var ViewportWindow = function () {
         .isExpandable(true)
         .spacing(2);
     function updateFlags(isChecked) {
-        var _a;
         var flags = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             flags[_i - 1] = arguments[_i];
         }
-        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+        viewport.updateUI(function (w) {
             var current = w.getFlags();
             if (isChecked) {
                 w.flags(current | flags.reduce(function (acc, val) { return acc | val; }));
@@ -189,85 +312,80 @@ var ViewportWindow = function () {
             }
         });
     }
-    (_a = checkboxHide.ui) === null || _a === void 0 ? void 0 : _a.onChange(function (_, isChecked) {
+    checkboxHide.onChange(function (_, isChecked) {
         updateFlags(isChecked, UIViewportFlag.HideBase, UIViewportFlag.HideVertical);
     });
-    (_b = checkboxRights.ui) === null || _b === void 0 ? void 0 : _b.onChange(function (_, isChecked) {
+    checkboxRights.onChange(function (_, isChecked) {
         updateFlags(isChecked, UIViewportFlag.LandOwnership, UIViewportFlag.ConstructionRights);
     });
-    (_c = checkboxHeights.ui) === null || _c === void 0 ? void 0 : _c.onChange(function (_, isChecked) {
+    checkboxHeights.onChange(function (_, isChecked) {
         updateFlags(isChecked, UIViewportFlag.LandHeights, UIViewportFlag.TrackHeights, UIViewportFlag.PathHeights);
     });
-    (_d = checkboxSoundOn.ui) === null || _d === void 0 ? void 0 : _d.onChange(function (_, isChecked) {
+    checkboxSoundOn.onChange(function (_, isChecked) {
         updateFlags(isChecked, UIViewportFlag.SoundOn);
     });
-    (_e = checkboxInvisible.ui) === null || _e === void 0 ? void 0 : _e.onChange(function (_, isChecked) {
+    checkboxInvisible.onChange(function (_, isChecked) {
         updateFlags(isChecked, UIViewportFlag.InvisibleSupports, UIViewportFlag.InvisiblePeeps, UIViewportFlag.InvisibleSprites);
     });
-    (_f = checkboxSeethrough.ui) === null || _f === void 0 ? void 0 : _f.onChange(function (_, isChecked) {
+    checkboxSeethrough.onChange(function (_, isChecked) {
         updateFlags(isChecked, UIViewportFlag.SeethroughRides, UIViewportFlag.SeethroughScenery, UIViewportFlag.SeethroughPaths);
     });
-    (_g = checkboxClipView.ui) === null || _g === void 0 ? void 0 : _g.onChange(function (_, isChecked) {
+    checkboxClipView.onChange(function (_, isChecked) {
         updateFlags(isChecked, UIViewportFlag.ClipView);
     });
-    (_h = checkboxGuidelines.ui) === null || _h === void 0 ? void 0 : _h.onChange(function (_, isChecked) {
+    checkboxGuidelines.onChange(function (_, isChecked) {
         updateFlags(isChecked, UIViewportFlag.Gridlines);
     });
-    (_j = checkboxUndergroundInside.ui) === null || _j === void 0 ? void 0 : _j.onChange(function (_, isChecked) {
+    checkboxUndergroundInside.onChange(function (_, isChecked) {
         updateFlags(isChecked, UIViewportFlag.UndergroundInside);
     });
-    (_k = checkboxTransparentBackground.ui) === null || _k === void 0 ? void 0 : _k.onChange(function (_, isChecked) {
+    checkboxTransparentBackground.onChange(function (_, isChecked) {
         updateFlags(isChecked, UIViewportFlag.TransparentBackground);
     });
     function updateButton(zoom) {
-        var _a, _b;
         var inDisable = zoom == 0;
-        (_a = buttonZoomIn.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+        buttonZoomIn.updateUI(function (w) {
             w.isDisabled(inDisable);
         });
         var outDisable = zoom == 3;
-        (_b = buttonZoomOut.ui) === null || _b === void 0 ? void 0 : _b.updateUI(function (w) {
+        buttonZoomOut.updateUI(function (w) {
             w.isDisabled(outDisable);
         });
     }
-    (_l = viewport.ui) === null || _l === void 0 ? void 0 : _l.didLoad(function (w) {
+    viewport.didLoad(function (w) {
         updateButton(w.getZoom());
     });
-    (_m = buttonZoomIn.ui) === null || _m === void 0 ? void 0 : _m.onClick(function (_) {
-        var _a;
-        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+    buttonZoomIn.onClick(function (_) {
+        viewport.updateUI(function (w) {
             var nextScale = w.getZoom() - 1;
             w.zoom(nextScale);
             updateButton(nextScale);
         });
     });
-    (_o = buttonZoomOut.ui) === null || _o === void 0 ? void 0 : _o.onClick(function (_) {
-        var _a;
-        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+    buttonZoomOut.onClick(function (_) {
+        viewport.updateUI(function (w) {
             var nextScale = w.getZoom() + 1;
             w.zoom(nextScale);
             updateButton(nextScale);
         });
     });
-    (_p = buttonRocateM2C.ui) === null || _p === void 0 ? void 0 : _p.onClick(function (_) {
+    buttonRocateM2C.onClick(function (_) {
         var _a;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.mainViewportScrollToThis();
     });
-    (_q = buttonRotate.ui) === null || _q === void 0 ? void 0 : _q.onClick(function (_) {
-        var _a;
-        (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+    buttonRotate.onClick(function (_) {
+        viewport.updateUI(function (w) {
             var nextRotation = (w.getRotation() + 1) % 4;
             w.rotation(nextRotation);
         });
     });
-    (_r = buttonRocateC2M.ui) === null || _r === void 0 ? void 0 : _r.onClick(function (_) {
+    buttonRocateC2M.onClick(function (_) {
         var _a;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.moveToMainViewportCenter();
     });
     return window;
 };
 var BasicWindow = function () {
-    var _a, _b;
     var window = UIWDP.$();
     var buttonBasicTitle = UIWP.$();
     var buttonBasicImage = UIWP.$();
@@ -281,21 +399,19 @@ var BasicWindow = function () {
         UIImageAwardBestStaff
     ])).title("Paging")).title("Button"), UISpacer.$(10)).bind(window)
         .isExpandable(true);
-    (_a = buttonBasicTitle.ui) === null || _a === void 0 ? void 0 : _a.onClick(function () {
+    buttonBasicTitle.onClick(function () {
         buttonBasicImage.updateUI(function (w) {
             w.isDisabled(!w.getIsDisabled());
         });
     });
-    (_b = buttonToggleImage.ui) === null || _b === void 0 ? void 0 : _b.onClick(function () {
-        var _a;
-        (_a = buttonToggleTitle.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (w) {
+    buttonToggleImage.onClick(function () {
+        buttonToggleTitle.updateUI(function (w) {
             w.isVisible(!w.getIsVisible());
         });
     });
     return window;
 };
 var MainWindow = function () {
-    var _a, _b, _c, _d, _e;
     var window = UIWDP.$();
     var tab1 = UITP.$();
     var tab2 = UITP.$();
@@ -312,25 +428,20 @@ var MainWindow = function () {
         .isExpandable(true), UITab.$(UIImageView.$(UIImageMenuLogo), UIButton.$("Update").bind(updateTabButton)).bind(tab2)
         .title("StackUI Demo - 2")).bind(window)
         .spacing(2);
-    (_a = basicButton.ui) === null || _a === void 0 ? void 0 : _a.onClick(function (_) {
-        var _a;
-        (_a = basicWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
+    basicButton.onClick(function (_) {
+        basicWindow.show();
     });
-    (_b = viewportButton.ui) === null || _b === void 0 ? void 0 : _b.onClick(function (_) {
-        var _a;
-        (_a = viewportWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
+    viewportButton.onClick(function (_) {
+        viewportWindow.show();
     });
-    (_c = listButton.ui) === null || _c === void 0 ? void 0 : _c.onClick(function (_) {
-        var _a;
-        (_a = listWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
+    listButton.onClick(function (_) {
+        listWindow.show();
     });
-    (_d = imageButton.ui) === null || _d === void 0 ? void 0 : _d.onClick(function (_) {
-        var _a;
-        (_a = imageWindow.ui) === null || _a === void 0 ? void 0 : _a.show();
+    imageButton.onClick(function (_) {
+        imageWindow.show();
     });
-    (_e = updateTabButton.ui) === null || _e === void 0 ? void 0 : _e.onClick(function (_) {
-        var _a;
-        (_a = tab2.ui) === null || _a === void 0 ? void 0 : _a.updateUI(function (tab) {
+    updateTabButton.onClick(function (_) {
+        tab2.updateUI(function (tab) {
             tab.title("Updated!");
             tab.theme({ primary: UIColor.DarkBlue });
             tab.image(UIImageTabStaffOptions);
@@ -339,6 +450,12 @@ var MainWindow = function () {
             tab.spacing(8);
             tab.maxSize({ height: 600 });
         });
+    });
+    window.onClose(function (_) {
+        basicWindow.close();
+        viewportWindow.close();
+        listWindow.close();
+        imageWindow.close();
     });
     return window;
 };
@@ -349,11 +466,10 @@ var main = function () {
     }
     var window;
     ui.registerMenuItem("StackUI Demo", function () {
-        var _a;
         if (typeof window === "undefined") {
             window = MainWindow();
         }
-        (_a = window.ui) === null || _a === void 0 ? void 0 : _a.show();
+        window.show();
     });
 };
 registerPlugin({
@@ -1131,13 +1247,18 @@ var UIWidget = (function () {
     };
     UIWidget.prototype._update = function (widget) {
         var _a, _b;
-        widget.x = this._origin.x;
-        widget.y = this._origin.y;
-        widget.width = ((_a = this._size.width) !== null && _a !== void 0 ? _a : 0) - 1;
-        widget.height = ((_b = this._size.height) !== null && _b !== void 0 ? _b : 0) - 1;
-        widget.tooltip = this._tooltip;
-        widget.isDisabled = this._isDisabled;
-        widget.isVisible = this._isVisible;
+        if (widget) {
+            widget.x = this._origin.x;
+            widget.y = this._origin.y;
+            widget.width = ((_a = this._size.width) !== null && _a !== void 0 ? _a : 0) - 1;
+            widget.height = ((_b = this._size.height) !== null && _b !== void 0 ? _b : 0) - 1;
+            widget.tooltip = this._tooltip;
+            widget.isDisabled = this._isDisabled;
+            widget.isVisible = this._isVisible;
+        }
+        else {
+            throw new Error("You cannot change the properties of a widget that is not currently drawn on the screen!\nPlease try again after the widget is displayed!\n" + this.description());
+        }
     };
     UIWidget.prototype._buildBaseValues = function () {
         var _a, _b;
@@ -1159,6 +1280,10 @@ var UIWidget = (function () {
             _this._widget = widget;
         });
         (_a = this._didLoad) === null || _a === void 0 ? void 0 : _a.call(this, this);
+    };
+    UIWidget.prototype._appearWidget = function () {
+        var _a;
+        (_a = this._didAppear) === null || _a === void 0 ? void 0 : _a.call(this, this);
     };
     UIWidget.prototype._resetSize = function () {
         if (typeof this._initialSize !== "undefined") {
@@ -1350,8 +1475,12 @@ var UIWidget = (function () {
         this._didLoad = block;
         return this;
     };
+    UIWidget.prototype.didAppear = function (block) {
+        this._didAppear = block;
+        return this;
+    };
     UIWidget.prototype.description = function () {
-        return "\nname: " + this._name + "\norigin: { x: " + this._origin.x + ", y: " + this._origin.y + " }\nsize: { width: " + this._size.width + ", height: " + this._size.height + " }\n";
+        return "name: " + this._name + "\norigin: { x: " + this._origin.x + ", y: " + this._origin.y + " }\nsize: { width: " + this._size.width + ", height: " + this._size.height + " }";
     };
     return UIWidget;
 }());
@@ -1392,6 +1521,9 @@ var UITab = (function () {
     };
     UITab.prototype._getDidLoad = function () {
         return this._didLoad;
+    };
+    UITab.prototype._getDidAppear = function () {
+        return this._didAppear;
     };
     UITab.prototype._setInteractor = function (val) {
         this._interactor = val;
@@ -1497,6 +1629,10 @@ var UITab = (function () {
     };
     UITab.prototype.didLoad = function (block) {
         this._didLoad = block;
+        return this;
+    };
+    UITab.prototype.didAppear = function (block) {
+        this._didAppear = block;
         return this;
     };
     UITab.prototype.getUIWidget = function (name) {
@@ -1822,7 +1958,7 @@ var UIConstructor = (function () {
                 height: (_f = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.height) !== null && _f !== void 0 ? _f : maxSize.height
             };
             if (tabMaxSize.width < tabMinSize.width || tabMaxSize.height < tabMinSize.height) {
-                console.log("\nWARNING: UITab[" + i + "] maximum size is less than its minimum size!\nminSize: { width: " + tabMinSize.width + ", height: " + tabMinSize.height + " }\nmaxSize: { width: " + tabMaxSize.width + ", height: " + tabMaxSize.height + " }\nErrors can occur when resizing windows.\n");
+                console.log("WARNING: UITab[" + i + "] maximum size is less than its minimum size!\nminSize: { width: " + tabMinSize.width + ", height: " + tabMinSize.height + " }\nmaxSize: { width: " + tabMaxSize.width + ", height: " + tabMaxSize.height + " }\nErrors can occur when resizing windows.");
             }
         }
         var selectedTab = tabs[selectedIndex];
@@ -1881,6 +2017,15 @@ var UIConstructor = (function () {
         var flattedChilds = stack._getUIWidgets();
         flattedChilds.forEach(function (val) { return val._loadWidget(); });
     };
+    UIConstructor.prototype.didAppearTab = function (tab) {
+        var _a;
+        this.didLoad(tab._getContentView());
+        (_a = tab._getDidAppear()) === null || _a === void 0 ? void 0 : _a.call(tab, tab);
+    };
+    UIConstructor.prototype.didAppear = function (stack) {
+        var flattedChilds = stack._getUIWidgets();
+        flattedChilds.forEach(function (val) { return val._appearWidget(); });
+    };
     UIConstructor.prototype.refreshTab = function (tab, windowSize) {
         this.refresh(tab._getContentView(), windowSize, UIEdgeInsetsTabContainer);
     };
@@ -1910,6 +2055,18 @@ var UITabProxy = (function () {
     UITabProxy.prototype._bind = function (ui) {
         this.ui = ui;
     };
+    UITabProxy.prototype.updateUI = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.updateUI(block);
+    };
+    UITabProxy.prototype.didLoad = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didLoad(block);
+    };
+    UITabProxy.prototype.didAppear = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didAppear(block);
+    };
     return UITabProxy;
 }());
 var UITP = (function (_super) {
@@ -1932,6 +2089,36 @@ var UIWidgetProxy = (function () {
     UIWidgetProxy.prototype.updateUI = function (block) {
         var _a;
         (_a = this.ui) === null || _a === void 0 ? void 0 : _a.updateUI(block);
+    };
+    UIWidgetProxy.prototype.didLoad = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didLoad(block);
+    };
+    UIWidgetProxy.prototype.didAppear = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didAppear(block);
+    };
+    UIWidgetProxy.prototype.onClick = function (block) {
+        var anyUI = this.ui;
+        if (anyUI) {
+            if (anyUI.onClick) {
+                anyUI.onClick(block);
+            }
+            else {
+                throw new Error("There is no 'onClick' function in widget '" + anyUI.getName() + "'!");
+            }
+        }
+    };
+    UIWidgetProxy.prototype.onChange = function (block) {
+        var anyUI = this.ui;
+        if (anyUI) {
+            if (anyUI.onChange) {
+                anyUI.onChange(block);
+            }
+            else {
+                throw new Error("There is no 'onChange' function in widget '" + anyUI.getName() + "'!");
+            }
+        }
     };
     return UIWidgetProxy;
 }());
@@ -2133,7 +2320,7 @@ var UIWindow = (function () {
                 width: Math.max(Math.min(this._size.width, tabMaxSize_1.width), tabMinSize_1.width),
                 height: Math.max(Math.min(this._size.height, tabMaxSize_1.height), tabMinSize_1.height)
             };
-            this._uiConstructor.didLoadTabs(this._tabs);
+            this._uiConstructor.didAppearTab(currentTab_1);
             this._refresh(size);
             this.updateUI(function (window) {
                 var _a;
@@ -2203,7 +2390,7 @@ var UIWindow = (function () {
     };
     UIWindow.prototype.show = function () {
         var _this = this;
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
         if (this._isOpened()) {
             this.bringToFront();
             return this;
@@ -2301,6 +2488,14 @@ var UIWindow = (function () {
         }
         this._reflectResizingFromChild();
         (_k = this._didLoad) === null || _k === void 0 ? void 0 : _k.call(this, this);
+        if (typeof singlecontentView !== "undefined") {
+            this._uiConstructor.didAppear(singlecontentView);
+        }
+        if (typeof this._tabs !== "undefined") {
+            var selectedTab = this._tabs[this._selectedTabIndex];
+            this._uiConstructor.didAppearTab(selectedTab);
+        }
+        (_l = this._didAppear) === null || _l === void 0 ? void 0 : _l.call(this, this);
         return this;
     };
     UIWindow.prototype.updateUI = function (block) {
@@ -2433,6 +2628,10 @@ var UIWindow = (function () {
         this._didLoad = block;
         return this;
     };
+    UIWindow.prototype.didAppear = function (block) {
+        this._didAppear = block;
+        return this;
+    };
     UIWindow.prototype.getUITab = function (name) {
         var _a;
         return (_a = this._tabs) === null || _a === void 0 ? void 0 : _a.first(function (val) { return val.getName() === name; });
@@ -2462,9 +2661,33 @@ var UIWindowProxy = (function () {
     UIWindowProxy.prototype._bind = function (ui) {
         this.ui = ui;
     };
+    UIWindowProxy.prototype.show = function () {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.show();
+    };
     UIWindowProxy.prototype.updateUI = function (block) {
         var _a;
         (_a = this.ui) === null || _a === void 0 ? void 0 : _a.updateUI(block);
+    };
+    UIWindowProxy.prototype.didLoad = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didLoad(block);
+    };
+    UIWindowProxy.prototype.didAppear = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didAppear(block);
+    };
+    UIWindowProxy.prototype.onTabChange = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.onTabChange(block);
+    };
+    UIWindowProxy.prototype.onClose = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.onClose(block);
+    };
+    UIWindowProxy.prototype.close = function () {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.close();
     };
     return UIWindowProxy;
 }());
@@ -3830,6 +4053,10 @@ var UIListView = (function (_super) {
     };
     UIListView.prototype.addItems = function (val) {
         this._items = this._items.concat(val);
+        return this;
+    };
+    UIListView.prototype.clearAllItems = function () {
+        this._items = [];
         return this;
     };
     UIListView.prototype.selectCell = function (row, column) {

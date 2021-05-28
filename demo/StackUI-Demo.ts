@@ -1,5 +1,6 @@
 /// <reference path="../modules/openrct2.d.ts" />
 
+//Window template
 var Window = function (): UIWindowProxy {
 
     //Proxy
@@ -82,14 +83,14 @@ var ImageWindow = function (): UIWindowProxy {
 
     //Bind
     function updateImageViews(block: (widget: UIImageView) => void) {
-        imageView1.ui?.updateUI(block);
-        imageView2.ui?.updateUI(block);
-        imageView3.ui?.updateUI(block);
-        imageView4.ui?.updateUI(block);
+        imageView1.updateUI(block);
+        imageView2.updateUI(block);
+        imageView3.updateUI(block);
+        imageView4.updateUI(block);
     }
 
     function updateWindow(theme: UIWindowTheme) {
-        window.ui?.updateUI(w => {
+        window.updateUI(w => {
             const windowTheme = w.getTheme();
             w.theme({
                 primary: theme.primary ?? windowTheme.primary,
@@ -99,7 +100,7 @@ var ImageWindow = function (): UIWindowProxy {
         });
     }
 
-    window.ui?.didLoad(w => {
+    window.didLoad(w => {
         const theme = {
             primary: w.getUIWidget<UIColorPicker>("primaryColorPicker")?.getColor(),
             secondary: secondaryColorpicker.ui?.getColor(),
@@ -128,15 +129,15 @@ var ImageWindow = function (): UIWindowProxy {
         updateWindow({ tertiary: color });
     }
 
-    primaryColorpicker.ui?.onChange(_ => primaryColorpickerOnChange());
-    secondaryColorpicker.ui?.onChange(_ => secondaryColorpickerOnChange());
-    tertiaryColorpicker.ui?.onChange(_ => tertiaryColorpickerOnChange());
+    primaryColorpicker.onChange(_ => primaryColorpickerOnChange());
+    secondaryColorpicker.onChange(_ => secondaryColorpickerOnChange());
+    tertiaryColorpicker.onChange(_ => tertiaryColorpickerOnChange());
 
-    primaryTranslucent.ui?.onChange(_ => primaryColorpickerOnChange());
-    secondaryTranslucent.ui?.onChange(_ => secondaryColorpickerOnChange());
+    primaryTranslucent.onChange(_ => primaryColorpickerOnChange());
+    secondaryTranslucent.onChange(_ => secondaryColorpickerOnChange());
 
-    isExpandable.ui?.onChange((_, isChecked) => {
-        window.ui?.updateUI(w => w.isExpandable(isChecked));
+    isExpandable.onChange((_, isChecked) => {
+        window.updateUI(w => w.isExpandable(isChecked));
     });
 
 
@@ -147,6 +148,9 @@ var ListWindow = function (): UIWindowProxy {
 
     //Proxy
     const window = UIWDP.$();
+    const tabs = [...Array(4)].map(_ => UITP.$());
+    const lists = [...Array(4)].map(_ => UIWP.$<UIListView>());
+    const counts = [...Array(4)].map(_ => UIWP.$<UILabel>());
 
     var createTab = (
         usingColor: boolean,
@@ -154,7 +158,8 @@ var ListWindow = function (): UIWindowProxy {
         hireTargetTitle: number,
         hireCost: number,
         hireTargetInfo: number,
-        tabImage: UIImage
+        tabImage: UIImage,
+        tag: number,
     ): UITab => {
         return UITab.$(
             UIStack.$H(
@@ -175,10 +180,10 @@ var ListWindow = function (): UIWindowProxy {
                         .occupiedSize({ width: 0 })
                 ).offset({ x: -70, y: -29 }),
                 UIStack.$H(
-                    UIButton.$I(UIImageDemolish)
+                    UIToggleButton.$I(UIImageDemolish)
                         .size(25)
                         .tooltip((5300).stringId()),
-                    UIButton.$I(UIImagePatrol)
+                    UIToggleButton.$I(UIImagePatrol)
                         .size(25)
                         .tooltip((1947).stringId()),
                     UIButton.$I(UIImageMap)
@@ -186,32 +191,176 @@ var ListWindow = function (): UIWindowProxy {
                         .tooltip((2804).stringId())
                 )
             ),
-            UIListView.$()
+            UIListView.$([
+                UIListViewColumn.$W("Name", 1),
+                UIListViewColumn.$F("Orders", 80),
+                UIListViewColumn.$W("Status", 2)
+            ]).bind(lists[tag])
                 .offset({ y: -6 })
-                .extends({ bottom: 6 }),
-            UILabel.$(`${0} ${hireTargetInfo.stringId()}`.color(TextColor.Black))
-        ).image(tabImage)
+                .extends({ bottom: 6 })
+                .scrollbarType(UIScrollbarType.Vertical),
+            UILabel.$(`${0} ${hireTargetInfo.stringId()}`.color(TextColor.Black)).bind(counts[tag])
+                .size({ width: 200 })
+        ).bind(tabs[tag])
+        .image(tabImage)
     }
 
     //Construct
     UIWindow.$T("StackUI Demo - List",
-        createTab(true, UIColor.BrightRed, 1700, 500, 1859, UIImageTabStaffHandymen),
-        createTab(true, UIColor.LightBlue, 1701, 800, 1860, UIImageTabStaffMechanics)
-            .minSize({ width: 300 }).maxSize({ width: 400 }),
-        createTab(true, UIColor.Yellow, 1702, 600, 1861, UIImageTabStaffSecurityGuards)
-            .minSize({ width: 100, height: 300 }),
-        createTab(false, UIColor.BrightRed, 1703, 550, 1862, UIImageTabStaffEntertainers)
-            .minSize({ height: 500 })
+        createTab(true, UIColor.BrightRed, 1700, 500, 1859, UIImageTabStaffHandymen, 0),
+        createTab(true, UIColor.LightBlue, 1701, 800, 1860, UIImageTabStaffMechanics, 1),
+        createTab(true, UIColor.Yellow, 1702, 600, 1861, UIImageTabStaffSecurityGuards, 2),
+        createTab(false, UIColor.BrightRed, 1703, 550, 1862, UIImageTabStaffEntertainers, 3)
     ).bind(window)
         .padding({ left: 1, bottom: -3 })
         .theme({ secondary: UIColor.LightPurple })
-        .minSize({ width: 250 })
-        .maxSize({ width: 600, height: 600 })
+        .minSize({ width: 276, height: 270 })
+        .maxSize({ width: 500, height: 450 })
         .isExpandable(true)
         .spacing(2)
 
     //Bind
+    tabs[0].didLoad(w => {
+        console.log("tab 0 didLoad");
+    });
+    tabs[0].didAppear(w => {
+        console.log("tab 0 didAppear");
 
+        var refresh = () => {
+            const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
+            const handymans = staffs.filter(val => val.staffType === "handyman")
+
+            lists[0].updateUI(w => {
+                const items = handymans.map(val => {
+                    const name = val.name;
+                    const sweep = val.orders & 1 << 0 ? UIImageStaffOrdersSweeping.string() : "";
+                    const water = val.orders & 1 << 1 ? UIImageStaffOrdersWaterFlowers.string() : "";
+                    const tarsh = val.orders & 1 << 2 ? UIImageStaffOrdersEmptyBins.string() : "";
+                    const grass = val.orders & 1 << 3 ? UIImageStaffOrdersMowing.string() : "";
+                    const status = (1431).format(TextFormat.StringId);//val.getFlag("slowWalk")
+                    return UIListViewItem.$([name, `${sweep}${water}${tarsh}${grass}`, status]);
+                });
+                w.clearAllItems().addItems(items);
+            });
+            counts[0].updateUI(w => {
+                w.text(`${handymans.length} ${(1859).stringId()}`.color(TextColor.Black));
+            });
+        }
+
+        context.subscribe("action.execute", (event) => {
+            if (event.action.includes("staff")) {
+                refresh();
+            }
+        });
+
+        refresh();
+    });
+
+    tabs[1].didLoad(w => {
+        console.log("tab 1 didLoad");
+    });
+    tabs[1].didAppear(w => {
+        console.log("tab 1 didAppear");
+
+        var refresh = () => {
+            const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
+            const mechanics = staffs.filter(val => val.staffType === "mechanic");
+
+            lists[1].updateUI(w => {
+                const items = mechanics.map(val => {
+                    const name = val.name;
+                    const inspect = val.orders & 1 << 0 ? UIImageStaffOrdersInspectRides.string() : "";
+                    const fix = val.orders & 1 << 1 ? UIImageStaffOrdersFixRides.string() : "";
+                    const status = (1431).format(TextFormat.StringId);//val.getFlag("slowWalk")
+                    return UIListViewItem.$([name, `${inspect}${fix}`, status]);
+                });
+                w.clearAllItems().addItems(items);
+            });
+            counts[1].updateUI(w => {
+                w.text(`${mechanics.length} ${(1860).stringId()}`.color(TextColor.Black));
+            });
+        }
+
+        context.subscribe("action.execute", (event) => {
+            if (event.action.includes("staff")) {
+                refresh();
+            }
+        });
+
+        refresh();
+    });
+
+    tabs[2].didLoad(w => {
+        console.log("tab 2 didLoad");
+    });
+    tabs[2].didAppear(w => {
+        console.log("tab 2 didAppear");
+        
+        var refresh = () => {
+            const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
+            const securites = staffs.filter(val => val.staffType === "security");
+
+            lists[2].updateUI(w => {
+                const items = securites.map(val => {
+                    const name = val.name;
+                    const status = (1431).format(TextFormat.StringId);//val.getFlag("slowWalk")
+                    return UIListViewItem.$([name, "", status]);
+                });
+                w.clearAllItems().addItems(items);
+            });
+            counts[2].updateUI(w => {
+                w.text(`${securites.length} ${(1861).stringId()}`.color(TextColor.Black));
+            });
+        }
+
+        context.subscribe("action.execute", (event) => {
+            if (event.action.includes("staff")) {
+                refresh();
+            }
+        });
+
+        refresh();
+    });
+
+    tabs[3].didLoad(w => {
+        console.log("tab 3 didLoad");
+    });
+    tabs[3].didAppear(w => {
+        console.log("tab 3 didAppear");
+        
+        var refresh = () => {
+            const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
+            const entertainers = staffs.filter(val => val.staffType === "entertainer");
+            console.log(entertainers)
+            lists[3].updateUI(w => {
+                const items = entertainers.map(val => {
+                    const name = val.name;
+                    const costume = UIImage.$(5118 + val.costume).string();
+                    const status = (1431).format(TextFormat.StringId);//val.getFlag("slowWalk")
+                    return UIListViewItem.$([name, costume, status]);
+                });
+                w.clearAllItems().addItems(items);
+            });
+            counts[3].updateUI(w => {
+                w.text(`${entertainers.length} ${(1862).stringId()}`.color(TextColor.Black));
+            });
+        }
+
+        context.subscribe("action.execute", (event) => {
+            if (event.action.includes("staff")) {
+                refresh();
+            }
+        });
+
+        refresh();
+    });
+
+    window.didLoad(window => {
+        console.log("window didLoad");
+    });
+    window.didAppear(window => {
+        console.log("window didAppear");
+    });
 
     return window;
 }
@@ -297,7 +446,7 @@ var ViewportWindow = function (): UIWindowProxy {
 
     //Bind
     function updateFlags(isChecked: boolean, ...flags: UIViewportFlag[]) {
-        viewport.ui?.updateUI(w => {
+        viewport.updateUI(w => {
             const current = w.getFlags();
             if (isChecked) {
                 w.flags(current | flags.reduce((acc, val) => acc | val));
@@ -307,60 +456,60 @@ var ViewportWindow = function (): UIWindowProxy {
         });
     }
 
-    checkboxHide.ui?.onChange((_, isChecked) => {
+    checkboxHide.onChange((_, isChecked) => {
         updateFlags(isChecked,
             UIViewportFlag.HideBase,
             UIViewportFlag.HideVertical
         );
     });
-    checkboxRights.ui?.onChange((_, isChecked) => {
+    checkboxRights.onChange((_, isChecked) => {
         updateFlags(isChecked,
             UIViewportFlag.LandOwnership,
             UIViewportFlag.ConstructionRights
         );
     });
-    checkboxHeights.ui?.onChange((_, isChecked) => {
+    checkboxHeights.onChange((_, isChecked) => {
         updateFlags(isChecked,
             UIViewportFlag.LandHeights,
             UIViewportFlag.TrackHeights,
             UIViewportFlag.PathHeights
         );
     });
-    checkboxSoundOn.ui?.onChange((_, isChecked) => {
+    checkboxSoundOn.onChange((_, isChecked) => {
         updateFlags(isChecked,
             UIViewportFlag.SoundOn
         );
     });
-    checkboxInvisible.ui?.onChange((_, isChecked) => {
+    checkboxInvisible.onChange((_, isChecked) => {
         updateFlags(isChecked,
             UIViewportFlag.InvisibleSupports,
             UIViewportFlag.InvisiblePeeps,
             UIViewportFlag.InvisibleSprites
         );
     });
-    checkboxSeethrough.ui?.onChange((_, isChecked) => {
+    checkboxSeethrough.onChange((_, isChecked) => {
         updateFlags(isChecked,
             UIViewportFlag.SeethroughRides,
             UIViewportFlag.SeethroughScenery,
             UIViewportFlag.SeethroughPaths
         );
     });
-    checkboxClipView.ui?.onChange((_, isChecked) => {
+    checkboxClipView.onChange((_, isChecked) => {
         updateFlags(isChecked,
             UIViewportFlag.ClipView
         );
     });
-    checkboxGuidelines.ui?.onChange((_, isChecked) => {
+    checkboxGuidelines.onChange((_, isChecked) => {
         updateFlags(isChecked,
             UIViewportFlag.Gridlines
         );
     });
-    checkboxUndergroundInside.ui?.onChange((_, isChecked) => {
+    checkboxUndergroundInside.onChange((_, isChecked) => {
         updateFlags(isChecked,
             UIViewportFlag.UndergroundInside
         );
     });
-    checkboxTransparentBackground.ui?.onChange((_, isChecked) => {
+    checkboxTransparentBackground.onChange((_, isChecked) => {
         updateFlags(isChecked,
             UIViewportFlag.TransparentBackground
         );
@@ -368,43 +517,43 @@ var ViewportWindow = function (): UIWindowProxy {
 
     function updateButton(zoom: UIViewportScale) {
         const inDisable = zoom == 0;
-        buttonZoomIn.ui?.updateUI(w => {
+        buttonZoomIn.updateUI(w => {
             w.isDisabled(inDisable);
         });
         const outDisable = zoom == 3;
-        buttonZoomOut.ui?.updateUI(w => {
+        buttonZoomOut.updateUI(w => {
             w.isDisabled(outDisable);
         });
     }
 
-    viewport.ui?.didLoad(w => {
+    viewport.didLoad(w => {
         updateButton(w.getZoom());
     });
 
-    buttonZoomIn.ui?.onClick(_ => {
-        viewport.ui?.updateUI(w => {
+    buttonZoomIn.onClick(_ => {
+        viewport.updateUI(w => {
             const nextScale = w.getZoom() - 1;
             w.zoom(nextScale);
             updateButton(nextScale);
         });
     });
-    buttonZoomOut.ui?.onClick(_ => {
-        viewport.ui?.updateUI(w => {
+    buttonZoomOut.onClick(_ => {
+        viewport.updateUI(w => {
             const nextScale = w.getZoom() + 1;
             w.zoom(nextScale);
             updateButton(nextScale);
         });
     });
-    buttonRocateM2C.ui?.onClick(_ => {
+    buttonRocateM2C.onClick(_ => {
         viewport.ui?.mainViewportScrollToThis();
     });
-    buttonRotate.ui?.onClick(_ => {
-        viewport.ui?.updateUI(w => {
+    buttonRotate.onClick(_ => {
+        viewport.updateUI(w => {
             const nextRotation = (w.getRotation() + 1) % 4;
             w.rotation(nextRotation);
         });
     });
-    buttonRocateC2M.ui?.onClick(_ => {
+    buttonRocateC2M.onClick(_ => {
         viewport.ui?.moveToMainViewportCenter();
     });
 
@@ -498,14 +647,14 @@ var BasicWindow = function (): UIWindowProxy {
 
 
     //Bind
-    buttonBasicTitle.ui?.onClick(() => {
+    buttonBasicTitle.onClick(() => {
         buttonBasicImage.updateUI(w => {
             w.isDisabled(!w.getIsDisabled());
         });
     });
 
-    buttonToggleImage.ui?.onClick(() => {
-        buttonToggleTitle.ui?.updateUI(w => {
+    buttonToggleImage.onClick(() => {
+        buttonToggleTitle.updateUI(w => {
             w.isVisible(!w.getIsVisible());
         });
     });
@@ -554,20 +703,20 @@ var MainWindow = function (): UIWindowProxy {
         .spacing(2)
 
     //Bind
-    basicButton.ui?.onClick(_ => {
-        basicWindow.ui?.show();
+    basicButton.onClick(_ => {
+        basicWindow.show();
     });
-    viewportButton.ui?.onClick(_ => {
-        viewportWindow.ui?.show();
+    viewportButton.onClick(_ => {
+        viewportWindow.show();
     });
-    listButton.ui?.onClick(_ => {
-        listWindow.ui?.show();
+    listButton.onClick(_ => {
+        listWindow.show();
     });
-    imageButton.ui?.onClick(_ => {
-        imageWindow.ui?.show();
+    imageButton.onClick(_ => {
+        imageWindow.show();
     });
-    updateTabButton.ui?.onClick(_ => {
-        tab2.ui?.updateUI(tab => {
+    updateTabButton.onClick(_ => {
+        tab2.updateUI(tab => {
             tab.title("Updated!");
             tab.theme({ primary: UIColor.DarkBlue });
             tab.image(UIImageTabStaffOptions);
@@ -576,6 +725,13 @@ var MainWindow = function (): UIWindowProxy {
             tab.spacing(8);
             tab.maxSize({ height: 600 });
         });
+    });
+
+    window.onClose(_ => {
+        basicWindow.close();
+        viewportWindow.close();
+        listWindow.close();
+        imageWindow.close();
     });
 
     return window;
@@ -597,7 +753,7 @@ var main = function () {
         if (typeof window === "undefined") {
             window = MainWindow();
         }
-        window.ui?.show();
+        window.show();
     });
 }
 
