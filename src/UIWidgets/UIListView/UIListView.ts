@@ -6,7 +6,7 @@
 /**
  * Widget that displays a multicolumn list.
  */
-class UIListView extends UIWidget<ListView> {
+class UIListView extends UIWidget<ListViewWidget> {
 
     protected _scrollbarType: UIScrollbarType = UIScrollbarType.None;
     protected _isStriped: boolean = false;
@@ -62,7 +62,7 @@ class UIListView extends UIWidget<ListView> {
         }
     }
 
-    protected _update(widget: ListView) {
+    protected _update(widget: ListViewWidget) {
         super._update(widget);
         widget.scrollbars = this._scrollbarType;
         widget.isStriped = this._isStriped;
@@ -185,7 +185,7 @@ class UIListView extends UIWidget<ListView> {
      * Gets highlighted cell info
      */
     getHighlightedCell(): RowColumn | undefined {
-        const widget: ListView = this._widget;
+        const widget: ListViewWidget = this._widget;
         return widget.highlightedCell;
     }
 
