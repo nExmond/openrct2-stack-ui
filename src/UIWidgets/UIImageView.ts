@@ -77,7 +77,11 @@ class UIImageView extends UIWidget<CustomWidget> {
             this._image = image;
         }
         const size = this._image.size();
-        this.size(size);
+        const corretedSize = {
+            width: size.width + 2,
+            height: size.height + 1
+        }
+        this.size(corretedSize);
 
         // intervalHelper.end(this._name);
         // if (this._image._isAnimatable()) {

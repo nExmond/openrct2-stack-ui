@@ -3322,7 +3322,11 @@ var UIImageView = (function (_super) {
             this._image = image;
         }
         var size = this._image.size();
-        this.size(size);
+        var corretedSize = {
+            width: size.width + 2,
+            height: size.height + 1
+        };
+        this.size(corretedSize);
         return this;
     };
     UIImageView.prototype.getImage = function () {
