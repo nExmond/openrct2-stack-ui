@@ -86,6 +86,14 @@ class UITab {
         this._interactor = val;
     }
 
+    _getMinSize(): UIOptionalSize | undefined {
+        return this._minSize;
+    }
+
+    _getMaxSize(): UIOptionalSize | undefined {
+        return this._maxSize;
+    }
+
     //Public
 
     /**
@@ -180,10 +188,6 @@ class UITab {
         return this._originalMinSize;
     }
 
-    _getMinSize(): UIOptionalSize | undefined {
-        return this._minSize;
-    }
-
     /**
      * Set the maximum size of the window in tab.
      * If not set, the window's maximum size is followed.
@@ -199,10 +203,6 @@ class UITab {
 
     getMaxSize(): UIOptionalSize | undefined {
         return this._originalMaxSize;
-    }
-
-    _getMaxSize(): UIOptionalSize | undefined {
-        return this._maxSize;
     }
 
     /**

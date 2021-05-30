@@ -31,7 +31,7 @@ class UITabProxy implements UIProxy<UITab> {
      * Modify and update the properties of the window.
      * @param block update block
      */
-    updateUI(block: (ui: UITab) => void) {
+    updateUI(block: ((ui: UITab) => void) | undefined = undefined) {
         this.ui?.updateUI(block);
     }
 

@@ -696,11 +696,12 @@ var MainWindow = function (): UIWindowProxy {
             .isExpandable(true),
         UITab.$(
             UIImageView.$(UIImageMenuLogo),
-            UIButton.$("Update").bind(updateTabButton),
+            UIButton.$("Update and move to first tab").bind(updateTabButton)
         ).bind(tab2)
             .title("StackUI Demo - 2")
     ).bind(window)
         .spacing(2)
+        .origin({ x: ui.width / 2, y: ui.height / 4 });
 
     //Bind
     basicButton.onClick(_ => {
@@ -715,15 +716,21 @@ var MainWindow = function (): UIWindowProxy {
     imageButton.onClick(_ => {
         imageWindow.show();
     });
-    updateTabButton.onClick(_ => {
+    updateTabButton.onClick(w => {
         tab2.updateUI(tab => {
             tab.title("Updated!");
             tab.theme({ primary: UIColor.DarkBlue });
             tab.image(UIImageTabStaffOptions);
             tab.isExpandable(true);
-            tab.padding(8);
+            tab.padding(10);
             tab.spacing(8);
             tab.maxSize({ height: 600 });
+        });
+        w.updateUI(_ => {
+            w.title("Move to first tab")
+        });
+        window.updateUI(window => {
+            window.selectedTabIndex(0);
         });
     });
 
@@ -747,13 +754,20 @@ var main = function () {
     }
 
     var window: UIWindowProxy | undefined;
-
-    // Add a menu item under the map icon on the top toolbar
-    ui.registerMenuItem("StackUI Demo", function () {
+    var show = () => {
         if (typeof window === "undefined") {
             window = MainWindow();
         }
         window.show();
+    }
+
+    // Add a menu item under the map icon on the top toolbar
+    ui.registerMenuItem("StackUI Demo", show);
+    ui.registerShortcut({
+        id: "stackui.demo",
+        text: "StackUI Demo",
+        bindings: ["ALT+S+D"],
+        callback: show
     });
 }
 

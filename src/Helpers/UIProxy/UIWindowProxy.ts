@@ -39,7 +39,7 @@ class UIWindowProxy implements UIProxy<UIWindow> {
      * Modify and update the properties of the window.
      * @param block update block
      */
-    updateUI(block: (ui: UIWindow) => void) {
+    updateUI(block: ((ui: UIWindow) => void) | undefined = undefined) {
         this.ui?.updateUI(block);
     }
 

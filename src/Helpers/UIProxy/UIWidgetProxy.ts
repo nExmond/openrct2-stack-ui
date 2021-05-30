@@ -33,7 +33,7 @@ class UIWidgetProxy<T extends UIWidget<any>> implements UIProxy<T> {
      * * If you change the property without using the update block, it will be reflected in the next update.
      * @param block update block
      */
-    updateUI(block: (ui: T) => void) {
+    updateUI(block: ((ui: T) => void) | undefined = undefined) {
         this.ui?.updateUI(block);
     }
 
