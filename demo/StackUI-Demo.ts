@@ -202,7 +202,7 @@ var ListWindow = function (): UIWindowProxy {
             UILabel.$(`${0} ${hireTargetInfo.stringId()}`.color(TextColor.Black)).bind(counts[tag])
                 .size({ width: 200 })
         ).bind(tabs[tag])
-        .image(tabImage)
+            .image(tabImage)
     }
 
     //Construct
@@ -295,7 +295,7 @@ var ListWindow = function (): UIWindowProxy {
     });
     tabs[2].didAppear(w => {
         console.log("tab 2 didAppear");
-        
+
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
             const securites = staffs.filter(val => val.staffType === "security");
@@ -327,7 +327,7 @@ var ListWindow = function (): UIWindowProxy {
     });
     tabs[3].didAppear(w => {
         console.log("tab 3 didAppear");
-        
+
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
             const entertainers = staffs.filter(val => val.staffType === "entertainer");
@@ -669,6 +669,9 @@ var MainWindow = function (): UIWindowProxy {
     const window = UIWDP.$();
     const tab1 = UITP.$();
     const tab2 = UITP.$();
+    const tab3 = UITP.$();
+    const tab4 = UITP.$();
+    const tab5 = UITP.$();
 
     const basicButton = UIWP.$<UIButton>();
     const basicWindow = BasicWindow();
@@ -682,6 +685,14 @@ var MainWindow = function (): UIWindowProxy {
     const imageButton = UIWP.$<UIButton>();
     const imageWindow = ImageWindow();
 
+    const tabVisibleCheckbox1_1 = UIWP.$<UICheckbox>();
+    const tabVisibleCheckbox1_2 = UIWP.$<UICheckbox>();
+    const tabVisibleCheckbox1_3 = UIWP.$<UICheckbox>();
+    const tabVisibleCheckbox1_4 = UIWP.$<UICheckbox>();
+    const tabVisibleButton1 = UIWP.$<UIButton>();
+    const tabVisibleButton2 = UIWP.$<UIButton>();
+    const tabVisibleButton3 = UIWP.$<UIButton>();
+
     const updateTabButton = UIWP.$<UIButton>();
 
     //Construct
@@ -691,6 +702,11 @@ var MainWindow = function (): UIWindowProxy {
             UIButton.$("Viewport").bind(viewportButton),
             UIButton.$("List").bind(listButton),
             UIButton.$("Image").bind(imageButton),
+            UISpacer.$(8),
+            UICheckbox.$("isHidden of tab2").bind(tabVisibleCheckbox1_1),
+            UICheckbox.$("isHidden of tab3").bind(tabVisibleCheckbox1_2),
+            UICheckbox.$("isHidden of tab4").bind(tabVisibleCheckbox1_3),
+            UICheckbox.$("isHidden of tab5").bind(tabVisibleCheckbox1_4),
             UISpacer.$(10)
         ).bind(tab1)
             .isExpandable(true),
@@ -698,7 +714,19 @@ var MainWindow = function (): UIWindowProxy {
             UIImageView.$(UIImageMenuLogo),
             UIButton.$("Update and move to first tab").bind(updateTabButton)
         ).bind(tab2)
-            .title("StackUI Demo - 2")
+            .title("StackUI Demo - 2"),
+        UITab.$(
+            UIButton.$("Hide this tab").bind(tabVisibleButton1)
+        ).bind(tab3)
+            .image(UIImageTabTimer),
+        UITab.$(
+            UIButton.$("Hide this tab").bind(tabVisibleButton2)
+        ).bind(tab4)
+            .image(UIImageTabPaint),
+        UITab.$(
+            UIButton.$("Hide this tab").bind(tabVisibleButton3)
+        ).bind(tab5)
+            .image(UIImageTabMusic)
     ).bind(window)
         .spacing(2)
         .origin({ x: ui.width / 2, y: ui.height / 4 });
@@ -715,6 +743,44 @@ var MainWindow = function (): UIWindowProxy {
     });
     imageButton.onClick(_ => {
         imageWindow.show();
+    });
+    tabVisibleCheckbox1_1.onChange((_, isChecked: boolean) => {
+        tab2.updateUI(tab => {
+            tab.isHidden(isChecked);
+        });
+    });
+    tabVisibleCheckbox1_2.onChange((_, isChecked: boolean) => {
+        tab3.updateUI(tab => {
+            tab.isHidden(isChecked);
+        });
+    });
+    tabVisibleCheckbox1_3.onChange((_, isChecked: boolean) => {
+        tab4.updateUI(tab => {
+            tab.isHidden(isChecked);
+        });
+    });
+    tabVisibleCheckbox1_4.onChange((_, isChecked: boolean) => {
+        tab5.updateUI(tab => {
+            tab.isHidden(isChecked);
+        });
+    });
+    tabVisibleButton1.onClick(_ => {
+        tab3.updateUI(tab => {
+            tab.isHidden(true);
+        });
+        tabVisibleCheckbox1_2.ui?.isChecked(true);
+    });
+    tabVisibleButton2.onClick(_ => {
+        tab4.updateUI(tab => {
+            tab.isHidden(true);
+        });
+        tabVisibleCheckbox1_3.ui?.isChecked(true);
+    });
+    tabVisibleButton3.onClick(_ => {
+        tab5.updateUI(tab => {
+            tab.isHidden(true);
+        });
+        tabVisibleCheckbox1_4.ui?.isChecked(true);
     });
     updateTabButton.onClick(w => {
         tab2.updateUI(tab => {

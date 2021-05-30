@@ -415,6 +415,9 @@ var MainWindow = function () {
     var window = UIWDP.$();
     var tab1 = UITP.$();
     var tab2 = UITP.$();
+    var tab3 = UITP.$();
+    var tab4 = UITP.$();
+    var tab5 = UITP.$();
     var basicButton = UIWP.$();
     var basicWindow = BasicWindow();
     var viewportButton = UIWP.$();
@@ -423,10 +426,20 @@ var MainWindow = function () {
     var listWindow = ListWindow();
     var imageButton = UIWP.$();
     var imageWindow = ImageWindow();
+    var tabVisibleCheckbox1_1 = UIWP.$();
+    var tabVisibleCheckbox1_2 = UIWP.$();
+    var tabVisibleCheckbox1_3 = UIWP.$();
+    var tabVisibleCheckbox1_4 = UIWP.$();
+    var tabVisibleButton1 = UIWP.$();
+    var tabVisibleButton2 = UIWP.$();
+    var tabVisibleButton3 = UIWP.$();
     var updateTabButton = UIWP.$();
-    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("List").bind(listButton), UIButton.$("Image").bind(imageButton), UISpacer.$(10)).bind(tab1)
+    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("List").bind(listButton), UIButton.$("Image").bind(imageButton), UISpacer.$(8), UICheckbox.$("isHidden of tab2").bind(tabVisibleCheckbox1_1), UICheckbox.$("isHidden of tab3").bind(tabVisibleCheckbox1_2), UICheckbox.$("isHidden of tab4").bind(tabVisibleCheckbox1_3), UICheckbox.$("isHidden of tab5").bind(tabVisibleCheckbox1_4), UISpacer.$(10)).bind(tab1)
         .isExpandable(true), UITab.$(UIImageView.$(UIImageMenuLogo), UIButton.$("Update and move to first tab").bind(updateTabButton)).bind(tab2)
-        .title("StackUI Demo - 2")).bind(window)
+        .title("StackUI Demo - 2"), UITab.$(UIButton.$("Hide this tab").bind(tabVisibleButton1)).bind(tab3)
+        .image(UIImageTabTimer), UITab.$(UIButton.$("Hide this tab").bind(tabVisibleButton2)).bind(tab4)
+        .image(UIImageTabPaint), UITab.$(UIButton.$("Hide this tab").bind(tabVisibleButton3)).bind(tab5)
+        .image(UIImageTabMusic)).bind(window)
         .spacing(2)
         .origin({ x: ui.width / 2, y: ui.height / 4 });
     basicButton.onClick(function (_) {
@@ -440,6 +453,47 @@ var MainWindow = function () {
     });
     imageButton.onClick(function (_) {
         imageWindow.show();
+    });
+    tabVisibleCheckbox1_1.onChange(function (_, isChecked) {
+        tab2.updateUI(function (tab) {
+            tab.isHidden(isChecked);
+        });
+    });
+    tabVisibleCheckbox1_2.onChange(function (_, isChecked) {
+        tab3.updateUI(function (tab) {
+            tab.isHidden(isChecked);
+        });
+    });
+    tabVisibleCheckbox1_3.onChange(function (_, isChecked) {
+        tab4.updateUI(function (tab) {
+            tab.isHidden(isChecked);
+        });
+    });
+    tabVisibleCheckbox1_4.onChange(function (_, isChecked) {
+        tab5.updateUI(function (tab) {
+            tab.isHidden(isChecked);
+        });
+    });
+    tabVisibleButton1.onClick(function (_) {
+        var _a;
+        tab3.updateUI(function (tab) {
+            tab.isHidden(true);
+        });
+        (_a = tabVisibleCheckbox1_2.ui) === null || _a === void 0 ? void 0 : _a.isChecked(true);
+    });
+    tabVisibleButton2.onClick(function (_) {
+        var _a;
+        tab4.updateUI(function (tab) {
+            tab.isHidden(true);
+        });
+        (_a = tabVisibleCheckbox1_3.ui) === null || _a === void 0 ? void 0 : _a.isChecked(true);
+    });
+    tabVisibleButton3.onClick(function (_) {
+        var _a;
+        tab5.updateUI(function (tab) {
+            tab.isHidden(true);
+        });
+        (_a = tabVisibleCheckbox1_4.ui) === null || _a === void 0 ? void 0 : _a.isChecked(true);
     });
     updateTabButton.onClick(function (w) {
         tab2.updateUI(function (tab) {
@@ -602,6 +656,16 @@ Array.prototype.first = function (predicate) {
         return filtered[0];
     }
     return undefined;
+};
+Array.prototype.firstIndex = function (predicate) {
+    for (var i = 0; i < this.length; i++) {
+        var object = this[i];
+        var existed = predicate(object);
+        if (existed) {
+            return i;
+        }
+    }
+    return -1;
 };
 function uuid() {
     var uuidValue = '', k, randomValue;
@@ -1502,6 +1566,7 @@ var UITab = (function () {
     function UITab(contentView, image) {
         if (image === void 0) { image = undefined; }
         this._isExpandable = false;
+        this._isHidden = false;
         this._name = this.constructor.name + '-' + uuid();
         this._image = image !== null && image !== void 0 ? image : UIImageNone;
         this._contentView = contentView;
@@ -1542,13 +1607,22 @@ var UITab = (function () {
     UITab.prototype._setInteractor = function (val) {
         this._interactor = val;
     };
+    UITab.prototype._getMinSize = function () {
+        return this._minSize;
+    };
+    UITab.prototype._getMaxSize = function () {
+        return this._maxSize;
+    };
     UITab.prototype.updateUI = function (block) {
         if (block === void 0) { block = undefined; }
         var prevImage = this._image;
+        var prevIsHidden = this._isHidden;
         block === null || block === void 0 ? void 0 : block.call(this, this);
         var changedImage = this._image;
+        var changedIsHidden = this._isHidden;
         var imageChanged = !changedImage.isEqual(prevImage);
-        this._interactor.refreshWindowTab(imageChanged);
+        var isHiddenChanged = changedIsHidden != prevIsHidden;
+        this._interactor.refreshWindowTab(imageChanged || isHiddenChanged);
     };
     UITab.prototype.name = function (val) {
         this._name = val;
@@ -1606,9 +1680,6 @@ var UITab = (function () {
     UITab.prototype.getMinSize = function () {
         return this._originalMinSize;
     };
-    UITab.prototype._getMinSize = function () {
-        return this._minSize;
-    };
     UITab.prototype.maxSize = function (val) {
         var _a, _b, _c, _d;
         this._maxSize = {
@@ -1620,9 +1691,6 @@ var UITab = (function () {
     };
     UITab.prototype.getMaxSize = function () {
         return this._originalMaxSize;
-    };
-    UITab.prototype._getMaxSize = function () {
-        return this._maxSize;
     };
     UITab.prototype.image = function (val) {
         this._image = val;
@@ -1644,6 +1712,13 @@ var UITab = (function () {
     };
     UITab.prototype.getTheme = function () {
         return this._theme;
+    };
+    UITab.prototype.isHidden = function (val) {
+        this._isHidden = val;
+        return this;
+    };
+    UITab.prototype.getIsHidden = function () {
+        return this._isHidden;
     };
     UITab.prototype.bind = function (proxy) {
         proxy._bind(this);
@@ -2250,23 +2325,47 @@ var UIWindow = (function () {
     UIWindow.prototype._usingTab = function () {
         return typeof this._tabs !== "undefined";
     };
+    UIWindow.prototype._getVisibleTabs = function () {
+        var _a;
+        return (_a = this._tabs) === null || _a === void 0 ? void 0 : _a.filter(function (val) { return !val.getIsHidden(); });
+    };
+    UIWindow.prototype._getSelectedTabIndex = function () {
+        var _a, _b;
+        var numberOfTabs = (_b = (_a = this._getVisibleTabs()) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0;
+        console.log(Math.min(Math.max(numberOfTabs - 1, 0), this._selectedTabIndex));
+        return Math.min(Math.max(numberOfTabs - 1, 0), this._selectedTabIndex);
+    };
+    UIWindow.prototype._getSelectedTab = function () {
+        var _a;
+        return (_a = this._getVisibleTabs()) === null || _a === void 0 ? void 0 : _a[this._getSelectedTabIndex()];
+    };
+    UIWindow.prototype._getTab = function (index) {
+        var _a, _b, _c;
+        var numberOfTabs = (_b = (_a = this._getVisibleTabs()) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0;
+        if (index >= 0 && index < numberOfTabs) {
+            return (_c = this._getVisibleTabs()) === null || _c === void 0 ? void 0 : _c[index];
+        }
+        else {
+            return undefined;
+        }
+    };
     UIWindow.prototype._convertColors = function (tabIndex) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         if (tabIndex === void 0) { tabIndex = undefined; }
         if (typeof tabIndex !== "undefined") {
-            var tab = (_a = this._tabs) === null || _a === void 0 ? void 0 : _a[tabIndex];
+            var tab = this._getTab(tabIndex);
             var theme = tab === null || tab === void 0 ? void 0 : tab.getTheme();
             return [
-                (_c = (_b = theme === null || theme === void 0 ? void 0 : theme.primary) !== null && _b !== void 0 ? _b : this._theme.primary) !== null && _c !== void 0 ? _c : this._defaultTheme.primary,
-                (_e = (_d = theme === null || theme === void 0 ? void 0 : theme.secondary) !== null && _d !== void 0 ? _d : this._theme.secondary) !== null && _e !== void 0 ? _e : this._defaultTheme.secondary,
-                (_g = (_f = theme === null || theme === void 0 ? void 0 : theme.tertiary) !== null && _f !== void 0 ? _f : this._theme.tertiary) !== null && _g !== void 0 ? _g : this._defaultTheme.tertiary
+                (_b = (_a = theme === null || theme === void 0 ? void 0 : theme.primary) !== null && _a !== void 0 ? _a : this._theme.primary) !== null && _b !== void 0 ? _b : this._defaultTheme.primary,
+                (_d = (_c = theme === null || theme === void 0 ? void 0 : theme.secondary) !== null && _c !== void 0 ? _c : this._theme.secondary) !== null && _d !== void 0 ? _d : this._defaultTheme.secondary,
+                (_f = (_e = theme === null || theme === void 0 ? void 0 : theme.tertiary) !== null && _e !== void 0 ? _e : this._theme.tertiary) !== null && _f !== void 0 ? _f : this._defaultTheme.tertiary
             ];
         }
         else {
             return [
-                (_h = this._theme.primary) !== null && _h !== void 0 ? _h : this._defaultTheme.primary,
-                (_j = this._theme.secondary) !== null && _j !== void 0 ? _j : this._defaultTheme.secondary,
-                (_k = this._theme.tertiary) !== null && _k !== void 0 ? _k : this._defaultTheme.tertiary
+                (_g = this._theme.primary) !== null && _g !== void 0 ? _g : this._defaultTheme.primary,
+                (_h = this._theme.secondary) !== null && _h !== void 0 ? _h : this._defaultTheme.secondary,
+                (_j = this._theme.tertiary) !== null && _j !== void 0 ? _j : this._defaultTheme.tertiary
             ];
         }
     };
@@ -2305,7 +2404,7 @@ var UIWindow = (function () {
         window.minHeight = expandableValue(false, this._minSize);
         window.maxWidth = expandableValue(true, this._maxSize);
         window.maxHeight = expandableValue(false, this._maxSize);
-        var selectedIndex = this._usingTab() ? this._selectedTabIndex : undefined;
+        var selectedIndex = this._usingTab() ? this._getSelectedTabIndex() : undefined;
         window.colours = this._convertColors(selectedIndex);
         window.x = ui.width + 1;
         window.y = ui.height + 1;
@@ -2317,82 +2416,92 @@ var UIWindow = (function () {
         if (typeof window === "undefined") {
             return;
         }
+        var isOriginChange = window.x != this._origin.x || window.y != this._origin.y;
         var isSizeChange = window.width != this._size.width || window.height != this._size.height;
+        if (isOriginChange || isSizeChange) {
+            this._sync();
+        }
         if (isSizeChange) {
-            this._size = {
-                width: window.width,
-                height: window.height
-            };
             this._refresh(this._size);
         }
     };
     UIWindow.prototype._internalOnTabChange = function () {
         var _a, _b, _c, _d, _e;
-        if (typeof this._tabs !== "undefined") {
+        var tabs = this._getVisibleTabs();
+        if (typeof tabs !== "undefined") {
             var minSize = this._originalMinSize;
             var maxSize = this._originalMaxSize;
-            var currentTab = this._tabs[this._selectedTabIndex];
-            currentTab._getContentView()._resetSize();
-            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, minSize, maxSize, false, true);
-            var tempTabMinSize = currentTab._getMinSize();
-            var tabMinSize_1 = {
-                width: (_a = tempTabMinSize === null || tempTabMinSize === void 0 ? void 0 : tempTabMinSize.width) !== null && _a !== void 0 ? _a : minSize.width,
-                height: (_b = tempTabMinSize === null || tempTabMinSize === void 0 ? void 0 : tempTabMinSize.height) !== null && _b !== void 0 ? _b : minSize.height
-            };
-            var tempTabMaxSize = currentTab._getMaxSize();
-            var tabMaxSize_1 = {
-                width: (_c = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.width) !== null && _c !== void 0 ? _c : maxSize.width,
-                height: (_d = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.height) !== null && _d !== void 0 ? _d : maxSize.height
-            };
-            var size = {
-                width: Math.max(Math.min(this._size.width, tabMaxSize_1.width), tabMinSize_1.width),
-                height: Math.max(Math.min(this._size.height, tabMaxSize_1.height), tabMinSize_1.height)
-            };
-            var title_1 = (_e = currentTab.getTitle()) !== null && _e !== void 0 ? _e : this._originalTitle;
-            var isExpandable_1 = this._initialExpandableState || currentTab.getIsExpandable();
-            this._uiConstructor.didAppearTab(currentTab);
-            this._refresh(size);
-            this.updateUI(function (window) {
-                window._minSize = tabMinSize_1;
-                window._maxSize = tabMaxSize_1;
-                window._isExpandable = isExpandable_1;
-                window._title = title_1;
-            });
+            var selectedTabIndex = this._getSelectedTabIndex();
+            var currentTab = this._getTab(selectedTabIndex);
+            if (typeof currentTab !== "undefined") {
+                currentTab._getContentView()._resetSize();
+                this._uiConstructor.constructTabs(tabs, selectedTabIndex, this._interactor, this._spacing, this._padding, minSize, maxSize, false, true);
+                var tempTabMinSize = currentTab._getMinSize();
+                var tabMinSize_1 = {
+                    width: (_a = tempTabMinSize === null || tempTabMinSize === void 0 ? void 0 : tempTabMinSize.width) !== null && _a !== void 0 ? _a : minSize.width,
+                    height: (_b = tempTabMinSize === null || tempTabMinSize === void 0 ? void 0 : tempTabMinSize.height) !== null && _b !== void 0 ? _b : minSize.height
+                };
+                var tempTabMaxSize = currentTab._getMaxSize();
+                var tabMaxSize_1 = {
+                    width: (_c = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.width) !== null && _c !== void 0 ? _c : maxSize.width,
+                    height: (_d = tempTabMaxSize === null || tempTabMaxSize === void 0 ? void 0 : tempTabMaxSize.height) !== null && _d !== void 0 ? _d : maxSize.height
+                };
+                var size = {
+                    width: Math.max(Math.min(this._size.width, tabMaxSize_1.width), tabMinSize_1.width),
+                    height: Math.max(Math.min(this._size.height, tabMaxSize_1.height), tabMinSize_1.height)
+                };
+                var title_1 = (_e = currentTab.getTitle()) !== null && _e !== void 0 ? _e : this._originalTitle;
+                var isExpandable_1 = this._initialExpandableState || currentTab.getIsExpandable();
+                this._uiConstructor.didAppearTab(currentTab);
+                this._refresh(size);
+                this.updateUI(function (window) {
+                    window._minSize = tabMinSize_1;
+                    window._maxSize = tabMaxSize_1;
+                    window._isExpandable = isExpandable_1;
+                    window._title = title_1;
+                });
+            }
         }
     };
     UIWindow.prototype._refresh = function (size) {
         if (this._usingTab()) {
-            var tab = this._tabs[this._selectedTabIndex];
-            this._uiConstructor.refreshTab(tab, size);
+            var tab = this._getSelectedTab();
+            if (typeof tab !== "undefined") {
+                this._uiConstructor.refreshTab(tab, size);
+            }
         }
         else {
             this._uiConstructor.refresh(this._singleContentView, size);
         }
     };
     UIWindow.prototype._reflectResizingFromChild = function () {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e;
         var contentView = this._singleContentView;
         var minSize = this._originalMinSize;
         var maxSize = this._originalMaxSize;
         var isExpandable = this._initialExpandableState;
         var title = this._title;
-        if (typeof this._tabs !== "undefined") {
-            var currentTab = this._tabs[this._selectedTabIndex];
-            contentView = currentTab._getContentView();
-            contentView._resetSize();
-            this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, minSize, maxSize, false);
-            var tabMinSize = currentTab._getMinSize();
-            minSize = {
-                width: (_a = tabMinSize === null || tabMinSize === void 0 ? void 0 : tabMinSize.width) !== null && _a !== void 0 ? _a : minSize.width,
-                height: (_b = tabMinSize === null || tabMinSize === void 0 ? void 0 : tabMinSize.height) !== null && _b !== void 0 ? _b : minSize.height
-            };
-            var tabMaxSize = currentTab._getMaxSize();
-            maxSize = {
-                width: (_c = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.width) !== null && _c !== void 0 ? _c : maxSize.width,
-                height: (_d = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.height) !== null && _d !== void 0 ? _d : maxSize.height
-            };
-            title = (_f = (_e = this._tabs) === null || _e === void 0 ? void 0 : _e[this._selectedTabIndex].getTitle()) !== null && _f !== void 0 ? _f : this._originalTitle;
-            isExpandable = isExpandable || currentTab.getIsExpandable();
+        var tabs = this._getVisibleTabs();
+        if (typeof tabs !== "undefined") {
+            var selectedTabIndex = this._getSelectedTabIndex();
+            var currentTab = this._getTab(selectedTabIndex);
+            if (typeof currentTab !== "undefined") {
+                contentView = currentTab._getContentView();
+                contentView._resetSize();
+                this._uiConstructor.constructTabs(tabs, selectedTabIndex, this._interactor, this._spacing, this._padding, minSize, maxSize, false);
+                var tabMinSize = currentTab._getMinSize();
+                minSize = {
+                    width: (_a = tabMinSize === null || tabMinSize === void 0 ? void 0 : tabMinSize.width) !== null && _a !== void 0 ? _a : minSize.width,
+                    height: (_b = tabMinSize === null || tabMinSize === void 0 ? void 0 : tabMinSize.height) !== null && _b !== void 0 ? _b : minSize.height
+                };
+                var tabMaxSize = currentTab._getMaxSize();
+                maxSize = {
+                    width: (_c = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.width) !== null && _c !== void 0 ? _c : maxSize.width,
+                    height: (_d = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.height) !== null && _d !== void 0 ? _d : maxSize.height
+                };
+                title = (_e = currentTab.getTitle()) !== null && _e !== void 0 ? _e : this._originalTitle;
+                isExpandable = isExpandable || currentTab.getIsExpandable();
+            }
         }
         else if (typeof this._singleContentView !== "undefined") {
             contentView = this._singleContentView;
@@ -2421,7 +2530,7 @@ var UIWindow = (function () {
     };
     UIWindow.prototype.show = function () {
         var _this = this;
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
         if (this._isOpened()) {
             this.bringToFront();
             return this;
@@ -2439,29 +2548,35 @@ var UIWindow = (function () {
         }
         ;
         var tabDescriptions;
-        if (typeof this._tabs !== "undefined") {
-            var constructed = this._uiConstructor.constructTabs(this._tabs, this._selectedTabIndex, this._interactor, this._spacing, this._padding, this._originalMinSize, this._originalMaxSize);
+        var tabs = this._getVisibleTabs();
+        var selectedTabIndex = this._getSelectedTabIndex();
+        if (typeof tabs !== "undefined") {
+            var selectedTab = this._getTab(selectedTabIndex);
+            var constructed = this._uiConstructor.constructTabs(tabs, selectedTabIndex, this._interactor, this._spacing, this._padding, this._originalMinSize, this._originalMaxSize);
             tabDescriptions = constructed.tabs;
             this._minSize = constructed.size;
-            var windownMaxSize = this._originalMaxSize;
-            var tabMaxSize = this._tabs[this._selectedTabIndex]._getMaxSize();
-            this._maxSize = {
-                width: (_b = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.width) !== null && _b !== void 0 ? _b : windownMaxSize.width,
-                height: (_c = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.height) !== null && _c !== void 0 ? _c : windownMaxSize.height
-            };
-            this._isExpandable || (this._isExpandable = (_e = (_d = this._tabs) === null || _d === void 0 ? void 0 : _d[this._selectedTabIndex].getIsExpandable()) !== null && _e !== void 0 ? _e : false);
-            title = (_g = (_f = this._tabs) === null || _f === void 0 ? void 0 : _f[this._selectedTabIndex].getTitle()) !== null && _g !== void 0 ? _g : this._originalTitle;
-            colors = this._convertColors(this._selectedTabIndex);
+            if (typeof selectedTab !== "undefined") {
+                var windownMaxSize = this._originalMaxSize;
+                var tabMaxSize = selectedTab._getMaxSize();
+                this._maxSize = {
+                    width: (_b = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.width) !== null && _b !== void 0 ? _b : windownMaxSize.width,
+                    height: (_c = tabMaxSize === null || tabMaxSize === void 0 ? void 0 : tabMaxSize.height) !== null && _c !== void 0 ? _c : windownMaxSize.height
+                };
+                this._isExpandable || (this._isExpandable = (_d = selectedTab.getIsExpandable()) !== null && _d !== void 0 ? _d : false);
+                title = (_e = selectedTab.getTitle()) !== null && _e !== void 0 ? _e : this._originalTitle;
+                colors = this._convertColors(selectedTabIndex);
+            }
         }
+        this._selectedTabIndex = selectedTabIndex;
         var size = {
-            width: Math.max(Math.min((_j = (_h = this._size) === null || _h === void 0 ? void 0 : _h.width) !== null && _j !== void 0 ? _j : 0, this._maxSize.width), this._minSize.width),
-            height: Math.max(Math.min((_l = (_k = this._size) === null || _k === void 0 ? void 0 : _k.height) !== null && _l !== void 0 ? _l : 0, this._maxSize.height), this._minSize.height)
+            width: Math.max(Math.min((_g = (_f = this._size) === null || _f === void 0 ? void 0 : _f.width) !== null && _g !== void 0 ? _g : 0, this._maxSize.width), this._minSize.width),
+            height: Math.max(Math.min((_j = (_h = this._size) === null || _h === void 0 ? void 0 : _h.height) !== null && _j !== void 0 ? _j : 0, this._maxSize.height), this._minSize.height)
         };
         this._activeInterval(true);
         var windowDesc = {
             classification: this._title,
-            x: (_m = this._origin) === null || _m === void 0 ? void 0 : _m.x,
-            y: (_o = this._origin) === null || _o === void 0 ? void 0 : _o.y,
+            x: (_k = this._origin) === null || _k === void 0 ? void 0 : _k.x,
+            y: (_l = this._origin) === null || _l === void 0 ? void 0 : _l.y,
             width: size.width,
             height: size.height,
             title: title,
@@ -2507,9 +2622,7 @@ var UIWindow = (function () {
         });
         this._interactor._refreshTab(function (isReopen) {
             if (isReopen) {
-                _this._internalClose = true;
-                _this.close();
-                _this.show();
+                _this.reopen(true);
             }
             else {
                 _this._internalOnTabChange();
@@ -2525,28 +2638,27 @@ var UIWindow = (function () {
             this._uiConstructor.didLoadTabs(this._tabs);
         }
         this._reflectResizingFromChild();
-        (_p = this._didLoad) === null || _p === void 0 ? void 0 : _p.call(this, this);
+        (_m = this._didLoad) === null || _m === void 0 ? void 0 : _m.call(this, this);
         if (typeof singlecontentView !== "undefined") {
             this._uiConstructor.didAppear(singlecontentView);
         }
-        if (typeof this._tabs !== "undefined") {
-            var selectedTab = this._tabs[this._selectedTabIndex];
-            this._uiConstructor.didAppearTab(selectedTab);
+        if (typeof tabs !== "undefined") {
+            var selectedTab = this._getSelectedTab();
+            if (typeof selectedTab !== "undefined") {
+                this._uiConstructor.didAppearTab(selectedTab);
+            }
         }
-        (_q = this._didAppear) === null || _q === void 0 ? void 0 : _q.call(this, this);
+        (_o = this._didAppear) === null || _o === void 0 ? void 0 : _o.call(this, this);
         return this;
     };
     UIWindow.prototype.updateUI = function (block) {
         if (block === void 0) { block = undefined; }
         var prevSelectedTabIndex = this._selectedTabIndex;
-        this._sync();
         block === null || block === void 0 ? void 0 : block.call(this, this);
         this._update();
         var selectedTabIndexChanged = this._selectedTabIndex != prevSelectedTabIndex;
         if (selectedTabIndexChanged) {
-            this._internalClose = true;
-            this.close();
-            this.show();
+            this.reopen(true);
         }
     };
     UIWindow.prototype.close = function () {
@@ -2556,6 +2668,12 @@ var UIWindow = (function () {
     UIWindow.prototype.bringToFront = function () {
         var _a;
         (_a = this._window) === null || _a === void 0 ? void 0 : _a.bringToFront();
+    };
+    UIWindow.prototype.reopen = function (internal) {
+        if (internal === void 0) { internal = false; }
+        this._internalClose = internal;
+        this.close();
+        this.show();
     };
     UIWindow.prototype.findWidget = function (name) {
         var _a;
@@ -2646,7 +2764,7 @@ var UIWindow = (function () {
     };
     UIWindow.prototype.selectedTabIndex = function (val) {
         if (this._usingTab()) {
-            if (this._selectedTabIndex < this._tabs.length, this._selectedTabIndex >= 0) {
+            if (val >= 0 && val < this._tabs.length) {
                 this._selectedTabIndex = val;
             }
             else {
@@ -2695,9 +2813,10 @@ var UIWindow = (function () {
     UIWindow.prototype.getUIWidget = function (name) {
         var _a;
         var finded = (_a = this._singleContentView) === null || _a === void 0 ? void 0 : _a._getUIWidgets().first(function (val) { return val.getName() === name; });
-        if (typeof finded === "undefined" && typeof this._tabs !== "undefined") {
-            for (var index = 0; index < this._tabs.length; index++) {
-                finded = this._tabs[index].getUIWidget(name);
+        var tabs = this._getVisibleTabs();
+        if (typeof finded === "undefined" && typeof tabs !== "undefined") {
+            for (var index = 0; index < tabs.length; index++) {
+                finded = tabs[index].getUIWidget(name);
                 if (typeof finded !== "undefined") {
                     break;
                 }

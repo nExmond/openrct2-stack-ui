@@ -19,6 +19,8 @@ class UITab {
     protected _title?: string;
     protected _theme?: UIWindowTheme;
 
+    protected _isHidden: boolean = false;
+
     protected _image: UIImage;
     protected _contentView: UIStack;
 
@@ -102,10 +104,13 @@ class UITab {
      */
      updateUI(block: ((val: this) => void) | undefined = undefined) {
         const prevImage = this._image;
+        const prevIsHidden = this._isHidden;
         block?.call(this, this);
         const changedImage = this._image;
+        const changedIsHidden = this._isHidden;
         const imageChanged = !changedImage.isEqual(prevImage);
-        this._interactor.refreshWindowTab(imageChanged);
+        const isHiddenChanged = changedIsHidden != prevIsHidden;
+        this._interactor.refreshWindowTab(imageChanged || isHiddenChanged);
     }
 
     /**
@@ -241,6 +246,18 @@ class UITab {
 
     getTheme(): UIWindowTheme | undefined {
         return this._theme;
+    }
+
+    /**
+     * Set tab visibility.
+     */
+    isHidden(val: boolean): this {
+        this._isHidden = val;
+        return this;
+    }
+
+    getIsHidden(): boolean {
+        return this._isHidden;
     }
     
     /**

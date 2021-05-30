@@ -11,6 +11,7 @@ interface Array<T> {
     min(): number;
     max(): number;
     first<T>(predicate: (value: T, index: number, array: T[]) => unknown): T | undefined;
+    firstIndex(predicate: (value: T) => boolean): number;
 }
 Array.prototype.flatMapFunc = function <T>(d = 1): T[] {
     return d > 0 ? this.reduce((acc, val) => acc.concat(Array.isArray(val) ? val.flatMapFunc(d - 1) : val), []) : this.slice();
@@ -36,6 +37,16 @@ Array.prototype.first = function <T>(predicate: (value: T, index: number, array:
         return filtered[0] as T | undefined;
     }
     return undefined;
+}
+Array.prototype.firstIndex = function <T>(predicate: (value: T) => boolean) {
+    for (var i = 0; i < this.length; i++) {
+        const object = this[i];
+        const existed = predicate(object);
+        if (existed) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 //https://www.cloudhadoop.com/2018/10/guide-to-unique-identifiers-uuid-guid.html
