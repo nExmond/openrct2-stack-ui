@@ -1,14 +1,14 @@
 {
   "name": "stack-ui-demo",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Easy to use UI framework for OpenRCT2",
   "license": "MIT",
   "author": "nexmond",
-  "main": "StackUI-Demo.js",
+  "main": "stack-ui-demo.js",
   "scripts": {
     "build": "tsc",
-    "minify": "uglifyjs --compress --mangle --output out/title-editor.min.js -- out/title-editor.js",
-    "copy": "copy out\\sharpness.js \"%HOMEDRIVE%%HOMEPATH%\\Documents\\OpenRCT2\\plugin\"",
+    "minify": "uglifyjs --compress --mangle --output demo/stack-ui-demo.min.js -- demo/stack-ui-demo.js",
+    "copy": "copy demo\\stack-ui-demo.js \"%HOMEDRIVE%%HOMEPATH%\\Documents\\OpenRCT2\\plugin\"",
     "watch": "tsc-watch --onSuccess \"npm run copy\""
   },
   "devDependencies": {

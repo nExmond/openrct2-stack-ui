@@ -1,6 +1,7 @@
 /// <reference path="../modules/openrct2.d.ts" />
 
-//Window template
+/**
+Window template
 var Window = function (): UIWindowProxy {
 
     //Proxy
@@ -17,6 +18,7 @@ var Window = function (): UIWindowProxy {
 
     return window;
 }
+*/
 
 var ImageWindow = function (): UIWindowProxy {
 
@@ -840,7 +842,7 @@ var main = function () {
 registerPlugin(
     {
         name: "StackUI Demo",
-        version: "0.0.1",
+        version: "1.0.0",
         authors: ["nExmond"],
         type: "local",
         licence: "MIT",

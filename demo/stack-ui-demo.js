@@ -30,13 +30,6 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var Window = function () {
-    var window = UIWDP.$();
-    UIWindow.$("StackUI Demo -").bind(window)
-        .isExpandable(true)
-        .spacing(2);
-    return window;
-};
 var ImageWindow = function () {
     var window = UIWDP.$();
     var imageView1 = UIWP.$();
@@ -2332,7 +2325,6 @@ var UIWindow = (function () {
     UIWindow.prototype._getSelectedTabIndex = function () {
         var _a, _b;
         var numberOfTabs = (_b = (_a = this._getVisibleTabs()) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0;
-        console.log(Math.min(Math.max(numberOfTabs - 1, 0), this._selectedTabIndex));
         return Math.min(Math.max(numberOfTabs - 1, 0), this._selectedTabIndex);
     };
     UIWindow.prototype._getSelectedTab = function () {

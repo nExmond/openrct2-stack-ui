@@ -99,7 +99,6 @@ class UIWindow {
 
     protected _getSelectedTabIndex(): number {
         const numberOfTabs = this._getVisibleTabs()?.length ?? 0;
-        console.log(Math.min(Math.max(numberOfTabs-1, 0), this._selectedTabIndex))
         return Math.min(Math.max(numberOfTabs-1, 0), this._selectedTabIndex);
     }
 
