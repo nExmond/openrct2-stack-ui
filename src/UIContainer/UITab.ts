@@ -207,6 +207,7 @@ class UITab {
 
     /**
      * Set the image.
+     * * If you change this attribute after the window is opened, the window is internally reopened for the changes to apply.
      */
     image(val: UIImage): this {
         this._image = val;

@@ -47,6 +47,8 @@ class UIWindow {
     protected _didLoad?: (window: this) => void;
     protected _didAppear?: (window: this) => void;
 
+    protected _internalClose: boolean = false;
+
     /**
      * Creates an instance of *UIWindow*.
      * @param title 
@@ -398,7 +400,10 @@ class UIWindow {
             tabs: tabDescriptions,
             tabIndex: this._selectedTabIndex,
             onClose: () => {
-                this._onClose?.call(this, this);
+                if (!this._internalClose) {
+                    this._onClose?.call(this, this);
+                }
+                this._internalClose = false;
                 this._activeInterval(false);
                 this._window = undefined;
             },
@@ -431,6 +436,7 @@ class UIWindow {
         });
         this._interactor._refreshTab(isReopen => {
             if (isReopen) {
+                this._internalClose = true;
                 this.close();
                 this.show();
             } else {
@@ -471,9 +477,18 @@ class UIWindow {
      * @param block update block
      */
     updateUI(block: ((val: this) => void) | undefined = undefined) {
+        const prevSelectedTabIndex = this._selectedTabIndex;
+        
         this._sync();
         block?.call(this, this);
         this._update();
+        
+        const selectedTabIndexChanged = this._selectedTabIndex != prevSelectedTabIndex;
+        if (selectedTabIndexChanged) {
+            this._internalClose = true;
+            this.close();
+            this.show();
+        }
     }
 
     /**
@@ -481,7 +496,6 @@ class UIWindow {
      */
     close() {
         this._window?.close();
-        this._window = undefined;
     }
 
     /**
@@ -543,8 +557,11 @@ class UIWindow {
     /**
      * Window coordinates on the screen.
      */
-    origin(val: UIPoint): this {
-        this._origin = val;
+    origin(val: UIOptionalPoint): this {
+        this._origin = {
+            x: val.x ?? this._origin.x,
+            y: val.y ?? this._origin.y
+        }
         return this;
     }
 
@@ -617,13 +634,18 @@ class UIWindow {
     }
 
     /**
-     * !If the window is configured with the tab list, select the initial tab before showing the window.
+     * Set the selected tab index of the window.
+     * * If you change this attribute after the window is opened, the window is internally reopened for the changes to apply.
      */
     selectedTabIndex(val: number): this {
-        if (this._isOpened()) {
-            console.log("WARNING: The tab index can set only before opening the window.");
+        if (this._usingTab()) {
+            if (this._selectedTabIndex < this._tabs!.length, this._selectedTabIndex >= 0) {
+                this._selectedTabIndex = val;
+            } else {
+                console.log(`WARNING: Enter a value within a valid range. (0 ~ ${this._tabs!.length-1})`);
+            }
         } else {
-            this._selectedTabIndex = val;
+            console.log("WARNING: This property is only available if the window is created with a tab type.");
         }
         return this;
     }
