@@ -8,6 +8,7 @@
   "scripts": {
     "build": "tsc",
     "minify": "uglifyjs --compress --mangle --output demo/stack-ui-demo.min.js -- demo/stack-ui-demo.js",
+    "build-product": "npm run build && npm run minify && del-cli --force demo/stack-ui-demo.js",
     "copy": "copy demo\\stack-ui-demo.js \"%HOMEDRIVE%%HOMEPATH%\\Documents\\OpenRCT2\\plugin\"",
     "watch": "tsc-watch --onSuccess \"npm run copy\""
   },
