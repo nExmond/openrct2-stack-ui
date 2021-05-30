@@ -7,7 +7,9 @@ class UITab {
 
     protected _name: string;
 
+    protected _originalMinSize?: UIOptionalSize;
     protected _minSize?: UIOptionalSize;
+    protected _originalMaxSize?: UIOptionalSize;
     protected _maxSize?: UIOptionalSize;
 
     protected _spacing?: number;
@@ -170,10 +172,15 @@ class UITab {
             width: val.width ?? this._minSize?.width,
             height: val.height ?? this._minSize?.height
         };
+        this._originalMinSize = { ...this._minSize };
         return this;
     }
 
     getMinSize(): UIOptionalSize | undefined {
+        return this._originalMinSize;
+    }
+
+    _getMinSize(): UIOptionalSize | undefined {
         return this._minSize;
     }
 
@@ -186,10 +193,15 @@ class UITab {
             width: val.width ?? this._maxSize?.width,
             height: val.height ?? this._maxSize?.height
         };
+        this._originalMaxSize = { ...this._maxSize };
         return this;
     }
 
     getMaxSize(): UIOptionalSize | undefined {
+        return this._originalMaxSize;
+    }
+
+    _getMaxSize(): UIOptionalSize | undefined {
         return this._maxSize;
     }
 

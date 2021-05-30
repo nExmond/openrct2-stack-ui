@@ -18,12 +18,22 @@ class UIConstructor {
      * @param padding 
      * @returns construction result
      */
-    constructTabs(tabs: UITab[], selectedIndex: number, interactor: UIInteractor, spacing: number, padding: UIEdgeInsets, minSize: UISize, maxSize: UISize, usingBuild: boolean = true): UIConstructResult {
+    constructTabs(
+        tabs: UITab[],
+        selectedIndex: number,
+        interactor: UIInteractor,
+        spacing: number,
+        padding: UIEdgeInsets,
+        minSize: UISize,
+        maxSize: UISize,
+        usingBuild: boolean = true,
+        onlySeleted: Boolean = false
+    ): UIConstructResult {
         if (selectedIndex >= tabs.length || selectedIndex < 0) {
             throw new Error("SelectedIndex is less than the count of tabs and must be at least 0.");
         }
-        const tabButtonMinWidth = 31 * tabs.length + 6
-        for (var i = 0; i < tabs.length; i++) {
+        const tabButtonMinWidth = 31 * tabs.length + 6;
+        for (var i = (onlySeleted ? selectedIndex: 0); onlySeleted ? (i == selectedIndex): (i < tabs.length); i++) {
             const tab = tabs[i];
             const stack = tab._getContentView()
                 .spacing(tab.getSpacing() ?? spacing)
@@ -37,7 +47,7 @@ class UIConstructor {
             const tabMinSize = tab._setMinSize({
                 width: Math.max(results.size.width, tabMinWidth, tabButtonMinWidth),
                 height: Math.max(results.size.height, tabMinHeight)
-            })
+            });
 
             const tempTabMaxSize = tab.getMaxSize();
             const tabMaxSize = {
@@ -58,7 +68,6 @@ Errors can occur when resizing windows.`);
             width: tempMinSize?.width ?? minSize.width,
             height: tempMinSize?.height ?? minSize.height
         }
-        this.refreshTab(selectedTab, selectedTabMinSize);
         return {
             size: selectedTabMinSize,
             widgets: [],
@@ -73,7 +82,13 @@ Errors can occur when resizing windows.`);
      * @param insets 
      * @returns construction result
      */
-    construct(stack: UIStack, interactor: UIInteractor, insets: UIEdgeInsets = UIEdgeInsetsContainer, minSize: UISize, usingBuild: boolean = true): UIConstructResult {
+    construct(
+        stack: UIStack,
+        interactor: UIInteractor,
+        insets: UIEdgeInsets = UIEdgeInsetsContainer,
+        minSize: UISize,
+        usingBuild: boolean = true
+    ): UIConstructResult {
         this._injectInteractor(stack, interactor);
         const size = this.calculateBounds(stack, insets, usingBuild)
         return {
