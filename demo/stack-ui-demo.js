@@ -139,10 +139,10 @@ var ListWindow = function () {
         .isExpandable(true)
         .spacing(2);
     tabs[0].didLoad(function (w) {
-        console.log("tab 0 didLoad");
+        console.log("Tab 0 didLoad");
     });
     tabs[0].didAppear(function (w) {
-        console.log("tab 0 didAppear");
+        console.log("Tab 0 didAppear");
         var refresh = function () {
             var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
             var handymans = staffs.filter(function (val) { return val.staffType === "handyman"; });
@@ -170,10 +170,10 @@ var ListWindow = function () {
         refresh();
     });
     tabs[1].didLoad(function (w) {
-        console.log("tab 1 didLoad");
+        console.log("Tab 1 didLoad");
     });
     tabs[1].didAppear(function (w) {
-        console.log("tab 1 didAppear");
+        console.log("Tab 1 didAppear");
         var refresh = function () {
             var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
             var mechanics = staffs.filter(function (val) { return val.staffType === "mechanic"; });
@@ -199,10 +199,10 @@ var ListWindow = function () {
         refresh();
     });
     tabs[2].didLoad(function (w) {
-        console.log("tab 2 didLoad");
+        console.log("Tab 2 didLoad");
     });
     tabs[2].didAppear(function (w) {
-        console.log("tab 2 didAppear");
+        console.log("Tab 2 didAppear");
         var refresh = function () {
             var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
             var securites = staffs.filter(function (val) { return val.staffType === "security"; });
@@ -226,10 +226,10 @@ var ListWindow = function () {
         refresh();
     });
     tabs[3].didLoad(function (w) {
-        console.log("tab 3 didLoad");
+        console.log("Tab 3 didLoad");
     });
     tabs[3].didAppear(function (w) {
-        console.log("tab 3 didAppear");
+        console.log("Tab 3 didAppear");
         var refresh = function () {
             var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
             var entertainers = staffs.filter(function (val) { return val.staffType === "entertainer"; });
@@ -427,30 +427,28 @@ var MainWindow = function () {
     var tabVisibleButton2 = UIWP.$();
     var tabVisibleButton3 = UIWP.$();
     var updateTabButton = UIWP.$();
-    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("List").bind(listButton), UIButton.$("Image").bind(imageButton), UIStack.$VG(UICheckbox.$("tab2.isHidden").bind(tabVisibleCheckbox1_1)
-        .isChecked(true), UICheckbox.$("tab3.isHidden").bind(tabVisibleCheckbox1_2)
-        .isChecked(true), UICheckbox.$("tab4.isHidden").bind(tabVisibleCheckbox1_3)
-        .isChecked(true), UICheckbox.$("tab5.isHidden").bind(tabVisibleCheckbox1_4)
-        .isChecked(true)).title("Tab Control"), UISpacer.$(10)).bind(tab1)
+    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("List").bind(listButton), UIButton.$("Image").bind(imageButton), UIStack.$VG(UICheckbox.$("Tab 2").bind(tabVisibleCheckbox1_1), UICheckbox.$("Tab 3").bind(tabVisibleCheckbox1_2)
+        .isChecked(true), UICheckbox.$("Tab 4").bind(tabVisibleCheckbox1_3)
+        .isChecked(true), UICheckbox.$("Tab 5").bind(tabVisibleCheckbox1_4)
+        .isChecked(true)).title("Tabs"), UISpacer.$(10)).bind(tab1)
         .image(UIImageTabPark)
+        .title("StackUI Demo: Tab 1")
         .isExpandable(true), UITab.$(UIStack.$H(UISpacer.$(), UIImageView.$(UIImageMenuLogo), UISpacer.$()), UIButton.$("Update and move to first tab").bind(updateTabButton)).bind(tab2)
         .image(UIImageTabRide)
-        .title("StackUI Demo: tab2")
-        .isHidden(true), UITab.$(UIButton.$("Hide this tab").bind(tabVisibleButton1)).bind(tab3)
+        .title("StackUI Demo: Tab 2"), UITab.$(UIButton.$("Hide this tab").bind(tabVisibleButton1)).bind(tab3)
         .image(UIImageTabTimer)
         .theme({ primary: UIColor.DarkBrown })
-        .title("StackUI Demo: tab3")
+        .title("StackUI Demo: Tab 3")
         .isHidden(true), UITab.$(UIButton.$("Hide this tab").bind(tabVisibleButton2)).bind(tab4)
         .image(UIImageTabPaint)
         .theme({ primary: UIColor.DarkOliveGreen })
-        .title("StackUI Demo: tab4")
+        .title("StackUI Demo: Tab 4")
         .isHidden(true), UITab.$(UIButton.$("Hide this tab").bind(tabVisibleButton3)).bind(tab5)
         .image(UIImageTabMusic)
         .theme({ primary: UIColor.DarkPurple })
-        .title("StackUI Demo: tab5")
+        .title("StackUI Demo: Tab 5")
         .isHidden(true)).bind(window)
         .spacing(2)
-        .origin({ x: ui.width / 2, y: ui.height / 4 })
         .theme({ primary: UIColor.DarkOrange });
     basicButton.onClick(function () {
         var _a, _b;
@@ -531,7 +529,7 @@ var MainWindow = function () {
     });
     updateTabButton.onClick(function (w) {
         tab2.updateUI(function (tab) {
-            tab.title("Updated!");
+            tab.title("StackUI Demo: Tab 2 [Updated]");
             tab.theme({ primary: UIColor.DarkBlue });
             tab.image(UIImageTabStaffOptions);
             tab.isExpandable(true);
@@ -551,6 +549,12 @@ var MainWindow = function () {
         viewportWindow.close();
         listWindow.close();
         imageWindow.close();
+    });
+    window.didAppear(function (w) {
+        var width = w.getSize().width;
+        w.updateUI(function (w) {
+            w.origin({ x: (ui.width - width) / 2, y: ui.height / 4 });
+        });
     });
     return window;
 };
@@ -2095,7 +2099,7 @@ var UIConstructor = (function () {
             }
         }
         var selectedTab = tabs[selectedIndex];
-        var tempMinSize = selectedTab.getMinSize();
+        var tempMinSize = selectedTab._getMinSize();
         var selectedTabMinSize = {
             width: (_g = tempMinSize === null || tempMinSize === void 0 ? void 0 : tempMinSize.width) !== null && _g !== void 0 ? _g : minSize.width,
             height: (_h = tempMinSize === null || tempMinSize === void 0 ? void 0 : tempMinSize.height) !== null && _h !== void 0 ? _h : minSize.height
@@ -2436,8 +2440,12 @@ var UIWindow = (function () {
         window.colours = this._convertColors(selectedIndex);
         window.x = ui.width + 1;
         window.y = ui.height + 1;
-        window.x = this._origin.x;
-        window.y = this._origin.y;
+        if (typeof this._origin.x !== "undefined") {
+            window.x = this._origin.x;
+        }
+        if (typeof this._origin.y !== "undefined") {
+            window.y = this._origin.y;
+        }
     };
     UIWindow.prototype._onUpdate = function () {
         var window = this._window;
@@ -2619,17 +2627,21 @@ var UIWindow = (function () {
             }
         }
         this._selectedTabIndex = selectedTabIndex;
-        var size = {
-            width: Math.max(Math.min((_g = (_f = this._size) === null || _f === void 0 ? void 0 : _f.width) !== null && _g !== void 0 ? _g : 0, this._maxSize.width), this._minSize.width),
-            height: Math.max(Math.min((_j = (_h = this._size) === null || _h === void 0 ? void 0 : _h.height) !== null && _j !== void 0 ? _j : 0, this._maxSize.height), this._minSize.height)
+        this._origin = {
+            x: (_f = origin.x) !== null && _f !== void 0 ? _f : (_g = this._origin) === null || _g === void 0 ? void 0 : _g.x,
+            y: (_h = origin.y) !== null && _h !== void 0 ? _h : (_j = this._origin) === null || _j === void 0 ? void 0 : _j.y
+        };
+        this._size = {
+            width: Math.max(Math.min((_l = (_k = this._size) === null || _k === void 0 ? void 0 : _k.width) !== null && _l !== void 0 ? _l : 0, this._maxSize.width), this._minSize.width),
+            height: Math.max(Math.min((_o = (_m = this._size) === null || _m === void 0 ? void 0 : _m.height) !== null && _o !== void 0 ? _o : 0, this._maxSize.height), this._minSize.height)
         };
         this._activeInterval(true);
         var windowDesc = {
             classification: this._title,
-            x: (_k = origin.x) !== null && _k !== void 0 ? _k : (_l = this._origin) === null || _l === void 0 ? void 0 : _l.x,
-            y: (_m = origin.y) !== null && _m !== void 0 ? _m : (_o = this._origin) === null || _o === void 0 ? void 0 : _o.y,
-            width: size.width,
-            height: size.height,
+            x: this._origin.x,
+            y: this._origin.y,
+            width: this._size.width,
+            height: this._size.height,
             title: title,
             minWidth: this._isExpandable ? this._minSize.width : undefined,
             maxWidth: this._isExpandable ? this._maxSize.width : undefined,
@@ -2661,10 +2673,9 @@ var UIWindow = (function () {
         };
         this._window = ui.openWindow(windowDesc);
         this._initialSize = {
-            width: this._window.width,
-            height: this._window.height
+            width: this._size.width,
+            height: this._size.height
         };
-        this._sync();
         this._interactor._findWidget(function (name) {
             return _this.findWidget(name);
         });

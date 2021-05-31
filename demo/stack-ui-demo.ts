@@ -222,10 +222,10 @@ var ListWindow = function (): UIWindowProxy {
 
     //Bind
     tabs[0].didLoad((w) => {
-        console.log("tab 0 didLoad");
+        console.log("Tab 0 didLoad");
     });
     tabs[0].didAppear((w) => {
-        console.log("tab 0 didAppear");
+        console.log("Tab 0 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
@@ -258,10 +258,10 @@ var ListWindow = function (): UIWindowProxy {
     });
 
     tabs[1].didLoad((w) => {
-        console.log("tab 1 didLoad");
+        console.log("Tab 1 didLoad");
     });
     tabs[1].didAppear((w) => {
-        console.log("tab 1 didAppear");
+        console.log("Tab 1 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
@@ -292,10 +292,10 @@ var ListWindow = function (): UIWindowProxy {
     });
 
     tabs[2].didLoad((w) => {
-        console.log("tab 2 didLoad");
+        console.log("Tab 2 didLoad");
     });
     tabs[2].didAppear((w) => {
-        console.log("tab 2 didAppear");
+        console.log("Tab 2 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
@@ -324,10 +324,10 @@ var ListWindow = function (): UIWindowProxy {
     });
 
     tabs[3].didLoad((w) => {
-        console.log("tab 3 didLoad");
+        console.log("Tab 3 didLoad");
     });
     tabs[3].didAppear((w) => {
-        console.log("tab 3 didAppear");
+        console.log("Tab 3 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
@@ -704,18 +704,18 @@ var MainWindow = function (): UIWindowProxy {
             UIButton.$("List").bind(listButton),
             UIButton.$("Image").bind(imageButton),
             UIStack.$VG(
-                UICheckbox.$("tab2.isHidden").bind(tabVisibleCheckbox1_1)
+                UICheckbox.$("Tab 2").bind(tabVisibleCheckbox1_1),
+                UICheckbox.$("Tab 3").bind(tabVisibleCheckbox1_2)
                     .isChecked(true),
-                UICheckbox.$("tab3.isHidden").bind(tabVisibleCheckbox1_2)
+                UICheckbox.$("Tab 4").bind(tabVisibleCheckbox1_3)
                     .isChecked(true),
-                UICheckbox.$("tab4.isHidden").bind(tabVisibleCheckbox1_3)
-                    .isChecked(true),
-                UICheckbox.$("tab5.isHidden").bind(tabVisibleCheckbox1_4)
+                UICheckbox.$("Tab 5").bind(tabVisibleCheckbox1_4)
                     .isChecked(true)
-            ).title("Tab Control"),
+            ).title("Tabs"),
             UISpacer.$(10)
         ).bind(tab1)
             .image(UIImageTabPark)
+            .title("StackUI Demo: Tab 1")
             .isExpandable(true),
         UITab.$(
             UIStack.$H(
@@ -726,32 +726,30 @@ var MainWindow = function (): UIWindowProxy {
             UIButton.$("Update and move to first tab").bind(updateTabButton)
         ).bind(tab2)
             .image(UIImageTabRide)
-            .title("StackUI Demo: tab2")
-            .isHidden(true),
+            .title("StackUI Demo: Tab 2"),
         UITab.$(
             UIButton.$("Hide this tab").bind(tabVisibleButton1)
         ).bind(tab3)
             .image(UIImageTabTimer)
             .theme({ primary: UIColor.DarkBrown })
-            .title("StackUI Demo: tab3")
+            .title("StackUI Demo: Tab 3")
             .isHidden(true),
         UITab.$(
             UIButton.$("Hide this tab").bind(tabVisibleButton2)
         ).bind(tab4)
             .image(UIImageTabPaint)
             .theme({ primary: UIColor.DarkOliveGreen })
-            .title("StackUI Demo: tab4")
+            .title("StackUI Demo: Tab 4")
             .isHidden(true),
         UITab.$(
             UIButton.$("Hide this tab").bind(tabVisibleButton3)
         ).bind(tab5)
             .image(UIImageTabMusic)
             .theme({ primary: UIColor.DarkPurple })
-            .title("StackUI Demo: tab5")
+            .title("StackUI Demo: Tab 5")
             .isHidden(true)
     ).bind(window)
         .spacing(2)
-        .origin({ x: ui.width / 2, y: ui.height / 4 })
         .theme({ primary: UIColor.DarkOrange });
 
     //Bind
@@ -827,7 +825,7 @@ var MainWindow = function (): UIWindowProxy {
     });
     updateTabButton.onClick((w) => {
         tab2.updateUI((tab) => {
-            tab.title("Updated!");
+            tab.title("StackUI Demo: Tab 2 [Updated]");
             tab.theme({ primary: UIColor.DarkBlue });
             tab.image(UIImageTabStaffOptions);
             tab.isExpandable(true);
@@ -848,6 +846,12 @@ var MainWindow = function (): UIWindowProxy {
         viewportWindow.close();
         listWindow.close();
         imageWindow.close();
+    });
+    window.didAppear((w) => {
+        const width = w.getSize().width;
+        w.updateUI((w) => {
+            w.origin({ x: (ui.width - width) / 2, y: ui.height / 4 });
+        });
     });
 
     return window;
