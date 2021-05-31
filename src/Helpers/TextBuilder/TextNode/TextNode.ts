@@ -169,7 +169,7 @@ class TextNode {
 
     _description(depth: number = 0, index: number | undefined = undefined): string {
         const tab = "│ "
-        const tabs = [...Array(depth)].map(_ => tab).join('');
+        const tabs = [...Array(depth)].map(() => tab).join('');
         const childTabs = tabs + tab;
         var childs = "[]";
         if (typeof this._childs !== "undefined" && this._childs.length > 0) {

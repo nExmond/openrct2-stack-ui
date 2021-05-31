@@ -85,14 +85,14 @@ String.prototype.size = function (): UISize {
     if (match) {
         console.log("WARNING: Images inserted in text may be displayed incorrectly.");
 
-        const images = match.map(val => {
+        const images = match.map((val) => {
             const strings: string[] = val.split('{').map(val => val.split('}')).flatMap();
             const values = strings.filter((_, index) => index % 2 === 1);
             const id = parseInt(values[3]) * (256 * 256) + parseInt(values[2]) * 256 + parseInt(values[1]);
             return id;
         }) ?? [];
 
-        imageBounds = images.map(val => {
+        imageBounds = images.map((val) => {
             const size = g?.getImage(val);
             return <UISize>{
                 width: size?.width ?? 0,

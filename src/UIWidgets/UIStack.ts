@@ -29,7 +29,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         super();
         this._axis = axis;
         this._childs = widgets;
-        this._childs.forEach(val => {
+        this._childs.forEach((val) => {
             if (val instanceof UISpacer) {
                 val._confirm(axis);
             }

@@ -95,11 +95,11 @@ var ImageWindow = function () {
         updateImageViews(function (w) { return w.theme({ tertiary: color }); });
         updateWindow({ tertiary: color });
     }
-    primaryColorpicker.onChange(function (_) { return primaryColorpickerOnChange(); });
-    secondaryColorpicker.onChange(function (_) { return secondaryColorpickerOnChange(); });
-    tertiaryColorpicker.onChange(function (_) { return tertiaryColorpickerOnChange(); });
-    primaryTranslucent.onChange(function (_) { return primaryColorpickerOnChange(); });
-    secondaryTranslucent.onChange(function (_) { return secondaryColorpickerOnChange(); });
+    primaryColorpicker.onChange(function () { return primaryColorpickerOnChange(); });
+    secondaryColorpicker.onChange(function () { return secondaryColorpickerOnChange(); });
+    tertiaryColorpicker.onChange(function () { return tertiaryColorpickerOnChange(); });
+    primaryTranslucent.onChange(function () { return primaryColorpickerOnChange(); });
+    secondaryTranslucent.onChange(function () { return secondaryColorpickerOnChange(); });
     isExpandable.onChange(function (_, isChecked) {
         window.updateUI(function (w) { return w.isExpandable(isChecked); });
     });
@@ -107,9 +107,9 @@ var ImageWindow = function () {
 };
 var ListWindow = function () {
     var window = UIWDP.$();
-    var tabs = __spreadArray([], Array(4)).map(function (_) { return UITP.$(); });
-    var lists = __spreadArray([], Array(4)).map(function (_) { return UIWP.$(); });
-    var counts = __spreadArray([], Array(4)).map(function (_) { return UIWP.$(); });
+    var tabs = __spreadArray([], Array(4)).map(function () { return UITP.$(); });
+    var lists = __spreadArray([], Array(4)).map(function () { return UIWP.$(); });
+    var counts = __spreadArray([], Array(4)).map(function () { return UIWP.$(); });
     var createTab = function (usingColor, defaultColor, hireTargetTitle, hireCost, hireTargetInfo, tabImage, tag) {
         return UITab.$(UIStack.$H(UIStack.$V(UISpacer.$(10), UIStack.$H(UILabel.$((1791).stringId()).isVisible(usingColor), UIColorPicker.$(defaultColor).isVisible(usingColor))), UISpacer.$(), UIStack.$V(UIButton.$(hireTargetTitle.stringId(), true)
             .occupiedSize({ width: 0 })
@@ -348,31 +348,31 @@ var ViewportWindow = function () {
     viewport.didLoad(function (w) {
         updateButton(w.getZoom());
     });
-    buttonZoomIn.onClick(function (_) {
+    buttonZoomIn.onClick(function () {
         viewport.updateUI(function (w) {
             var nextScale = w.getZoom() - 1;
             w.zoom(nextScale);
             updateButton(nextScale);
         });
     });
-    buttonZoomOut.onClick(function (_) {
+    buttonZoomOut.onClick(function () {
         viewport.updateUI(function (w) {
             var nextScale = w.getZoom() + 1;
             w.zoom(nextScale);
             updateButton(nextScale);
         });
     });
-    buttonRocateM2C.onClick(function (_) {
+    buttonRocateM2C.onClick(function () {
         var _a;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.mainViewportScrollToThis();
     });
-    buttonRotate.onClick(function (_) {
+    buttonRotate.onClick(function () {
         viewport.updateUI(function (w) {
             var nextRotation = (w.getRotation() + 1) % 4;
             w.rotation(nextRotation);
         });
     });
-    buttonRocateC2M.onClick(function (_) {
+    buttonRocateC2M.onClick(function () {
         var _a;
         (_a = viewport.ui) === null || _a === void 0 ? void 0 : _a.moveToMainViewportCenter();
     });
@@ -452,7 +452,7 @@ var MainWindow = function () {
         .spacing(2)
         .origin({ x: ui.width / 2, y: ui.height / 4 })
         .theme({ primary: UIColor.DarkOrange });
-    basicButton.onClick(function (_) {
+    basicButton.onClick(function () {
         var _a, _b;
         var mainOrigin = (_b = (_a = window.ui) === null || _a === void 0 ? void 0 : _a.getOrigin()) !== null && _b !== void 0 ? _b : UIPointZero;
         basicWindow.show();
@@ -461,7 +461,7 @@ var MainWindow = function () {
             w.origin({ x: mainOrigin.x - width, y: mainOrigin.y - 160 });
         });
     });
-    viewportButton.onClick(function (_) {
+    viewportButton.onClick(function () {
         var _a, _b;
         var mainOrigin = (_b = (_a = window.ui) === null || _a === void 0 ? void 0 : _a.getOrigin()) !== null && _b !== void 0 ? _b : UIPointZero;
         viewportWindow.show();
@@ -470,7 +470,7 @@ var MainWindow = function () {
             w.origin({ x: mainOrigin.x - width, y: mainOrigin.y + 170 });
         });
     });
-    listButton.onClick(function (_) {
+    listButton.onClick(function () {
         var _a, _b, _c, _d;
         var mainOrigin = (_b = (_a = window.ui) === null || _a === void 0 ? void 0 : _a.getOrigin()) !== null && _b !== void 0 ? _b : UIPointZero;
         var mainSize = (_d = (_c = window.ui) === null || _c === void 0 ? void 0 : _c.getSize()) !== null && _d !== void 0 ? _d : UISizeZero;
@@ -479,7 +479,7 @@ var MainWindow = function () {
             w.origin({ x: mainOrigin.x + mainSize.width, y: mainOrigin.y - 160 });
         });
     });
-    imageButton.onClick(function (_) {
+    imageButton.onClick(function () {
         var _a, _b, _c, _d;
         var mainOrigin = (_b = (_a = window.ui) === null || _a === void 0 ? void 0 : _a.getOrigin()) !== null && _b !== void 0 ? _b : UIPointZero;
         var mainSize = (_d = (_c = window.ui) === null || _c === void 0 ? void 0 : _c.getSize()) !== null && _d !== void 0 ? _d : UISizeZero;
@@ -508,21 +508,21 @@ var MainWindow = function () {
             tab.isHidden(isChecked);
         });
     });
-    tabVisibleButton1.onClick(function (_) {
+    tabVisibleButton1.onClick(function () {
         var _a;
         tab3.updateUI(function (tab) {
             tab.isHidden(true);
         });
         (_a = tabVisibleCheckbox1_2.ui) === null || _a === void 0 ? void 0 : _a.isChecked(true);
     });
-    tabVisibleButton2.onClick(function (_) {
+    tabVisibleButton2.onClick(function () {
         var _a;
         tab4.updateUI(function (tab) {
             tab.isHidden(true);
         });
         (_a = tabVisibleCheckbox1_3.ui) === null || _a === void 0 ? void 0 : _a.isChecked(true);
     });
-    tabVisibleButton3.onClick(function (_) {
+    tabVisibleButton3.onClick(function () {
         var _a;
         tab5.updateUI(function (tab) {
             tab.isHidden(true);
@@ -539,14 +539,14 @@ var MainWindow = function () {
             tab.spacing(8);
             tab.maxSize({ height: 600 });
         });
-        w.updateUI(function (_) {
+        w.updateUI(function () {
             w.title("Move to first tab");
         });
         window.updateUI(function (window) {
             window.selectedTabIndex(0);
         });
     });
-    window.onClose(function (_) {
+    window.onClose(function () {
         basicWindow.close();
         viewportWindow.close();
         listWindow.close();
@@ -1132,7 +1132,7 @@ var TextNode = (function () {
         if (depth === void 0) { depth = 0; }
         if (index === void 0) { index = undefined; }
         var tab = "│ ";
-        var tabs = __spreadArray([], Array(depth)).map(function (_) { return tab; }).join('');
+        var tabs = __spreadArray([], Array(depth)).map(function () { return tab; }).join('');
         var childTabs = tabs + tab;
         var childs = "[]";
         if (typeof this._childs !== "undefined" && this._childs.length > 0) {

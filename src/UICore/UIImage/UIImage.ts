@@ -135,7 +135,7 @@ class UIImage {
      */
     size(): UISize {
         const graphicsContext = imageHelper.graphicsContext();
-        return this._frames.map(val => {
+        return this._frames.map((val) => {
             const info = graphicsContext?.getImage(val);
             if (typeof info !== "undefined") {
                 return <UISize>{

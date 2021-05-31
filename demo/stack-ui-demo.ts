@@ -91,7 +91,7 @@ var ImageWindow = function (): UIWindowProxy {
     }
 
     function updateWindow(theme: UIWindowTheme) {
-        window.updateUI(w => {
+        window.updateUI((w) => {
             const windowTheme = w.getTheme();
             w.theme({
                 primary: theme.primary ?? windowTheme.primary,
@@ -101,44 +101,44 @@ var ImageWindow = function (): UIWindowProxy {
         });
     }
 
-    window.didLoad(w => {
+    window.didLoad((w) => {
         const theme = {
             primary: w.getUIWidget<UIColorPicker>("primaryColorPicker")?.getColor(),
             secondary: secondaryColorpicker.ui?.getColor(),
             tertiary: tertiaryColorpicker.ui?.getColor()
         }
 
-        updateImageViews(w => w.theme(theme));
+        updateImageViews((w) => w.theme(theme));
         updateWindow(theme);
     });
 
     function primaryColorpickerOnChange() {
         const color = (primaryColorpicker.ui?.getColor() ?? 0) | ((primaryTranslucent.ui?.getIsChecked() ?? false) ? UIColorFlag.Translucent : 0);
-        updateImageViews(w => w.theme({ primary: color }));
+        updateImageViews((w) => w.theme({ primary: color }));
         updateWindow({ primary: color });
     }
 
     function secondaryColorpickerOnChange() {
         const color = (secondaryColorpicker.ui?.getColor() ?? 0) | ((secondaryTranslucent.ui?.getIsChecked() ?? false) ? UIColorFlag.Translucent : 0);
-        updateImageViews(w => w.theme({ secondary: color }));
+        updateImageViews((w) => w.theme({ secondary: color }));
         updateWindow({ secondary: color });
     }
 
     function tertiaryColorpickerOnChange() {
         const color = tertiaryColorpicker.ui?.getColor();
-        updateImageViews(w => w.theme({ tertiary: color }));
+        updateImageViews((w) => w.theme({ tertiary: color }));
         updateWindow({ tertiary: color });
     }
 
-    primaryColorpicker.onChange(_ => primaryColorpickerOnChange());
-    secondaryColorpicker.onChange(_ => secondaryColorpickerOnChange());
-    tertiaryColorpicker.onChange(_ => tertiaryColorpickerOnChange());
+    primaryColorpicker.onChange(() => primaryColorpickerOnChange());
+    secondaryColorpicker.onChange(() => secondaryColorpickerOnChange());
+    tertiaryColorpicker.onChange(() => tertiaryColorpickerOnChange());
 
-    primaryTranslucent.onChange(_ => primaryColorpickerOnChange());
-    secondaryTranslucent.onChange(_ => secondaryColorpickerOnChange());
+    primaryTranslucent.onChange(() => primaryColorpickerOnChange());
+    secondaryTranslucent.onChange(() => secondaryColorpickerOnChange());
 
     isExpandable.onChange((_, isChecked) => {
-        window.updateUI(w => w.isExpandable(isChecked));
+        window.updateUI((w) => w.isExpandable(isChecked));
     });
 
 
@@ -149,9 +149,9 @@ var ListWindow = function (): UIWindowProxy {
 
     //Proxy
     const window = UIWDP.$();
-    const tabs = [...Array(4)].map(_ => UITP.$());
-    const lists = [...Array(4)].map(_ => UIWP.$<UIListView>());
-    const counts = [...Array(4)].map(_ => UIWP.$<UILabel>());
+    const tabs = [...Array(4)].map(() => UITP.$());
+    const lists = [...Array(4)].map(() => UIWP.$<UIListView>());
+    const counts = [...Array(4)].map(() => UIWP.$<UILabel>());
 
     var createTab = (
         usingColor: boolean,
@@ -221,18 +221,18 @@ var ListWindow = function (): UIWindowProxy {
         .spacing(2)
 
     //Bind
-    tabs[0].didLoad(w => {
+    tabs[0].didLoad((w) => {
         console.log("tab 0 didLoad");
     });
-    tabs[0].didAppear(w => {
+    tabs[0].didAppear((w) => {
         console.log("tab 0 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
             const handymans = staffs.filter(val => val.staffType === "handyman")
 
-            lists[0].updateUI(w => {
-                const items = handymans.map(val => {
+            lists[0].updateUI((w) => {
+                const items = handymans.map((val) => {
                     const name = val.name;
                     const sweep = val.orders & 1 << 0 ? UIImageStaffOrdersSweeping.string() : "";
                     const water = val.orders & 1 << 1 ? UIImageStaffOrdersWaterFlowers.string() : "";
@@ -243,7 +243,7 @@ var ListWindow = function (): UIWindowProxy {
                 });
                 w.clearAllItems().addItems(items);
             });
-            counts[0].updateUI(w => {
+            counts[0].updateUI((w) => {
                 w.text(`${handymans.length} ${(1859).stringId()}`.color(TextColor.Black));
             });
         }
@@ -257,18 +257,18 @@ var ListWindow = function (): UIWindowProxy {
         refresh();
     });
 
-    tabs[1].didLoad(w => {
+    tabs[1].didLoad((w) => {
         console.log("tab 1 didLoad");
     });
-    tabs[1].didAppear(w => {
+    tabs[1].didAppear((w) => {
         console.log("tab 1 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
             const mechanics = staffs.filter(val => val.staffType === "mechanic");
 
-            lists[1].updateUI(w => {
-                const items = mechanics.map(val => {
+            lists[1].updateUI((w) => {
+                const items = mechanics.map((val) => {
                     const name = val.name;
                     const inspect = val.orders & 1 << 0 ? UIImageStaffOrdersInspectRides.string() : "";
                     const fix = val.orders & 1 << 1 ? UIImageStaffOrdersFixRides.string() : "";
@@ -277,7 +277,7 @@ var ListWindow = function (): UIWindowProxy {
                 });
                 w.clearAllItems().addItems(items);
             });
-            counts[1].updateUI(w => {
+            counts[1].updateUI((w) => {
                 w.text(`${mechanics.length} ${(1860).stringId()}`.color(TextColor.Black));
             });
         }
@@ -291,25 +291,25 @@ var ListWindow = function (): UIWindowProxy {
         refresh();
     });
 
-    tabs[2].didLoad(w => {
+    tabs[2].didLoad((w) => {
         console.log("tab 2 didLoad");
     });
-    tabs[2].didAppear(w => {
+    tabs[2].didAppear((w) => {
         console.log("tab 2 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
             const securites = staffs.filter(val => val.staffType === "security");
 
-            lists[2].updateUI(w => {
-                const items = securites.map(val => {
+            lists[2].updateUI((w) => {
+                const items = securites.map((val) => {
                     const name = val.name;
                     const status = (1431).format(TextFormat.StringId);//val.getFlag("slowWalk")
                     return UIListViewItem.$([name, "", status]);
                 });
                 w.clearAllItems().addItems(items);
             });
-            counts[2].updateUI(w => {
+            counts[2].updateUI((w) => {
                 w.text(`${securites.length} ${(1861).stringId()}`.color(TextColor.Black));
             });
         }
@@ -323,18 +323,18 @@ var ListWindow = function (): UIWindowProxy {
         refresh();
     });
 
-    tabs[3].didLoad(w => {
+    tabs[3].didLoad((w) => {
         console.log("tab 3 didLoad");
     });
-    tabs[3].didAppear(w => {
+    tabs[3].didAppear((w) => {
         console.log("tab 3 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
             const entertainers = staffs.filter(val => val.staffType === "entertainer");
             console.log(entertainers)
-            lists[3].updateUI(w => {
-                const items = entertainers.map(val => {
+            lists[3].updateUI((w) => {
+                const items = entertainers.map((val) => {
                     const name = val.name;
                     const costume = UIImage.$(5118 + val.costume).string();
                     const status = (1431).format(TextFormat.StringId);//val.getFlag("slowWalk")
@@ -342,7 +342,7 @@ var ListWindow = function (): UIWindowProxy {
                 });
                 w.clearAllItems().addItems(items);
             });
-            counts[3].updateUI(w => {
+            counts[3].updateUI((w) => {
                 w.text(`${entertainers.length} ${(1862).stringId()}`.color(TextColor.Black));
             });
         }
@@ -356,10 +356,10 @@ var ListWindow = function (): UIWindowProxy {
         refresh();
     });
 
-    window.didLoad(window => {
+    window.didLoad((window) => {
         console.log("window didLoad");
     });
-    window.didAppear(window => {
+    window.didAppear((window) => {
         console.log("window didAppear");
     });
 
@@ -447,7 +447,7 @@ var ViewportWindow = function (): UIWindowProxy {
 
     //Bind
     function updateFlags(isChecked: boolean, ...flags: UIViewportFlag[]) {
-        viewport.updateUI(w => {
+        viewport.updateUI((w) => {
             const current = w.getFlags();
             if (isChecked) {
                 w.flags(current | flags.reduce((acc, val) => acc | val));
@@ -518,43 +518,43 @@ var ViewportWindow = function (): UIWindowProxy {
 
     function updateButton(zoom: UIViewportScale) {
         const inDisable = zoom == 0;
-        buttonZoomIn.updateUI(w => {
+        buttonZoomIn.updateUI((w) => {
             w.isDisabled(inDisable);
         });
         const outDisable = zoom == 3;
-        buttonZoomOut.updateUI(w => {
+        buttonZoomOut.updateUI((w) => {
             w.isDisabled(outDisable);
         });
     }
 
-    viewport.didLoad(w => {
+    viewport.didLoad((w) => {
         updateButton(w.getZoom());
     });
 
-    buttonZoomIn.onClick(_ => {
-        viewport.updateUI(w => {
+    buttonZoomIn.onClick(() => {
+        viewport.updateUI((w) => {
             const nextScale = w.getZoom() - 1;
             w.zoom(nextScale);
             updateButton(nextScale);
         });
     });
-    buttonZoomOut.onClick(_ => {
-        viewport.updateUI(w => {
+    buttonZoomOut.onClick(() => {
+        viewport.updateUI((w) => {
             const nextScale = w.getZoom() + 1;
             w.zoom(nextScale);
             updateButton(nextScale);
         });
     });
-    buttonRocateM2C.onClick(_ => {
+    buttonRocateM2C.onClick(() => {
         viewport.ui?.mainViewportScrollToThis();
     });
-    buttonRotate.onClick(_ => {
-        viewport.updateUI(w => {
+    buttonRotate.onClick(() => {
+        viewport.updateUI((w) => {
             const nextRotation = (w.getRotation() + 1) % 4;
             w.rotation(nextRotation);
         });
     });
-    buttonRocateC2M.onClick(_ => {
+    buttonRocateC2M.onClick(() => {
         viewport.ui?.moveToMainViewportCenter();
     });
 
@@ -649,13 +649,13 @@ var BasicWindow = function (): UIWindowProxy {
 
     //Bind
     buttonBasicTitle.onClick(() => {
-        buttonBasicImage.updateUI(w => {
+        buttonBasicImage.updateUI((w) => {
             w.isDisabled(!w.getIsDisabled());
         });
     });
 
     buttonToggleImage.onClick(() => {
-        buttonToggleTitle.updateUI(w => {
+        buttonToggleTitle.updateUI((w) => {
             w.isVisible(!w.getIsVisible());
         });
     });
@@ -755,78 +755,78 @@ var MainWindow = function (): UIWindowProxy {
         .theme({ primary: UIColor.DarkOrange });
 
     //Bind
-    basicButton.onClick(_ => {
+    basicButton.onClick(() => {
         const mainOrigin = window.ui?.getOrigin() ?? UIPointZero;
         basicWindow.show();
-        basicWindow.updateUI(w => {
+        basicWindow.updateUI((w) => {
             const width = w.getSize().width;
             w.origin({ x: mainOrigin.x - width, y: mainOrigin.y - 160 });
         });
     });
-    viewportButton.onClick(_ => {
+    viewportButton.onClick(() => {
         const mainOrigin = window.ui?.getOrigin() ?? UIPointZero;
         viewportWindow.show();
-        viewportWindow.updateUI(w => {
+        viewportWindow.updateUI((w) => {
             const width = w.getSize().width;
             w.origin({ x: mainOrigin.x - width, y: mainOrigin.y + 170 });
         });
     });
-    listButton.onClick(_ => {
+    listButton.onClick(() => {
         const mainOrigin = window.ui?.getOrigin() ?? UIPointZero;
         const mainSize = window.ui?.getSize() ?? UISizeZero;
         listWindow.show();
-        listWindow.updateUI(w => {
+        listWindow.updateUI((w) => {
             w.origin({ x: mainOrigin.x + mainSize.width, y: mainOrigin.y - 160 });
         });
     });
-    imageButton.onClick(_ => {
+    imageButton.onClick(() => {
         const mainOrigin = window.ui?.getOrigin() ?? UIPointZero;
         const mainSize = window.ui?.getSize() ?? UISizeZero;
         imageWindow.show();
-        imageWindow.updateUI(w => {
+        imageWindow.updateUI((w) => {
             w.origin({ x: mainOrigin.x + mainSize.width, y: mainOrigin.y + 110 });
         });
     });
     tabVisibleCheckbox1_1.onChange((_, isChecked: boolean) => {
-        tab2.updateUI(tab => {
+        tab2.updateUI((tab) => {
             tab.isHidden(isChecked);
         });
     });
     tabVisibleCheckbox1_2.onChange((_, isChecked: boolean) => {
-        tab3.updateUI(tab => {
+        tab3.updateUI((tab) => {
             tab.isHidden(isChecked);
         });
     });
     tabVisibleCheckbox1_3.onChange((_, isChecked: boolean) => {
-        tab4.updateUI(tab => {
+        tab4.updateUI((tab) => {
             tab.isHidden(isChecked);
         });
     });
     tabVisibleCheckbox1_4.onChange((_, isChecked: boolean) => {
-        tab5.updateUI(tab => {
+        tab5.updateUI((tab) => {
             tab.isHidden(isChecked);
         });
     });
-    tabVisibleButton1.onClick(_ => {
-        tab3.updateUI(tab => {
+    tabVisibleButton1.onClick(() => {
+        tab3.updateUI((tab) => {
             tab.isHidden(true);
         });
         tabVisibleCheckbox1_2.ui?.isChecked(true);
     });
-    tabVisibleButton2.onClick(_ => {
-        tab4.updateUI(tab => {
+    tabVisibleButton2.onClick(() => {
+        tab4.updateUI((tab) => {
             tab.isHidden(true);
         });
         tabVisibleCheckbox1_3.ui?.isChecked(true);
     });
-    tabVisibleButton3.onClick(_ => {
-        tab5.updateUI(tab => {
+    tabVisibleButton3.onClick(() => {
+        tab5.updateUI((tab) => {
             tab.isHidden(true);
         });
         tabVisibleCheckbox1_4.ui?.isChecked(true);
     });
-    updateTabButton.onClick(w => {
-        tab2.updateUI(tab => {
+    updateTabButton.onClick((w) => {
+        tab2.updateUI((tab) => {
             tab.title("Updated!");
             tab.theme({ primary: UIColor.DarkBlue });
             tab.image(UIImageTabStaffOptions);
@@ -835,15 +835,15 @@ var MainWindow = function (): UIWindowProxy {
             tab.spacing(8);
             tab.maxSize({ height: 600 });
         });
-        w.updateUI(_ => {
+        w.updateUI(() => {
             w.title("Move to first tab")
         });
-        window.updateUI(window => {
+        window.updateUI((window) => {
             window.selectedTabIndex(0);
         });
     });
 
-    window.onClose(_ => {
+    window.onClose(() => {
         basicWindow.close();
         viewportWindow.close();
         listWindow.close();
