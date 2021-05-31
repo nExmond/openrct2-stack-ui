@@ -13,7 +13,6 @@ class UIConstructor {
      * Constructs tabs
      * @param tabs 
      * @param selectedIndex After configuring the tab, specify the first tab to be used.
-     * @param interactor 
      * @param spacing 
      * @param padding 
      * @returns construction result
@@ -21,7 +20,6 @@ class UIConstructor {
     constructTabs(
         tabs: UITab[],
         selectedIndex: number,
-        interactor: UIInteractor,
         spacing: number,
         padding: UIEdgeInsets,
         minSize: UISize,
@@ -39,8 +37,7 @@ class UIConstructor {
                 .spacing(tab.getSpacing() ?? spacing)
                 .padding(tab.getPadding() ?? padding);
 
-            tab._setInteractor(interactor);
-            const results = this.construct(stack, interactor, UIEdgeInsetsTabContainer, minSize, usingBuild);
+            const results = this.construct(stack, UIEdgeInsetsTabContainer, minSize, usingBuild);
             const tempTabMinSize = tab.getMinSize();
             const tabMinWidth = tempTabMinSize?.width ?? 0;
             const tabMinHeight = tempTabMinSize?.height ?? 0;
@@ -78,18 +75,15 @@ Errors can occur when resizing windows.`);
     /**
      * Constructs single container
      * @param stack 
-     * @param interactor 
      * @param insets 
      * @returns construction result
      */
     construct(
         stack: UIStack,
-        interactor: UIInteractor,
         insets: UIEdgeInsets = UIEdgeInsetsContainer,
         minSize: UISize,
         usingBuild: boolean = true
     ): UIConstructResult {
-        this._injectInteractor(stack, interactor);
         const size = this.calculateBounds(stack, insets, usingBuild)
         return {
             size: {
@@ -98,13 +92,6 @@ Errors can occur when resizing windows.`);
             },
             widgets: stack._getWidgets()
         };
-    }
-
-    _injectInteractor(stack: UIStack, interactor: UIInteractor) {
-
-        const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
-        stack._setInteractor(interactor);
-        flattedChilds.forEach(val => val._setInteractor(interactor));
     }
 
     protected calculateBounds(stack: UIStack, insets: UIEdgeInsets, usingBuild: boolean = true): UISize {
@@ -146,6 +133,7 @@ Errors can occur when resizing windows.`);
         flattedChilds.forEach(val => val._loadWidget());
     }
 
+
     /**
      * Notifies all widgets that tab has been displayed.
      * @param tab
@@ -163,6 +151,7 @@ Errors can occur when resizing windows.`);
         const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
         flattedChilds.forEach(val => val._appearWidget());
     }
+
 
     /**
      * Updates the tab to the given size.

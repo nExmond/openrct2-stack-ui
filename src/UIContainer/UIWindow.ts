@@ -217,7 +217,6 @@ class UIWindow {
                 this._uiConstructor.constructTabs(
                     tabs,
                     selectedTabIndex,
-                    this._interactor,
                     this._spacing,
                     this._padding,
                     minSize,
@@ -290,7 +289,6 @@ class UIWindow {
                 this._uiConstructor.constructTabs(
                     tabs,
                     selectedTabIndex,
-                    this._interactor,
                     this._spacing,
                     this._padding,
                     minSize,
@@ -319,7 +317,6 @@ class UIWindow {
 
             const construct = this._uiConstructor.construct(
                 this._singleContentView,
-                this._interactor,
                 UIEdgeInsetsContainer,
                 minSize,
                 false
@@ -349,6 +346,27 @@ class UIWindow {
         const tabsWidgets: UIWidget<any>[] | undefined = this._tabs?.map(val => val._getContentView()._getUIWidgets()).flatMap();
         tabsWidgets?.forEach(val => intervalHelper.enabled(val.getName(), flag));
     }
+    
+    protected _injectInteractorTabs(tabs: UITab[]) {
+        for (var tab of tabs) {
+            tab._setInteractor(this._interactor);
+            this._injectInteractorSingle(tab._getContentView());
+        }
+    }
+
+    protected _injectInteractorSingle(stack: UIStack) {
+        const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        stack._setInteractor(this._interactor);
+        flattedChilds.forEach(val => val._setInteractor(this._interactor));
+    }
+
+    protected _injectInteractor() {
+        if (this._usingTab()) {
+            this._injectInteractorTabs(this._tabs!);
+        } else {
+            this._injectInteractorSingle(this._singleContentView!);
+        }
+    }
 
     //Public
 
@@ -363,6 +381,8 @@ class UIWindow {
             return this;
         }
 
+        this._injectInteractor();
+
         var title!: string;
         var colors!: UIColor[];
 
@@ -371,7 +391,6 @@ class UIWindow {
         if (typeof singlecontentView !== "undefined") {
             const constructed = this._uiConstructor.construct(
                 singlecontentView,
-                this._interactor,
                 UIEdgeInsetsContainer,
                 this._originalMinSize
             );
@@ -391,7 +410,6 @@ class UIWindow {
             const constructed = this._uiConstructor.constructTabs(
                 tabs,
                 selectedTabIndex,
-                this._interactor,
                 this._spacing,
                 this._padding,
                 this._originalMinSize,
