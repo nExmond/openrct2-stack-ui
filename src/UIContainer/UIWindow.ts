@@ -374,7 +374,7 @@ class UIWindow {
      * Shows a window on the screen.
      * Initial data is set at this point.
      */
-    show(): this {
+    show(origin: UIOptionalPoint = UIOptionalPointDefault): this {
 
         if (this._isOpened()) {
             this.bringToFront();
@@ -445,8 +445,8 @@ class UIWindow {
 
         const windowDesc: WindowDesc = {
             classification: this._title,
-            x: this._origin?.x,
-            y: this._origin?.y,
+            x: origin.x ?? this._origin?.x,
+            y: origin.y ?? this._origin?.y,
             width: size.width,
             height: size.height,
             title: title,
