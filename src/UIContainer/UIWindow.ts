@@ -703,11 +703,12 @@ class UIWindow {
      * * If you change this attribute after the window is opened, the window is internally reopened for the changes to apply.
      */
     selectedTabIndex(val: number): this {
-        if (this._usingTab()) {
-            if (val >= 0 && val < this._tabs!.length) {
+        const tabs = this._getVisibleTabs();
+        if (typeof tabs !== "undefined") {
+            if (val >= 0 && val < tabs.length) {
                 this._selectedTabIndex = val;
             } else {
-                console.log(`WARNING: Enter a value within a valid range. (0 ~ ${this._tabs!.length - 1})`);
+                console.log(`WARNING: Enter a value within a valid range. (0 ~ ${tabs.length - 1})`);
             }
         } else {
             console.log("WARNING: This property is only available if the window is created with a tab type.");
@@ -717,6 +718,20 @@ class UIWindow {
 
     getSelectedTabIndex(): number {
         return this._selectedTabIndex;
+    }
+
+    /**
+     * Set the selected tab name of the window.
+     * * If you change this attribute after the window is opened, the window is internally reopened for the changes to apply.
+     */
+    selectedTabName(name: string): this {
+        const index = this._getVisibleTabs()?.firstIndex(val => val.getName() === name) ?? 0;
+        this.selectedTabIndex(index);
+        return this;
+    }
+
+    getSelectedTabName(): string | undefined {
+        return this._getSelectedTab()?.getName();
     }
 
     /**
@@ -774,9 +789,6 @@ class UIWindow {
     /**
      * Find the tab contained in window by its unique name.
      */
-    // getUITab(name: string): UITab | undefined {
-    //     return this._tabs?.first(val => val.getName() === name);
-    // }
     getUITab(name: string): UITab | undefined {
         return this._tabs?.first(val => val.getName() === name);
     }
@@ -786,12 +798,9 @@ class UIWindow {
      */
     getUIWidget<T extends UIWidget<any>>(name: string): T | undefined {
         var finded: T | undefined = this._singleContentView?._getUIWidgets().first(val => val.getName() === name);
-        const tabs = this._getVisibleTabs();
-        // if (typeof finded === "undefined" && typeof this._tabs !== "undefined") {
-        if (typeof finded === "undefined" && typeof tabs !== "undefined") {
-            // for (var index = 0; index < this._tabs.length; index++) {
-            for (var index = 0; index < tabs.length; index++) {
-                finded = tabs[index].getUIWidget(name);
+        if (typeof finded === "undefined" && typeof this._tabs !== "undefined") {
+            for (var index = 0; index < this._tabs.length; index++) {
+                finded = this._tabs[index].getUIWidget(name);
                 if (typeof finded !== "undefined") {
                     break;
                 }
