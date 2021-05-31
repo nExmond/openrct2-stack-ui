@@ -51,7 +51,6 @@ var ImageWindow = function (): UIWindowProxy {
             UIImageView.$(UIImage.$(5627)).bind(imageView3),
             UISpacer.$(),
             UIImageView.$(UIImageTesting).bind(imageView4)
-            // UIImageView.$(UIImageTabStaffHandymen).bind(imageView4)
         ).spacing(4),
         UIStack.$H(
             UIStack.$VG(
@@ -704,47 +703,89 @@ var MainWindow = function (): UIWindowProxy {
             UIButton.$("Viewport").bind(viewportButton),
             UIButton.$("List").bind(listButton),
             UIButton.$("Image").bind(imageButton),
-            UISpacer.$(8),
-            UICheckbox.$("isHidden of tab2").bind(tabVisibleCheckbox1_1),
-            UICheckbox.$("isHidden of tab3").bind(tabVisibleCheckbox1_2),
-            UICheckbox.$("isHidden of tab4").bind(tabVisibleCheckbox1_3),
-            UICheckbox.$("isHidden of tab5").bind(tabVisibleCheckbox1_4),
+            UIStack.$VG(
+                UICheckbox.$("tab2.isHidden").bind(tabVisibleCheckbox1_1)
+                    .isChecked(true),
+                UICheckbox.$("tab3.isHidden").bind(tabVisibleCheckbox1_2)
+                    .isChecked(true),
+                UICheckbox.$("tab4.isHidden").bind(tabVisibleCheckbox1_3)
+                    .isChecked(true),
+                UICheckbox.$("tab5.isHidden").bind(tabVisibleCheckbox1_4)
+                    .isChecked(true)
+            ).title("Tab Control"),
             UISpacer.$(10)
         ).bind(tab1)
+            .image(UIImageTabPark)
             .isExpandable(true),
         UITab.$(
-            UIImageView.$(UIImageMenuLogo),
+            UIStack.$H(
+                UISpacer.$(),
+                UIImageView.$(UIImageMenuLogo),
+                UISpacer.$()
+            ),
             UIButton.$("Update and move to first tab").bind(updateTabButton)
         ).bind(tab2)
-            .title("StackUI Demo - 2"),
+            .image(UIImageTabRide)
+            .title("StackUI Demo: tab2")
+            .isHidden(true),
         UITab.$(
             UIButton.$("Hide this tab").bind(tabVisibleButton1)
         ).bind(tab3)
-            .image(UIImageTabTimer),
+            .image(UIImageTabTimer)
+            .theme({ primary: UIColor.DarkBrown })
+            .title("StackUI Demo: tab3")
+            .isHidden(true),
         UITab.$(
             UIButton.$("Hide this tab").bind(tabVisibleButton2)
         ).bind(tab4)
-            .image(UIImageTabPaint),
+            .image(UIImageTabPaint)
+            .theme({ primary: UIColor.DarkOliveGreen })
+            .title("StackUI Demo: tab4")
+            .isHidden(true),
         UITab.$(
             UIButton.$("Hide this tab").bind(tabVisibleButton3)
         ).bind(tab5)
             .image(UIImageTabMusic)
+            .theme({ primary: UIColor.DarkPurple })
+            .title("StackUI Demo: tab5")
+            .isHidden(true)
     ).bind(window)
         .spacing(2)
-        .origin({ x: ui.width / 2, y: ui.height / 4 });
+        .origin({ x: ui.width / 2, y: ui.height / 4 })
+        .theme({ primary: UIColor.DarkOrange });
 
     //Bind
     basicButton.onClick(_ => {
+        const mainOrigin = window.ui?.getOrigin() ?? UIPointZero;
         basicWindow.show();
+        basicWindow.updateUI(w => {
+            const width = w.getSize().width;
+            w.origin({ x: mainOrigin.x - width, y: mainOrigin.y - 160 });
+        });
     });
     viewportButton.onClick(_ => {
+        const mainOrigin = window.ui?.getOrigin() ?? UIPointZero;
         viewportWindow.show();
+        viewportWindow.updateUI(w => {
+            const width = w.getSize().width;
+            w.origin({ x: mainOrigin.x - width, y: mainOrigin.y + 170 });
+        });
     });
     listButton.onClick(_ => {
+        const mainOrigin = window.ui?.getOrigin() ?? UIPointZero;
+        const mainSize = window.ui?.getSize() ?? UISizeZero;
         listWindow.show();
+        listWindow.updateUI(w => {
+            w.origin({ x: mainOrigin.x + mainSize.width, y: mainOrigin.y - 160 });
+        });
     });
     imageButton.onClick(_ => {
+        const mainOrigin = window.ui?.getOrigin() ?? UIPointZero;
+        const mainSize = window.ui?.getSize() ?? UISizeZero;
         imageWindow.show();
+        imageWindow.updateUI(w => {
+            w.origin({ x: mainOrigin.x + mainSize.width, y: mainOrigin.y + 110 });
+        });
     });
     tabVisibleCheckbox1_1.onChange((_, isChecked: boolean) => {
         tab2.updateUI(tab => {
