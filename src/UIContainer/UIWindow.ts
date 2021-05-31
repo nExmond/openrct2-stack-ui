@@ -182,8 +182,12 @@ class UIWindow {
         window.x = ui.width + 1;
         window.y = ui.height + 1;
 
-        window.x = this._origin.x;
-        window.y = this._origin.y;
+        if (typeof this._origin.x !== "undefined") {
+            window.x = this._origin.x;
+        }
+        if (typeof this._origin.y !== "undefined") {
+            window.y = this._origin.y;
+        }
     }
 
     protected _onUpdate() {
@@ -335,7 +339,7 @@ class UIWindow {
             window._maxSize = maxSize;
             window._isExpandable = isExpandable;
             window._title = title;
-        })
+        });
     }
 
     protected _activeInterval(flag: boolean) {
@@ -436,7 +440,11 @@ class UIWindow {
 
         this._selectedTabIndex = selectedTabIndex;
         
-        const size = {
+        this._origin = {
+            x: origin.x ?? this._origin?.x,
+            y: origin.y ?? this._origin?.y
+        }
+        this._size = {
             width: Math.max(Math.min(this._size?.width ?? 0, this._maxSize.width), this._minSize.width),
             height: Math.max(Math.min(this._size?.height ?? 0, this._maxSize.height), this._minSize.height)
         }
@@ -445,10 +453,10 @@ class UIWindow {
 
         const windowDesc: WindowDesc = {
             classification: this._title,
-            x: origin.x ?? this._origin?.x,
-            y: origin.y ?? this._origin?.y,
-            width: size.width,
-            height: size.height,
+            x: this._origin.x,
+            y: this._origin.y,
+            width: this._size.width,
+            height: this._size.height,
             title: title,
             minWidth: this._isExpandable ? this._minSize.width : undefined,
             maxWidth: this._isExpandable ? this._maxSize.width : undefined,
@@ -482,10 +490,9 @@ class UIWindow {
 
         this._window = ui.openWindow(windowDesc);
         this._initialSize = {
-            width: this._window.width,
-            height: this._window.height
+            width: this._size.width,
+            height: this._size.height
         };
-        this._sync();
 
         this._interactor._findWidget((name) => {
             return this.findWidget(name);

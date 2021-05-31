@@ -60,7 +60,7 @@ Errors can occur when resizing windows.`);
             }
         }
         const selectedTab = tabs[selectedIndex];
-        const tempMinSize = selectedTab.getMinSize();
+        const tempMinSize = selectedTab._getMinSize();
         const selectedTabMinSize = {
             width: tempMinSize?.width ?? minSize.width,
             height: tempMinSize?.height ?? minSize.height
