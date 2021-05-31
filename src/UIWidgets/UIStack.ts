@@ -259,7 +259,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
     }
 
     protected _update(widget: any) {
-        if (this._isGrouped && widget) {
+        if (this._isGrouped) {
             super._update(widget);
             widget.name = this._groupTitle ?? "";
         }

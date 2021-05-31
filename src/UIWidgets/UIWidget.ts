@@ -140,7 +140,9 @@ ${this.description()}`);
 
     _loadWidget() {
         this._interactor._update(this._name, (widget: T) => {
-            this._widget = widget;
+            if (widget) {
+                this._widget = widget;
+            }
         });
         this._didLoad?.call(this, this);
     }

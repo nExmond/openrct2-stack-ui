@@ -507,8 +507,8 @@ class UIWindow {
         if (typeof singlecontentView !== "undefined") {
             this._uiConstructor.didLoad(singlecontentView);
         }
-        if (typeof this._tabs !== "undefined") {
-            this._uiConstructor.didLoadTabs(this._tabs);
+        if (typeof tabs !== "undefined") {
+            this._uiConstructor.didLoadTabs(tabs);
         }
         this._reflectResizingFromChild();
 
