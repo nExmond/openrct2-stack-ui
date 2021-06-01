@@ -598,7 +598,7 @@ var MainWindow = function () {
         listWindow.close();
         imageWindow.close();
     });
-    window.didAppear(function (w) {
+    window.didLoad(function (w) {
         var width = w.getSize().width;
         w.updateUI(function (w) {
             w.origin({ x: (ui.width - width) / 2, y: ui.height / 4 });

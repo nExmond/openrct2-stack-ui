@@ -898,7 +898,7 @@ var MainWindow = function (): UIWindowProxy {
         listWindow.close();
         imageWindow.close();
     });
-    window.didAppear((w) => {
+    window.didLoad((w) => {
         const width = w.getSize().width;
         w.updateUI((w) => {
             w.origin({ x: (ui.width - width) / 2, y: ui.height / 4 });
