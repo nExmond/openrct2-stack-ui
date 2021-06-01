@@ -30,6 +30,7 @@ class UIWidget<T extends Widget> {
 
     protected _didLoad?: (widget: UIWidget<T>) => void;
     protected _didAppear?: (widget: UIWidget<T>) => void;
+    protected _didDisappear?: (widget: UIWidget<T>) => void;
 
     constructor() {
         //https://stackoverflow.com/questions/13613524/get-an-objects-class-name-at-runtime
@@ -154,6 +155,10 @@ ${this.description()}`);
             }
         });
         this._didAppear?.call(this, this);
+    }
+
+    _disappearWidget() {
+        this._didDisappear?.call(this, this);
     }
 
     _resetSize() {
@@ -414,6 +419,15 @@ ${this.description()}`);
      */
     didAppear(block: (widget: this) => void): this {
         this._didAppear = block as (widget: UIWidget<T>) => void;
+        return this;
+    }
+
+    /**
+     * This function is called after the widget invisible.
+     * ! It has nothing to do with the isVisible property.
+     */
+    didDisappear(block: (widget: this) => void): this {
+        this._didDisappear = block as (widget: UIWidget<T>) => void;
         return this;
     }
 

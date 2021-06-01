@@ -227,11 +227,17 @@ var ListWindow = function (): UIWindowProxy {
     lists[0].didAppear((w) => {
         console.log("List 1 didAppear");
     });
+    lists[0].didDisappear((w) => {
+        console.log("List 1 didDisappear");
+    });
     lists[1].didLoad((w) => {
         console.log("List 2 didLoad");
     });
     lists[1].didAppear((w) => {
         console.log("List 2 didAppear");
+    });
+    lists[1].didDisappear((w) => {
+        console.log("List 2 didDisappear");
     });
     lists[2].didLoad((w) => {
         console.log("List 3 didLoad");
@@ -239,11 +245,17 @@ var ListWindow = function (): UIWindowProxy {
     lists[2].didAppear((w) => {
         console.log("List 3 didAppear");
     });
+    lists[2].didDisappear((w) => {
+        console.log("List 3 didDisappear");
+    });
     lists[3].didLoad((w) => {
         console.log("List 4 didLoad");
     });
     lists[3].didAppear((w) => {
         console.log("List 4 didAppear");
+    });
+    lists[3].didDisappear((w) => {
+        console.log("List 4 didDisappear");
     });
 
 
@@ -282,6 +294,9 @@ var ListWindow = function (): UIWindowProxy {
 
         refresh();
     });
+    tabs[0].didDisappear((w) => {
+        console.log("Tab 1 didDisappear");
+    });
 
     tabs[1].didLoad((w) => {
         console.log("Tab 2 didLoad");
@@ -316,6 +331,9 @@ var ListWindow = function (): UIWindowProxy {
 
         refresh();
     });
+    tabs[1].didDisappear((w) => {
+        console.log("Tab 2 didDisappear");
+    });
 
     tabs[2].didLoad((w) => {
         console.log("Tab 3 didLoad");
@@ -347,6 +365,9 @@ var ListWindow = function (): UIWindowProxy {
         });
 
         refresh();
+    });
+    tabs[2].didDisappear((w) => {
+        console.log("Tab 3 didDisappear");
     });
 
     tabs[3].didLoad((w) => {
@@ -381,12 +402,18 @@ var ListWindow = function (): UIWindowProxy {
 
         refresh();
     });
+    tabs[3].didDisappear((w) => {
+        console.log("Tab 4 didDisappear");
+    });
 
     window.didLoad((window) => {
         console.log("window didLoad");
     });
     window.didAppear((window) => {
         console.log("window didAppear");
+    });
+    window.didDisappear((w) => {
+        console.log("window didDisappear");
     });
 
     return window;

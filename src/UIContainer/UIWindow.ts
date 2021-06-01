@@ -19,7 +19,7 @@ class UIWindow {
     protected _singleContentView?: UIStack;
     protected _tabs?: UITab[];
 
-    // protected _prevSelectedTabIndex: number = 0;
+    protected _prevSelectedTabIndex: number = 0;
     protected _selectedTabIndex: number = 0;
 
     protected _origin!: UIPoint;
@@ -46,6 +46,7 @@ class UIWindow {
 
     protected _didLoad?: (window: this) => void;
     protected _didAppear?: (window: this) => void;
+    protected _didDisappear?: (window: this) => void;
 
     protected _internalClose: boolean = false;
     protected _firstOpen = true;
@@ -218,6 +219,13 @@ class UIWindow {
             const currentTab = this._getTab(selectedTabIndex);
             if (typeof currentTab !== "undefined") {
 
+                if (selectedTabIndex != this._prevSelectedTabIndex) {
+                    const prevTab = this._getTab(this._prevSelectedTabIndex);
+                    if (typeof prevTab !== "undefined") {
+                        this.__didDisappearTab(prevTab);
+                    }
+                }
+
                 currentTab._getContentView()._resetSize();
                 this._uiConstructor.constructTabs(
                     tabs,
@@ -248,7 +256,9 @@ class UIWindow {
                 const title = currentTab.getTitle() ?? this._originalTitle;
                 const isExpandable = this._initialExpandableState || currentTab.getIsExpandable();
 
-                this._uiConstructor.didAppearTab(currentTab);
+                if (selectedTabIndex != this._prevSelectedTabIndex) {
+                    this.__didAppearTab(currentTab);
+                }
 
                 this._refresh(size);
                 this.updateUI((window) => {
@@ -343,6 +353,23 @@ class UIWindow {
         });
     }
 
+    protected __onClose() {
+        if (!this._internalClose) {
+            this._onClose?.call(this, this);
+
+            if (this._usingTab()) {
+                const tab = this._getSelectedTab();
+                if (typeof tab !== "undefined") {
+                    this.__didDisappearTab(tab);
+                }
+            } else {
+                this.__didDisappear(this._singleContentView!);
+            }
+            this._didDisappear?.call(this, this);
+        }
+        this._internalClose = false;
+    }
+
     protected _activeInterval(flag: boolean) {
 
         const singleWidgets = this._singleContentView?._getUIWidgets();
@@ -371,6 +398,62 @@ class UIWindow {
         } else {
             this._injectInteractorSingle(this._singleContentView!);
         }
+    }
+
+    /**
+     * Notifies all widgets that tab configuration is complete.
+     * @param tabs 
+     */
+    protected __didLoadTabs(tabs: UITab[]) {
+        for (var tab of tabs) {
+            this.__didLoad(tab._getContentView());
+            tab._getDidLoad()?.call(tab, tab);
+        }
+    }
+
+    /**
+     * Notifies all widgets that single container configuration is complete.
+     * @param stack 
+     */
+    protected __didLoad(stack: UIStack) {
+        const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        flattedChilds.forEach(val => val._loadWidget());
+    }
+
+    /**
+     * Notifies all widgets that tab has been displayed.
+     * @param tab
+     */
+     protected __didAppearTab(tab: UITab) {
+        this.__didAppear(tab._getContentView());
+        tab._getDidAppear()?.call(tab, tab);
+    }
+    
+    /**
+     * Notifies all widgets that single container has been displayed.
+     * @param stack 
+     */
+    protected __didAppear(stack: UIStack) {
+        const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        flattedChilds.forEach(val => val._appearWidget());
+    }
+
+    /**
+     * Notifies all widgets that the tab is disabled.
+     * @param tab
+     */
+     protected __didDisappearTab(tab: UITab) {
+        this.__didDisappear(tab._getContentView());
+        tab._getDidDisappear()?.call(tab, tab);
+    }
+    
+    /**
+     * Notifies all widgets that a single container has become invisible.
+     * @param stack 
+     */
+    protected __didDisappear(stack: UIStack) {
+        const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
+        flattedChilds.forEach(val => val._disappearWidget());
     }
 
     //Public
@@ -468,10 +551,7 @@ class UIWindow {
             tabs: tabDescriptions,
             tabIndex: this._selectedTabIndex,
             onClose: () => {
-                if (!this._internalClose) {
-                    this._onClose?.call(this, this);
-                }
-                this._internalClose = false;
+                this.__onClose();
                 this._activeInterval(false);
                 this._window = undefined;
             },
@@ -481,10 +561,10 @@ class UIWindow {
             onTabChange: () => {
                 const changedTabIndex = this._window?.tabIndex ?? 0;
                 // if (changedTabIndex !== this._prevSelectedTabIndex) {
+                this._prevSelectedTabIndex = this._selectedTabIndex;
                 this._selectedTabIndex = changedTabIndex
                 this._internalOnTabChange();
                 this._onTabChange?.call(this, this, this._selectedTabIndex);
-                //     this._prevSelectedTabIndex = changedTabIndex;
                 // }
             }
         }
@@ -519,10 +599,10 @@ class UIWindow {
         //didLoad
         if (this._firstOpen) {
             if (typeof singlecontentView !== "undefined") {
-                this._uiConstructor.didLoad(singlecontentView);
+                this.__didLoad(singlecontentView);
             }
             if (typeof tabs !== "undefined") {
-                this._uiConstructor.didLoadTabs(tabs);
+                this.__didLoadTabs(tabs);
             }
             this._didLoad?.call(this, this);
         }
@@ -530,12 +610,12 @@ class UIWindow {
 
         //didAppear
         if (typeof singlecontentView !== "undefined") {
-            this._uiConstructor.didAppear(singlecontentView);
+            this.__didAppear(singlecontentView);
         }
         if (typeof tabs !== "undefined") {
             const selectedTab = this._getSelectedTab();
             if (typeof selectedTab !== "undefined") {
-                this._uiConstructor.didAppearTab(selectedTab);
+                this.__didAppearTab(selectedTab);
             }
         }
         this._didAppear?.call(this, this);
@@ -800,6 +880,14 @@ class UIWindow {
      */
     didAppear(block: (window: this) => void): this {
         this._didAppear = block;
+        return this;
+    }
+    
+    /**
+     * This function is called after the window is closed.
+     */
+     didDisappear(block: (window: this) => void): this {
+        this._didDisappear = block;
         return this;
     }
 

@@ -48,6 +48,13 @@ class UITabProxy implements UIProxy<UITab> {
     didAppear(block: (ui: UITab) => void) {
         this.ui?.didAppear(block);
     }
+    
+    /**
+     * This function is called after the tab is disabled.
+     */
+     didDisappear(block: (ui: UITab) => void) {
+        this.ui?.didDisappear(block);
+    }
 }
 
 /**

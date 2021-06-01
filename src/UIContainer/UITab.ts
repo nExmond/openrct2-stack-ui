@@ -28,6 +28,7 @@ class UITab {
 
     protected _didLoad?: (tab: this) => void;
     protected _didAppear?: (tab: this) => void;
+    protected _didDisappear?: (tab: this) => void;
 
     /**
      * Creates an instance of uitab.
@@ -82,6 +83,10 @@ class UITab {
 
     _getDidAppear(): ((tab: this) => void) | undefined {
         return this._didAppear;
+    }
+
+    _getDidDisappear(): ((tab: this) => void) | undefined {
+        return this._didDisappear;
     }
 
     _setInteractor(val: UIInteractor) {
@@ -281,6 +286,14 @@ class UITab {
      */
      didAppear(block: (tab: this) => void): this {
         this._didAppear = block;
+        return this;
+    }
+
+    /**
+     * This function is called after the tab is disabled.
+     */
+     didDisappear(block: (tab: this) => void): this {
+        this._didDisappear = block;
         return this;
     }
 

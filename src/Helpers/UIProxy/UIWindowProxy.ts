@@ -56,6 +56,13 @@ class UIWindowProxy implements UIProxy<UIWindow> {
     didAppear(block: (ui: UIWindow) => void) {
         this.ui?.didAppear(block);
     }
+    
+    /**
+     * This function is called after the window is closed.
+     */
+     didDisappear(block: (ui: UIWindow) => void) {
+        this.ui?.didDisappear(block);
+    }
 
     /**
      * Execute the function when selecting a tab.

@@ -115,46 +115,6 @@ Errors can occur when resizing windows.`);
     }
 
     /**
-     * Notifies all widgets that tab configuration is complete.
-     * @param tabs 
-     */
-    didLoadTabs(tabs: UITab[]) {
-        for (var tab of tabs) {
-            this.didLoad(tab._getContentView());
-            tab._getDidLoad()?.call(tab, tab);
-        }
-    }
-
-    /**
-     * Notifies all widgets that single container configuration is complete.
-     * @param stack 
-     */
-    didLoad(stack: UIStack) {
-        const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
-        flattedChilds.forEach(val => val._loadWidget());
-    }
-
-
-    /**
-     * Notifies all widgets that tab has been displayed.
-     * @param tab
-     */
-    didAppearTab(tab: UITab) {
-        this.didAppear(tab._getContentView());
-        tab._getDidAppear()?.call(tab, tab);
-    }
-    
-    /**
-     * Notifies all widgets that single container has been displayed.
-     * @param stack 
-     */
-    didAppear(stack: UIStack) {
-        const flattedChilds: UIWidget<any>[] = stack._getUIWidgets();
-        flattedChilds.forEach(val => val._appearWidget());
-    }
-
-
-    /**
      * Updates the tab to the given size.
      * @param tab 
      * @param windowSize 

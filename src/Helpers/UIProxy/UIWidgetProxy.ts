@@ -51,6 +51,14 @@ class UIWidgetProxy<T extends UIWidget<any>> implements UIProxy<T> {
         this.ui?.didAppear(block);
     }
 
+    /**
+     * This function is called after the widget invisible.
+     * ! It has nothing to do with the isVisible property.
+     */
+    didDisappear(block: (ui: T) => void) {
+        this.ui?.didDisappear(block);
+    }
+
     //---
 
     /**

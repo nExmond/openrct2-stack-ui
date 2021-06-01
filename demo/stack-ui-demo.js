@@ -144,11 +144,17 @@ var ListWindow = function () {
     lists[0].didAppear(function (w) {
         console.log("List 1 didAppear");
     });
+    lists[0].didDisappear(function (w) {
+        console.log("List 1 didDisappear");
+    });
     lists[1].didLoad(function (w) {
         console.log("List 2 didLoad");
     });
     lists[1].didAppear(function (w) {
         console.log("List 2 didAppear");
+    });
+    lists[1].didDisappear(function (w) {
+        console.log("List 2 didDisappear");
     });
     lists[2].didLoad(function (w) {
         console.log("List 3 didLoad");
@@ -156,11 +162,17 @@ var ListWindow = function () {
     lists[2].didAppear(function (w) {
         console.log("List 3 didAppear");
     });
+    lists[2].didDisappear(function (w) {
+        console.log("List 3 didDisappear");
+    });
     lists[3].didLoad(function (w) {
         console.log("List 4 didLoad");
     });
     lists[3].didAppear(function (w) {
         console.log("List 4 didAppear");
+    });
+    lists[3].didDisappear(function (w) {
+        console.log("List 4 didDisappear");
     });
     tabs[0].didLoad(function (w) {
         console.log("Tab 1 didLoad");
@@ -193,6 +205,9 @@ var ListWindow = function () {
         });
         refresh();
     });
+    tabs[0].didDisappear(function (w) {
+        console.log("Tab 1 didDisappear");
+    });
     tabs[1].didLoad(function (w) {
         console.log("Tab 2 didLoad");
     });
@@ -222,6 +237,9 @@ var ListWindow = function () {
         });
         refresh();
     });
+    tabs[1].didDisappear(function (w) {
+        console.log("Tab 2 didDisappear");
+    });
     tabs[2].didLoad(function (w) {
         console.log("Tab 3 didLoad");
     });
@@ -248,6 +266,9 @@ var ListWindow = function () {
             }
         });
         refresh();
+    });
+    tabs[2].didDisappear(function (w) {
+        console.log("Tab 3 didDisappear");
     });
     tabs[3].didLoad(function (w) {
         console.log("Tab 4 didLoad");
@@ -277,11 +298,17 @@ var ListWindow = function () {
         });
         refresh();
     });
+    tabs[3].didDisappear(function (w) {
+        console.log("Tab 4 didDisappear");
+    });
     window.didLoad(function (window) {
         console.log("window didLoad");
     });
     window.didAppear(function (window) {
         console.log("window didAppear");
+    });
+    window.didDisappear(function (w) {
+        console.log("window didDisappear");
     });
     return window;
 };
@@ -1430,6 +1457,10 @@ var UIWidget = (function () {
         });
         (_a = this._didAppear) === null || _a === void 0 ? void 0 : _a.call(this, this);
     };
+    UIWidget.prototype._disappearWidget = function () {
+        var _a;
+        (_a = this._didDisappear) === null || _a === void 0 ? void 0 : _a.call(this, this);
+    };
     UIWidget.prototype._resetSize = function () {
         if (typeof this._initialSize !== "undefined") {
             this._size = this._initialSize;
@@ -1624,6 +1655,10 @@ var UIWidget = (function () {
         this._didAppear = block;
         return this;
     };
+    UIWidget.prototype.didDisappear = function (block) {
+        this._didDisappear = block;
+        return this;
+    };
     UIWidget.prototype.description = function () {
         return "name: " + this._name + "\norigin: { x: " + this._origin.x + ", y: " + this._origin.y + " }\nsize: { width: " + this._size.width + ", height: " + this._size.height + " }";
     };
@@ -1670,6 +1705,9 @@ var UITab = (function () {
     };
     UITab.prototype._getDidAppear = function () {
         return this._didAppear;
+    };
+    UITab.prototype._getDidDisappear = function () {
+        return this._didDisappear;
     };
     UITab.prototype._setInteractor = function (val) {
         this._interactor = val;
@@ -1797,6 +1835,10 @@ var UITab = (function () {
     };
     UITab.prototype.didAppear = function (block) {
         this._didAppear = block;
+        return this;
+    };
+    UITab.prototype.didDisappear = function (block) {
+        this._didDisappear = block;
         return this;
     };
     UITab.prototype.getUIWidget = function (name) {
@@ -2165,27 +2207,6 @@ var UIConstructor = (function () {
             height: estimatedSize.height + insets.top + insets.bottom
         };
     };
-    UIConstructor.prototype.didLoadTabs = function (tabs) {
-        var _a;
-        for (var _i = 0, tabs_1 = tabs; _i < tabs_1.length; _i++) {
-            var tab = tabs_1[_i];
-            this.didLoad(tab._getContentView());
-            (_a = tab._getDidLoad()) === null || _a === void 0 ? void 0 : _a.call(tab, tab);
-        }
-    };
-    UIConstructor.prototype.didLoad = function (stack) {
-        var flattedChilds = stack._getUIWidgets();
-        flattedChilds.forEach(function (val) { return val._loadWidget(); });
-    };
-    UIConstructor.prototype.didAppearTab = function (tab) {
-        var _a;
-        this.didAppear(tab._getContentView());
-        (_a = tab._getDidAppear()) === null || _a === void 0 ? void 0 : _a.call(tab, tab);
-    };
-    UIConstructor.prototype.didAppear = function (stack) {
-        var flattedChilds = stack._getUIWidgets();
-        flattedChilds.forEach(function (val) { return val._appearWidget(); });
-    };
     UIConstructor.prototype.refreshTab = function (tab, windowSize) {
         this.refresh(tab._getContentView(), windowSize, UIEdgeInsetsTabContainer);
     };
@@ -2228,6 +2249,10 @@ var UITabProxy = (function () {
         var _a;
         (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didAppear(block);
     };
+    UITabProxy.prototype.didDisappear = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didDisappear(block);
+    };
     return UITabProxy;
 }());
 var UITP = (function (_super) {
@@ -2259,6 +2284,10 @@ var UIWidgetProxy = (function () {
     UIWidgetProxy.prototype.didAppear = function (block) {
         var _a;
         (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didAppear(block);
+    };
+    UIWidgetProxy.prototype.didDisappear = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didDisappear(block);
     };
     UIWidgetProxy.prototype.onClick = function (block) {
         var anyUI = this.ui;
@@ -2343,6 +2372,7 @@ var UIWindow = (function () {
         this._id = this.constructor.name + '-' + uuid();
         this._uiConstructor = new UIConstructor();
         this._interactor = new UIInteractor();
+        this._prevSelectedTabIndex = 0;
         this._selectedTabIndex = 0;
         this._defaultTheme = UIWindowThemeDefault;
         this._theme = UIWindowThemeDefault;
@@ -2501,6 +2531,12 @@ var UIWindow = (function () {
             var selectedTabIndex = this._getSelectedTabIndex();
             var currentTab = this._getTab(selectedTabIndex);
             if (typeof currentTab !== "undefined") {
+                if (selectedTabIndex != this._prevSelectedTabIndex) {
+                    var prevTab = this._getTab(this._prevSelectedTabIndex);
+                    if (typeof prevTab !== "undefined") {
+                        this.__didDisappearTab(prevTab);
+                    }
+                }
                 currentTab._getContentView()._resetSize();
                 this._uiConstructor.constructTabs(tabs, selectedTabIndex, this._spacing, this._padding, minSize, maxSize, false, true);
                 var tempTabMinSize = currentTab._getMinSize();
@@ -2519,7 +2555,9 @@ var UIWindow = (function () {
                 };
                 var title_1 = (_e = currentTab.getTitle()) !== null && _e !== void 0 ? _e : this._originalTitle;
                 var isExpandable_1 = this._initialExpandableState || currentTab.getIsExpandable();
-                this._uiConstructor.didAppearTab(currentTab);
+                if (selectedTabIndex != this._prevSelectedTabIndex) {
+                    this.__didAppearTab(currentTab);
+                }
                 this._refresh(size);
                 this.updateUI(function (window) {
                     window._minSize = tabMinSize_1;
@@ -2588,6 +2626,23 @@ var UIWindow = (function () {
             window._title = title;
         });
     };
+    UIWindow.prototype.__onClose = function () {
+        var _a, _b;
+        if (!this._internalClose) {
+            (_a = this._onClose) === null || _a === void 0 ? void 0 : _a.call(this, this);
+            if (this._usingTab()) {
+                var tab = this._getSelectedTab();
+                if (typeof tab !== "undefined") {
+                    this.__didDisappearTab(tab);
+                }
+            }
+            else {
+                this.__didDisappear(this._singleContentView);
+            }
+            (_b = this._didDisappear) === null || _b === void 0 ? void 0 : _b.call(this, this);
+        }
+        this._internalClose = false;
+    };
     UIWindow.prototype._activeInterval = function (flag) {
         var _a, _b;
         var singleWidgets = (_a = this._singleContentView) === null || _a === void 0 ? void 0 : _a._getUIWidgets();
@@ -2596,8 +2651,8 @@ var UIWindow = (function () {
         tabsWidgets === null || tabsWidgets === void 0 ? void 0 : tabsWidgets.forEach(function (val) { return intervalHelper.enabled(val.getName(), flag); });
     };
     UIWindow.prototype._injectInteractorTabs = function (tabs) {
-        for (var _i = 0, tabs_2 = tabs; _i < tabs_2.length; _i++) {
-            var tab = tabs_2[_i];
+        for (var _i = 0, tabs_1 = tabs; _i < tabs_1.length; _i++) {
+            var tab = tabs_1[_i];
             tab._setInteractor(this._interactor);
             this._injectInteractorSingle(tab._getContentView());
         }
@@ -2615,6 +2670,36 @@ var UIWindow = (function () {
         else {
             this._injectInteractorSingle(this._singleContentView);
         }
+    };
+    UIWindow.prototype.__didLoadTabs = function (tabs) {
+        var _a;
+        for (var _i = 0, tabs_2 = tabs; _i < tabs_2.length; _i++) {
+            var tab = tabs_2[_i];
+            this.__didLoad(tab._getContentView());
+            (_a = tab._getDidLoad()) === null || _a === void 0 ? void 0 : _a.call(tab, tab);
+        }
+    };
+    UIWindow.prototype.__didLoad = function (stack) {
+        var flattedChilds = stack._getUIWidgets();
+        flattedChilds.forEach(function (val) { return val._loadWidget(); });
+    };
+    UIWindow.prototype.__didAppearTab = function (tab) {
+        var _a;
+        this.__didAppear(tab._getContentView());
+        (_a = tab._getDidAppear()) === null || _a === void 0 ? void 0 : _a.call(tab, tab);
+    };
+    UIWindow.prototype.__didAppear = function (stack) {
+        var flattedChilds = stack._getUIWidgets();
+        flattedChilds.forEach(function (val) { return val._appearWidget(); });
+    };
+    UIWindow.prototype.__didDisappearTab = function (tab) {
+        var _a;
+        this.__didDisappear(tab._getContentView());
+        (_a = tab._getDidDisappear()) === null || _a === void 0 ? void 0 : _a.call(tab, tab);
+    };
+    UIWindow.prototype.__didDisappear = function (stack) {
+        var flattedChilds = stack._getUIWidgets();
+        flattedChilds.forEach(function (val) { return val._disappearWidget(); });
     };
     UIWindow.prototype.show = function (origin) {
         var _this = this;
@@ -2683,11 +2768,7 @@ var UIWindow = (function () {
             tabs: tabDescriptions,
             tabIndex: this._selectedTabIndex,
             onClose: function () {
-                var _a;
-                if (!_this._internalClose) {
-                    (_a = _this._onClose) === null || _a === void 0 ? void 0 : _a.call(_this, _this);
-                }
-                _this._internalClose = false;
+                _this.__onClose();
                 _this._activeInterval(false);
                 _this._window = undefined;
             },
@@ -2697,6 +2778,7 @@ var UIWindow = (function () {
             onTabChange: function () {
                 var _a, _b, _c;
                 var changedTabIndex = (_b = (_a = _this._window) === null || _a === void 0 ? void 0 : _a.tabIndex) !== null && _b !== void 0 ? _b : 0;
+                _this._prevSelectedTabIndex = _this._selectedTabIndex;
                 _this._selectedTabIndex = changedTabIndex;
                 _this._internalOnTabChange();
                 (_c = _this._onTabChange) === null || _c === void 0 ? void 0 : _c.call(_this, _this, _this._selectedTabIndex);
@@ -2726,20 +2808,20 @@ var UIWindow = (function () {
         });
         if (this._firstOpen) {
             if (typeof singlecontentView !== "undefined") {
-                this._uiConstructor.didLoad(singlecontentView);
+                this.__didLoad(singlecontentView);
             }
             if (typeof tabs !== "undefined") {
-                this._uiConstructor.didLoadTabs(tabs);
+                this.__didLoadTabs(tabs);
             }
             (_p = this._didLoad) === null || _p === void 0 ? void 0 : _p.call(this, this);
         }
         if (typeof singlecontentView !== "undefined") {
-            this._uiConstructor.didAppear(singlecontentView);
+            this.__didAppear(singlecontentView);
         }
         if (typeof tabs !== "undefined") {
             var selectedTab = this._getSelectedTab();
             if (typeof selectedTab !== "undefined") {
-                this._uiConstructor.didAppearTab(selectedTab);
+                this.__didAppearTab(selectedTab);
             }
         }
         (_q = this._didAppear) === null || _q === void 0 ? void 0 : _q.call(this, this);
@@ -2913,6 +2995,10 @@ var UIWindow = (function () {
         this._didAppear = block;
         return this;
     };
+    UIWindow.prototype.didDisappear = function (block) {
+        this._didDisappear = block;
+        return this;
+    };
     UIWindow.prototype.getUITab = function (name) {
         var _a;
         return (_a = this._tabs) === null || _a === void 0 ? void 0 : _a.first(function (val) { return val.getName() === name; });
@@ -2958,6 +3044,10 @@ var UIWindowProxy = (function () {
     UIWindowProxy.prototype.didAppear = function (block) {
         var _a;
         (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didAppear(block);
+    };
+    UIWindowProxy.prototype.didDisappear = function (block) {
+        var _a;
+        (_a = this.ui) === null || _a === void 0 ? void 0 : _a.didDisappear(block);
     };
     UIWindowProxy.prototype.onTabChange = function (block) {
         var _a;
