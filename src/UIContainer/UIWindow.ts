@@ -48,6 +48,7 @@ class UIWindow {
     protected _didAppear?: (window: this) => void;
 
     protected _internalClose: boolean = false;
+    protected _firstOpen = true;
 
     /**
      * Creates an instance of *UIWindow*.
@@ -99,7 +100,7 @@ class UIWindow {
 
     protected _getSelectedTabIndex(): number {
         const numberOfTabs = this._getVisibleTabs()?.length ?? 0;
-        return Math.min(Math.max(numberOfTabs-1, 0), this._selectedTabIndex);
+        return Math.min(Math.max(numberOfTabs - 1, 0), this._selectedTabIndex);
     }
 
     protected _getSelectedTab(): UITab | undefined {
@@ -350,7 +351,7 @@ class UIWindow {
         const tabsWidgets: UIWidget<any>[] | undefined = this._tabs?.map(val => val._getContentView()._getUIWidgets()).flatMap();
         tabsWidgets?.forEach(val => intervalHelper.enabled(val.getName(), flag));
     }
-    
+
     protected _injectInteractorTabs(tabs: UITab[]) {
         for (var tab of tabs) {
             tab._setInteractor(this._interactor);
@@ -439,7 +440,7 @@ class UIWindow {
         }
 
         this._selectedTabIndex = selectedTabIndex;
-        
+
         this._origin = {
             x: origin.x ?? this._origin?.x,
             y: origin.y ?? this._origin?.y
@@ -488,12 +489,15 @@ class UIWindow {
             }
         }
 
+
         this._window = ui.openWindow(windowDesc);
         this._initialSize = {
             width: this._size.width,
             height: this._size.height
         };
 
+
+        //bind interactor
         this._interactor._findWidget((name) => {
             return this.findWidget(name);
         });
@@ -511,18 +515,20 @@ class UIWindow {
             return this._theme;
         });
 
-        if (typeof singlecontentView !== "undefined") {
-            this._uiConstructor.didLoad(singlecontentView);
+
+        //didLoad
+        if (this._firstOpen) {
+            if (typeof singlecontentView !== "undefined") {
+                this._uiConstructor.didLoad(singlecontentView);
+            }
+            if (typeof tabs !== "undefined") {
+                this._uiConstructor.didLoadTabs(tabs);
+            }
+            this._didLoad?.call(this, this);
         }
-        if (typeof tabs !== "undefined") {
-            this._uiConstructor.didLoadTabs(tabs);
-        }
-        this._reflectResizingFromChild();
 
-        this._didLoad?.call(this, this);
 
-        //---
-
+        //didAppear
         if (typeof singlecontentView !== "undefined") {
             this._uiConstructor.didAppear(singlecontentView);
         }
@@ -532,8 +538,12 @@ class UIWindow {
                 this._uiConstructor.didAppearTab(selectedTab);
             }
         }
-
         this._didAppear?.call(this, this);
+
+
+        this._reflectResizingFromChild();
+        this._firstOpen = false;
+
 
         return this;
     }

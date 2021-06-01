@@ -138,11 +138,35 @@ var ListWindow = function () {
         .maxSize({ width: 500, height: 450 })
         .isExpandable(true)
         .spacing(2);
+    lists[0].didLoad(function (w) {
+        console.log("List 1 didLoad");
+    });
+    lists[0].didAppear(function (w) {
+        console.log("List 1 didAppear");
+    });
+    lists[1].didLoad(function (w) {
+        console.log("List 2 didLoad");
+    });
+    lists[1].didAppear(function (w) {
+        console.log("List 2 didAppear");
+    });
+    lists[2].didLoad(function (w) {
+        console.log("List 3 didLoad");
+    });
+    lists[2].didAppear(function (w) {
+        console.log("List 3 didAppear");
+    });
+    lists[3].didLoad(function (w) {
+        console.log("List 4 didLoad");
+    });
+    lists[3].didAppear(function (w) {
+        console.log("List 4 didAppear");
+    });
     tabs[0].didLoad(function (w) {
-        console.log("Tab 0 didLoad");
+        console.log("Tab 1 didLoad");
     });
     tabs[0].didAppear(function (w) {
-        console.log("Tab 0 didAppear");
+        console.log("Tab 1 didAppear");
         var refresh = function () {
             var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
             var handymans = staffs.filter(function (val) { return val.staffType === "handyman"; });
@@ -170,10 +194,10 @@ var ListWindow = function () {
         refresh();
     });
     tabs[1].didLoad(function (w) {
-        console.log("Tab 1 didLoad");
+        console.log("Tab 2 didLoad");
     });
     tabs[1].didAppear(function (w) {
-        console.log("Tab 1 didAppear");
+        console.log("Tab 2 didAppear");
         var refresh = function () {
             var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
             var mechanics = staffs.filter(function (val) { return val.staffType === "mechanic"; });
@@ -199,10 +223,10 @@ var ListWindow = function () {
         refresh();
     });
     tabs[2].didLoad(function (w) {
-        console.log("Tab 2 didLoad");
+        console.log("Tab 3 didLoad");
     });
     tabs[2].didAppear(function (w) {
-        console.log("Tab 2 didAppear");
+        console.log("Tab 3 didAppear");
         var refresh = function () {
             var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
             var securites = staffs.filter(function (val) { return val.staffType === "security"; });
@@ -226,14 +250,13 @@ var ListWindow = function () {
         refresh();
     });
     tabs[3].didLoad(function (w) {
-        console.log("Tab 3 didLoad");
+        console.log("Tab 4 didLoad");
     });
     tabs[3].didAppear(function (w) {
-        console.log("Tab 3 didAppear");
+        console.log("Tab 4 didAppear");
         var refresh = function () {
             var staffs = map.getAllEntities("peep").filter(function (val) { return val.peepType === "staff"; }).sort(function (a, b) { return a.id - b.id; });
             var entertainers = staffs.filter(function (val) { return val.staffType === "entertainer"; });
-            console.log(entertainers);
             lists[3].updateUI(function (w) {
                 var items = entertainers.map(function (val) {
                     var name = val.name;
@@ -427,10 +450,8 @@ var MainWindow = function () {
     var tabVisibleButton2 = UIWP.$();
     var tabVisibleButton3 = UIWP.$();
     var updateTabButton = UIWP.$();
-    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("List").bind(listButton), UIButton.$("Image").bind(imageButton), UIStack.$VG(UICheckbox.$("Tab 2").bind(tabVisibleCheckbox1_1), UICheckbox.$("Tab 3").bind(tabVisibleCheckbox1_2)
-        .isChecked(true), UICheckbox.$("Tab 4").bind(tabVisibleCheckbox1_3)
-        .isChecked(true), UICheckbox.$("Tab 5").bind(tabVisibleCheckbox1_4)
-        .isChecked(true)).title("Tabs"), UISpacer.$(10)).bind(tab1)
+    UIWindow.$T("StackUI Demo", UITab.$(UIButton.$("Basic").bind(basicButton), UIButton.$("Viewport").bind(viewportButton), UIButton.$("List").bind(listButton), UIButton.$("Image").bind(imageButton), UIStack.$VG(UICheckbox.$("Tab 2").bind(tabVisibleCheckbox1_1)
+        .isChecked(true), UICheckbox.$("Tab 3").bind(tabVisibleCheckbox1_2), UICheckbox.$("Tab 4").bind(tabVisibleCheckbox1_3), UICheckbox.$("Tab 5").bind(tabVisibleCheckbox1_4)).title("Tabs"), UISpacer.$(10)).bind(tab1)
         .image(UIImageTabPark)
         .title("StackUI Demo: Tab 1")
         .isExpandable(true), UITab.$(UIStack.$H(UISpacer.$(), UIImageView.$(UIImageMenuLogo), UISpacer.$()), UIButton.$("Update and move to first tab").bind(updateTabButton)).bind(tab2)
@@ -488,22 +509,22 @@ var MainWindow = function () {
     });
     tabVisibleCheckbox1_1.onChange(function (_, isChecked) {
         tab2.updateUI(function (tab) {
-            tab.isHidden(isChecked);
+            tab.isHidden(!isChecked);
         });
     });
     tabVisibleCheckbox1_2.onChange(function (_, isChecked) {
         tab3.updateUI(function (tab) {
-            tab.isHidden(isChecked);
+            tab.isHidden(!isChecked);
         });
     });
     tabVisibleCheckbox1_3.onChange(function (_, isChecked) {
         tab4.updateUI(function (tab) {
-            tab.isHidden(isChecked);
+            tab.isHidden(!isChecked);
         });
     });
     tabVisibleCheckbox1_4.onChange(function (_, isChecked) {
         tab5.updateUI(function (tab) {
-            tab.isHidden(isChecked);
+            tab.isHidden(!isChecked);
         });
     });
     tabVisibleButton1.onClick(function () {
@@ -511,21 +532,21 @@ var MainWindow = function () {
         tab3.updateUI(function (tab) {
             tab.isHidden(true);
         });
-        (_a = tabVisibleCheckbox1_2.ui) === null || _a === void 0 ? void 0 : _a.isChecked(true);
+        (_a = tabVisibleCheckbox1_2.ui) === null || _a === void 0 ? void 0 : _a.isChecked(false);
     });
     tabVisibleButton2.onClick(function () {
         var _a;
         tab4.updateUI(function (tab) {
             tab.isHidden(true);
         });
-        (_a = tabVisibleCheckbox1_3.ui) === null || _a === void 0 ? void 0 : _a.isChecked(true);
+        (_a = tabVisibleCheckbox1_3.ui) === null || _a === void 0 ? void 0 : _a.isChecked(false);
     });
     tabVisibleButton3.onClick(function () {
         var _a;
         tab5.updateUI(function (tab) {
             tab.isHidden(true);
         });
-        (_a = tabVisibleCheckbox1_4.ui) === null || _a === void 0 ? void 0 : _a.isChecked(true);
+        (_a = tabVisibleCheckbox1_4.ui) === null || _a === void 0 ? void 0 : _a.isChecked(false);
     });
     updateTabButton.onClick(function (w) {
         tab2.updateUI(function (tab) {
@@ -1400,7 +1421,13 @@ var UIWidget = (function () {
         (_a = this._didLoad) === null || _a === void 0 ? void 0 : _a.call(this, this);
     };
     UIWidget.prototype._appearWidget = function () {
+        var _this = this;
         var _a;
+        this._interactor._update(this._name, function (widget) {
+            if (widget) {
+                _this._widget = widget;
+            }
+        });
         (_a = this._didAppear) === null || _a === void 0 ? void 0 : _a.call(this, this);
     };
     UIWidget.prototype._resetSize = function () {
@@ -2139,9 +2166,12 @@ var UIConstructor = (function () {
         };
     };
     UIConstructor.prototype.didLoadTabs = function (tabs) {
-        var flattedChilds = tabs.map(function (val) { return val._getContentView()._getUIWidgets(); }).flatMap();
-        flattedChilds.forEach(function (val) { return val._loadWidget(); });
-        tabs.forEach(function (val) { var _a; return (_a = val._getDidLoad()) === null || _a === void 0 ? void 0 : _a.call(val, val); });
+        var _a;
+        for (var _i = 0, tabs_1 = tabs; _i < tabs_1.length; _i++) {
+            var tab = tabs_1[_i];
+            this.didLoad(tab._getContentView());
+            (_a = tab._getDidLoad()) === null || _a === void 0 ? void 0 : _a.call(tab, tab);
+        }
     };
     UIConstructor.prototype.didLoad = function (stack) {
         var flattedChilds = stack._getUIWidgets();
@@ -2149,7 +2179,7 @@ var UIConstructor = (function () {
     };
     UIConstructor.prototype.didAppearTab = function (tab) {
         var _a;
-        this.didLoad(tab._getContentView());
+        this.didAppear(tab._getContentView());
         (_a = tab._getDidAppear()) === null || _a === void 0 ? void 0 : _a.call(tab, tab);
     };
     UIConstructor.prototype.didAppear = function (stack) {
@@ -2325,6 +2355,7 @@ var UIWindow = (function () {
         this._originalMaxSize = { width: ui.width, height: ui.height };
         this._maxSize = { width: ui.width, height: ui.height };
         this._internalClose = false;
+        this._firstOpen = true;
         this._title = title;
         this._originalTitle = title;
         if (contents.length > 0) {
@@ -2565,8 +2596,8 @@ var UIWindow = (function () {
         tabsWidgets === null || tabsWidgets === void 0 ? void 0 : tabsWidgets.forEach(function (val) { return intervalHelper.enabled(val.getName(), flag); });
     };
     UIWindow.prototype._injectInteractorTabs = function (tabs) {
-        for (var _i = 0, tabs_1 = tabs; _i < tabs_1.length; _i++) {
-            var tab = tabs_1[_i];
+        for (var _i = 0, tabs_2 = tabs; _i < tabs_2.length; _i++) {
+            var tab = tabs_2[_i];
             tab._setInteractor(this._interactor);
             this._injectInteractorSingle(tab._getContentView());
         }
@@ -2693,14 +2724,15 @@ var UIWindow = (function () {
         this._interactor._windowTheme(function () {
             return _this._theme;
         });
-        if (typeof singlecontentView !== "undefined") {
-            this._uiConstructor.didLoad(singlecontentView);
+        if (this._firstOpen) {
+            if (typeof singlecontentView !== "undefined") {
+                this._uiConstructor.didLoad(singlecontentView);
+            }
+            if (typeof tabs !== "undefined") {
+                this._uiConstructor.didLoadTabs(tabs);
+            }
+            (_p = this._didLoad) === null || _p === void 0 ? void 0 : _p.call(this, this);
         }
-        if (typeof tabs !== "undefined") {
-            this._uiConstructor.didLoadTabs(tabs);
-        }
-        this._reflectResizingFromChild();
-        (_p = this._didLoad) === null || _p === void 0 ? void 0 : _p.call(this, this);
         if (typeof singlecontentView !== "undefined") {
             this._uiConstructor.didAppear(singlecontentView);
         }
@@ -2711,6 +2743,8 @@ var UIWindow = (function () {
             }
         }
         (_q = this._didAppear) === null || _q === void 0 ? void 0 : _q.call(this, this);
+        this._reflectResizingFromChild();
+        this._firstOpen = false;
         return this;
     };
     UIWindow.prototype.updateUI = function (block) {

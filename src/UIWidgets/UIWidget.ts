@@ -109,7 +109,7 @@ class UIWidget<T extends Widget> {
     /**
      * ! If you get an error, you may have attempted an update before the widget is displayed.
      */
-     protected _update(widget: T) {
+    protected _update(widget: T) {
         if (widget) {
             widget.x = this._origin.x;
             widget.y = this._origin.y;
@@ -148,6 +148,11 @@ ${this.description()}`);
     }
 
     _appearWidget() {
+        this._interactor._update(this._name, (widget: T) => {
+            if (widget) {
+                this._widget = widget;
+            }
+        });
         this._didAppear?.call(this, this);
     }
 
@@ -403,11 +408,11 @@ ${this.description()}`);
         this._didLoad = block as (widget: UIWidget<T>) => void;
         return this;
     }
-    
+
     /**
      * This function is called immediately after the widget is displayed.
      */
-     didAppear(block: (widget: this) => void): this {
+    didAppear(block: (widget: this) => void): this {
         this._didAppear = block as (widget: UIWidget<T>) => void;
         return this;
     }

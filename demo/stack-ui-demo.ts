@@ -221,11 +221,37 @@ var ListWindow = function (): UIWindowProxy {
         .spacing(2)
 
     //Bind
+    lists[0].didLoad((w) => {
+        console.log("List 1 didLoad");
+    });
+    lists[0].didAppear((w) => {
+        console.log("List 1 didAppear");
+    });
+    lists[1].didLoad((w) => {
+        console.log("List 2 didLoad");
+    });
+    lists[1].didAppear((w) => {
+        console.log("List 2 didAppear");
+    });
+    lists[2].didLoad((w) => {
+        console.log("List 3 didLoad");
+    });
+    lists[2].didAppear((w) => {
+        console.log("List 3 didAppear");
+    });
+    lists[3].didLoad((w) => {
+        console.log("List 4 didLoad");
+    });
+    lists[3].didAppear((w) => {
+        console.log("List 4 didAppear");
+    });
+
+
     tabs[0].didLoad((w) => {
-        console.log("Tab 0 didLoad");
+        console.log("Tab 1 didLoad");
     });
     tabs[0].didAppear((w) => {
-        console.log("Tab 0 didAppear");
+        console.log("Tab 1 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
@@ -258,10 +284,10 @@ var ListWindow = function (): UIWindowProxy {
     });
 
     tabs[1].didLoad((w) => {
-        console.log("Tab 1 didLoad");
+        console.log("Tab 2 didLoad");
     });
     tabs[1].didAppear((w) => {
-        console.log("Tab 1 didAppear");
+        console.log("Tab 2 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
@@ -292,10 +318,10 @@ var ListWindow = function (): UIWindowProxy {
     });
 
     tabs[2].didLoad((w) => {
-        console.log("Tab 2 didLoad");
+        console.log("Tab 3 didLoad");
     });
     tabs[2].didAppear((w) => {
-        console.log("Tab 2 didAppear");
+        console.log("Tab 3 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
@@ -324,15 +350,15 @@ var ListWindow = function (): UIWindowProxy {
     });
 
     tabs[3].didLoad((w) => {
-        console.log("Tab 3 didLoad");
+        console.log("Tab 4 didLoad");
     });
     tabs[3].didAppear((w) => {
-        console.log("Tab 3 didAppear");
+        console.log("Tab 4 didAppear");
 
         var refresh = () => {
             const staffs = map.getAllEntities("peep").filter(val => val.peepType === "staff").sort((a, b) => a.id - b.id) as Staff[]
             const entertainers = staffs.filter(val => val.staffType === "entertainer");
-            console.log(entertainers)
+
             lists[3].updateUI((w) => {
                 const items = entertainers.map((val) => {
                     const name = val.name;
@@ -704,13 +730,11 @@ var MainWindow = function (): UIWindowProxy {
             UIButton.$("List").bind(listButton),
             UIButton.$("Image").bind(imageButton),
             UIStack.$VG(
-                UICheckbox.$("Tab 2").bind(tabVisibleCheckbox1_1),
-                UICheckbox.$("Tab 3").bind(tabVisibleCheckbox1_2)
+                UICheckbox.$("Tab 2").bind(tabVisibleCheckbox1_1)
                     .isChecked(true),
-                UICheckbox.$("Tab 4").bind(tabVisibleCheckbox1_3)
-                    .isChecked(true),
+                UICheckbox.$("Tab 3").bind(tabVisibleCheckbox1_2),
+                UICheckbox.$("Tab 4").bind(tabVisibleCheckbox1_3),
                 UICheckbox.$("Tab 5").bind(tabVisibleCheckbox1_4)
-                    .isChecked(true)
             ).title("Tabs"),
             UISpacer.$(10)
         ).bind(tab1)
@@ -787,41 +811,41 @@ var MainWindow = function (): UIWindowProxy {
     });
     tabVisibleCheckbox1_1.onChange((_, isChecked: boolean) => {
         tab2.updateUI((tab) => {
-            tab.isHidden(isChecked);
+            tab.isHidden(!isChecked);
         });
     });
     tabVisibleCheckbox1_2.onChange((_, isChecked: boolean) => {
         tab3.updateUI((tab) => {
-            tab.isHidden(isChecked);
+            tab.isHidden(!isChecked);
         });
     });
     tabVisibleCheckbox1_3.onChange((_, isChecked: boolean) => {
         tab4.updateUI((tab) => {
-            tab.isHidden(isChecked);
+            tab.isHidden(!isChecked);
         });
     });
     tabVisibleCheckbox1_4.onChange((_, isChecked: boolean) => {
         tab5.updateUI((tab) => {
-            tab.isHidden(isChecked);
+            tab.isHidden(!isChecked);
         });
     });
     tabVisibleButton1.onClick(() => {
         tab3.updateUI((tab) => {
             tab.isHidden(true);
         });
-        tabVisibleCheckbox1_2.ui?.isChecked(true);
+        tabVisibleCheckbox1_2.ui?.isChecked(false);
     });
     tabVisibleButton2.onClick(() => {
         tab4.updateUI((tab) => {
             tab.isHidden(true);
         });
-        tabVisibleCheckbox1_3.ui?.isChecked(true);
+        tabVisibleCheckbox1_3.ui?.isChecked(false);
     });
     tabVisibleButton3.onClick(() => {
         tab5.updateUI((tab) => {
             tab.isHidden(true);
         });
-        tabVisibleCheckbox1_4.ui?.isChecked(true);
+        tabVisibleCheckbox1_4.ui?.isChecked(false);
     });
     updateTabButton.onClick((w) => {
         tab2.updateUI((tab) => {

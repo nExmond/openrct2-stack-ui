@@ -119,9 +119,10 @@ Errors can occur when resizing windows.`);
      * @param tabs 
      */
     didLoadTabs(tabs: UITab[]) {
-        const flattedChilds: UIWidget<any>[] = tabs.map(val => val._getContentView()._getUIWidgets()).flatMap();
-        flattedChilds.forEach(val => val._loadWidget());
-        tabs.forEach(val => val._getDidLoad()?.call(val, val));
+        for (var tab of tabs) {
+            this.didLoad(tab._getContentView());
+            tab._getDidLoad()?.call(tab, tab);
+        }
     }
 
     /**
@@ -139,7 +140,7 @@ Errors can occur when resizing windows.`);
      * @param tab
      */
     didAppearTab(tab: UITab) {
-        this.didLoad(tab._getContentView());
+        this.didAppear(tab._getContentView());
         tab._getDidAppear()?.call(tab, tab);
     }
     
