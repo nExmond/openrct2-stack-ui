@@ -3,6 +3,8 @@
 /**
  * Please refer to the link for the sprite ID.
  * https://github.com/OpenRCT2/OpenRCT2/blob/develop/src/openrct2/sprites.h
+ * 
+ * * When building for distribution, set unused items as comments.
  */
 
 //UIImage constants
