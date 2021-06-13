@@ -436,7 +436,7 @@ var BasicWindow = function () {
     var buttonToggleImage = UIWP.$();
     var formatted = TB.$(TN.$(TN.$I(UIImageShopItemChips), TN.$(TN.$S("Chips\n..."), TN.$(TN.$S((1432).format(TextFormat.StringId, 53))
         .color(TextColor.BabyBlue), TN.$NL()).outline()).color(TextColor.Celadon), TN.$S((767).format(TextFormat.StringId, 77)), TN.$I(UIImageShopItemDoughnut), TN.$I(UIImageShopItemIceCream)).color(TextColor.Topaz)).build();
-    UIWindow.$("StackUI Demo - Basic", UIStack.$VG(UILabel.$(formatted, true)).title("Label"), UIStack.$HG(UIStack.$HG(UICheckbox.$("checkbox")).title("Basic"), UIStack.$HG(UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN()).title("Unnamed")).title("Checkbox"), UIStack.$HG(UIColorPicker.$(UIColor.BrightRed), UIColorPicker.$(UIColor.LightOrange), UIColorPicker.$(UIColor.BrightYellow), UIColorPicker.$(UIColor.BrightGreen), UIColorPicker.$(UIColor.LightBlue), UIColorPicker.$(UIColor.DarkBlue), UIColorPicker.$(UIColor.LightPurple)).title("ColorPicker"), UIStack.$VG(UIDropdown.$(["Item1", "Item2", "Item3"]).selected(1)).title("Dropdown"), UIStack.$VG(UISpinner.$()).title("Spinner"), UIStack.$VG(UITextBox.$()).title("TextBox"), UIStack.$HG(UIStack.$HG(UIButton.$("button", true).bind(buttonBasicTitle), UIButton.$I(UIImageGuests).bind(buttonBasicImage)).title("Basic"), UIStack.$HG(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageTabPaint).bind(buttonToggleImage)).title("Toggle"), UIStack.$HG(UIPageImageButton.$IP.apply(UIPageImageButton, [
+    UIWindow.$("StackUI Demo - Basic", UIStack.$VG(UILabel.$(formatted, true)).title("Label"), UIStack.$HG(UIStack.$HG(UICheckbox.$("checkbox")).title("Basic"), UIStack.$HG(UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN(), UICheckbox.$UN()).title("Unnamed")).title("Checkbox"), UIStack.$HG(UIColorPicker.$(UIColor.BrightRed), UIColorPicker.$(UIColor.LightOrange), UIColorPicker.$(UIColor.BrightYellow), UIColorPicker.$(UIColor.BrightGreen), UIColorPicker.$(UIColor.LightBlue), UIColorPicker.$(UIColor.DarkBlue), UIColorPicker.$(UIColor.LightPurple)).title("ColorPicker"), UIStack.$VG(UIDropdown.$(["Item1", "Item2", "Item3"]).selectedIndex(1)).title("Dropdown"), UIStack.$VG(UISpinner.$()).title("Spinner"), UIStack.$VG(UITextBox.$()).title("TextBox"), UIStack.$HG(UIStack.$HG(UIButton.$("button", true).bind(buttonBasicTitle), UIButton.$I(UIImageGuests).bind(buttonBasicImage)).title("Basic"), UIStack.$HG(UIToggleButton.$("button").bind(buttonToggleTitle), UIToggleButton.$I(UIImageTabPaint).bind(buttonToggleImage)).title("Toggle"), UIStack.$HG(UIPageImageButton.$IP.apply(UIPageImageButton, [
         UIImageAwardBestValue,
         UIImageAwardMostBeautiful,
         UIImageAwardBestStaff
@@ -628,7 +628,7 @@ var main = function () {
 };
 registerPlugin({
     name: "StackUI Demo",
-    version: "1.0.0",
+    version: "0.1.0",
     authors: ["nExmond"],
     type: "local",
     licence: "MIT",
@@ -2126,7 +2126,7 @@ var UIStack = (function (_super) {
         this._groupTitle = val;
         return this;
     };
-    UIStack.prototype.getGroupBoxTitle = function () {
+    UIStack.prototype.getTitle = function () {
         return this._groupTitle;
     };
     UIStack.prototype.getChilds = function () {
@@ -3630,7 +3630,7 @@ var UIDropdown = (function (_super) {
     UIDropdown.prototype.getItems = function () {
         return this._items;
     };
-    UIDropdown.prototype.selected = function (val) {
+    UIDropdown.prototype.selectedIndex = function (val) {
         if (val < this._items.length && val >= 0) {
             this._selectedIndex = val;
         }
@@ -4374,7 +4374,7 @@ var UIListView = (function (_super) {
         var _a;
         this._widget = __assign(__assign({}, this._buildBaseValues()), { type: "listview", scrollbars: this._scrollbarType, isStriped: this._isStriped, showColumnHeaders: this._showColumnHeaders, columns: (_a = this._columns) === null || _a === void 0 ? void 0 : _a.map(function (val) { return val._data(function (val) { return _this._applyFont(val); }); }), items: this._items.map(function (val) { return val._data(function (val) { return _this._applyFont(val); }); }), selectedCell: this._selectedCell, canSelect: this._canSelect, onHighlight: function (item, column) {
                 var _a;
-                (_a = _this._onHeighlight) === null || _a === void 0 ? void 0 : _a.call(_this, _this, column, item);
+                (_a = _this._onHighlight) === null || _a === void 0 ? void 0 : _a.call(_this, _this, column, item);
             }, onClick: function (item, column) {
                 var _a;
                 (_a = _this._onClick) === null || _a === void 0 ? void 0 : _a.call(_this, _this, column, item);
@@ -4435,7 +4435,7 @@ var UIListView = (function (_super) {
         this._items = [];
         return this;
     };
-    UIListView.prototype.selectCell = function (row, column) {
+    UIListView.prototype.selectedCell = function (row, column) {
         this._selectedCell = { row: row, column: column };
         return this;
     };
@@ -4461,8 +4461,8 @@ var UIListView = (function (_super) {
         var widget = this._widget;
         return widget.highlightedCell;
     };
-    UIListView.prototype.onHeighlight = function (block) {
-        this._onHeighlight = block;
+    UIListView.prototype.onHighlight = function (block) {
+        this._onHighlight = block;
         return this;
     };
     UIListView.prototype.onClick = function (block) {

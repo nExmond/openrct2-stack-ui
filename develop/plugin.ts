@@ -670,7 +670,7 @@ var BasicWindow = function (): UIWindowProxy {
             UIColorPicker.$(UIColor.LightPurple)
         ).title("ColorPicker"),
         UIStack.$VG(
-            UIDropdown.$(["Item1", "Item2", "Item3"]).selected(1)
+            UIDropdown.$(["Item1", "Item2", "Item3"]).selectedIndex(1)
         ).title("Dropdown"),
         UIStack.$VG(
             UISpinner.$()
@@ -938,7 +938,7 @@ var main = function () {
 registerPlugin(
     {
         name: "StackUI Demo",
-        version: "1.0.0",
+        version: "0.1.0",
         authors: ["nExmond"],
         type: "local",
         licence: "MIT",
