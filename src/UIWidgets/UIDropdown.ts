@@ -64,7 +64,7 @@ class UIDropdown extends UIWidget<DropdownWidget> {
     /**
      * Select an item within a range.
      */
-    selected(val: number): this {
+    selectedIndex(val: number): this {
         if (val < this._items.length && val >= 0) {
             this._selectedIndex = val;
         } else {

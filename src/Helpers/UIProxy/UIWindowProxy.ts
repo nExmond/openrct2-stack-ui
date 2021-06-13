@@ -60,7 +60,7 @@ class UIWindowProxy implements UIProxy<UIWindow> {
     /**
      * This function is called after the window is closed.
      */
-     didDisappear(block: (ui: UIWindow) => void) {
+    didDisappear(block: (ui: UIWindow) => void) {
         this.ui?.didDisappear(block);
     }
 

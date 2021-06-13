@@ -343,7 +343,7 @@ class UIStack extends UIWidget<GroupBoxWidget> {
         return this;
     }
 
-    getGroupBoxTitle(): string | undefined {
+    getTitle(): string | undefined {
         return this._groupTitle;
     }
 

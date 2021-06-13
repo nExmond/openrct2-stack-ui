@@ -18,7 +18,7 @@ class UIListView extends UIWidget<ListViewWidget> {
     protected _selectedCell?: RowColumn;
     protected _canSelect: boolean = false;
 
-    protected _onHeighlight?: (listView: this, column: number, item: number) => void;
+    protected _onHighlight?: (listView: this, column: number, item: number) => void;
     protected _onClick?: (listView: this, column: number, item: number) => void;
 
     /**
@@ -54,7 +54,7 @@ class UIListView extends UIWidget<ListViewWidget> {
             selectedCell: this._selectedCell,
             canSelect: this._canSelect,
             onHighlight: (item: number, column: number) => {
-                this._onHeighlight?.call(this, this, column, item);
+                this._onHighlight?.call(this, this, column, item);
             },
             onClick: (item: number, column: number) => {
                 this._onClick?.call(this, this, column, item);
@@ -154,7 +154,7 @@ class UIListView extends UIWidget<ListViewWidget> {
     /**
      * Selects cell
      */
-    selectCell(row: number, column: number): this {
+    selectedCell(row: number, column: number): this {
         this._selectedCell = { row: row, column: column };
         return this;
     }
@@ -201,8 +201,8 @@ class UIListView extends UIWidget<ListViewWidget> {
      * Observe the highlighted item.
      * @param block
      */
-    onHeighlight(block: (listView: this, column: number, item: number) => void): this {
-        this._onHeighlight = block;
+    onHighlight(block: (listView: this, column: number, item: number) => void): this {
+        this._onHighlight = block;
         return this;
     }
 
