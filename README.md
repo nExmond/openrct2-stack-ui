@@ -5,7 +5,7 @@
 <img src="https://img.shields.io/badge/api-%3E%3D%2029-turquoise.svg" />
 <br /><br />
 ✨ Easy-to-use UI framework for OpenRCT2 plugin developer.
-<a href="README_ko.md"><strong>[Korean]</strong></a>
+<a href="README_ko.md"><strong>[한국어]</strong></a>
 </p>
 <br /><br /><br />
 
