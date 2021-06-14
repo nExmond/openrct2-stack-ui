@@ -495,7 +495,7 @@ windowProxy.show();
 - didAppear
 - didDisappear
 
-Derived proxy
+파생 프록시
 <details><summary><b>💠 UIWindowProxy (UIWDP)</b></summary>
 
 액션
