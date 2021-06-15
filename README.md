@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/nExmond/openrct2-stack-ui/blob/master/images/logo.png"/>
+<img src="images/logo.png"/>
 <br /><br />
 <img src="https://img.shields.io/badge/version-0.1.0-blueviolet.svg" />
 <img src="https://img.shields.io/badge/api-%3E%3D%2029-turquoise.svg" />
@@ -20,7 +20,7 @@
 
 ## 🌍 Demo
 
-![https://github.com/nExmond/openrct2-stack-ui/blob/master/images/demo.png](https://github.com/nExmond/openrct2-stack-ui/blob/master/images/demo.png)
+![images/demo.png](images/demo.png)
 
 Most of the usage examples are included in the demo plugin.
 
@@ -601,7 +601,7 @@ Action
 
 <details><summary><b>🧩 UI Hierarchy</b></summary>
 
-![https://github.com/nExmond/openrct2-stack-ui/blob/master/images/stack.png](https://github.com/nExmond/openrct2-stack-ui/blob/master/images/stack.png)
+![images/stack.png](images/stack.png)
 
 The containment relationship is:
 
@@ -674,7 +674,7 @@ proxy.onClick((w) => {
 </details>
 <details><summary><b>♻️ UI Life Cycle</b></summary>
 
-![https://github.com/nExmond/openrct2-stack-ui/blob/master/images/lifecycle.png](https://github.com/nExmond/openrct2-stack-ui/blob/master/images/lifecycle.png)
+![images/lifecycle.png](images/lifecycle.png)
 
 In StackUI, UI has a lifecycle and provides hooks according to its state.
 
@@ -737,7 +737,7 @@ TextBuilder defines the font of the string, and TextNode defines the color and o
 
 The following are the examples included in the demo.
 
-![https://github.com/nExmond/openrct2-stack-ui/blob/master/images/textbuilder.png](https://github.com/nExmond/openrct2-stack-ui/blob/master/images/textbuilder.png)
+![images/textbuilder.png](images/textbuilder.png)
 
 ```tsx
 const formatted = TB.$(
