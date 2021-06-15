@@ -114,7 +114,7 @@ windowProxy.didAppear((window) => {
     console.log(window.getTitle());
     console.log(`before: ${labelProxy.ui?.getText()}`);
     labelProxy.updateUI((label) => {
-        label.title(`${window.getTitle()} is opened.`);
+        label.text(`${window.getTitle()} is opened.`);
     });
     console.log(`after: ${labelProxy.ui?.getText()}`);
 });
@@ -139,7 +139,7 @@ windowProxy.didAppear((window) => {
     console.log(window.getTitle());
     console.log(`before: ${labelProxy.ui?.getText()}`);
     labelProxy.updateUI((label) => {
-        label.title(`${window.getTitle()} is opened.`);
+        label.text(`${window.getTitle()} is opened.`);
     });
     console.log(`after: ${labelProxy.ui?.getText()}`);
 });
